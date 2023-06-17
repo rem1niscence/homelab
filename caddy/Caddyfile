@@ -13,10 +13,6 @@
   respond 404
 }
 
-pi-1.tail412fa.ts.net {
-  import network_paths
-}
-
-http://100.102.188.8 {
+{$SERVER_URL} {
   import network_paths
 }

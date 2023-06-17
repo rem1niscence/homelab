@@ -36,7 +36,6 @@ services:
       - '--web.enable-lifecycle'
     networks:
       - pi-network
-  
   grafana:
     image: grafana/grafana:10.0.0
     container_name: grafana

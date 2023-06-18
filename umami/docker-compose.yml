@@ -2,22 +2,20 @@ version: '3'
 
 services:
   umami:
+    container_name: umami
     image: ghcr.io/umami-software/umami:postgresql-latest
     ports:
       - "3010:3000"
-    environment:
-      DATABASE_URL: postgresql://umami:umami@db:5432/umami
-      DATABASE_TYPE: postgresql
-      APP_SECRET: replace-me-with-a-random-string
+    env_file:
+      - .env
     depends_on:
       - db
     restart: always
   db:
+    container_name: umami_db
     image: postgres:15-alpine
-    environment:
-      POSTGRES_DB: umami
-      POSTGRES_USER: umami
-      POSTGRES_PASSWORD: umami
+    env_file:
+      .env
     volumes:
       - ./sql/schema.postgresql.sql:/docker-entrypoint-initdb.d/schema.postgresql.sql:ro
       - umami-db-data:/var/lib/postgresql/data

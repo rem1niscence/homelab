@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# install vim if not already
+sudo apt install -y vim
+
 # Enable missing locales
 sudo vim /etc/locale.gen
 

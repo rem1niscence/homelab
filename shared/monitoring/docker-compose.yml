@@ -46,7 +46,7 @@ services:
     ports:
       - 3000:3000
     environment:
-      - GF_SECURITY_ADMIN_USER=pi-1
+      - GF_SECURITY_ADMIN_USER=pi-admin
       - GF_SECURITY_ADMIN_PASSWORD=dj4S23c0l!s
       - GF_USERS_ALLOW_SIGN_UP=false
       - GF_SERVER_ROOT_URL=/grafana/

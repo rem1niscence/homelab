@@ -1148,7 +1148,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "node_filesystem_avail_bytes{instance=\"$node\",job=\"$job\",device!~'rootfs'}",
+          "expr": "node_filesystem_avail_bytes{instance=\"$node\",job=\"$job\",mountpoint=\"/\", device!~'rootfs'}",
           "intervalFactor": 1,
           "range": true,
           "refId": "A",
@@ -23476,6 +23476,6 @@
   "timezone": "browser",
   "title": "Node Exporter Full",
   "uid": "rYdddlPWk",
-  "version": 3,
+  "version": 2,
   "weekStart": ""
 }

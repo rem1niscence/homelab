@@ -26,3 +26,6 @@ volumes:
 networks:
   pi-network:
     external: true
+
+# You may have to create the volume:
+# docker volume create caddy_data

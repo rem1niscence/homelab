@@ -10,6 +10,15 @@
     reverse_proxy grafana:3000  
   }
 
+  handle_path /umami/* {
+    reverse_proxy /* umami:3000  
+  }
+
+  # @umami {
+	#   header Referer *umami*
+  # }
+  # reverse_proxy @umami /* umami:3000
+
   respond 404
 }
 

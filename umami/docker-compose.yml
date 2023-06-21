@@ -1,9 +1,15 @@
+# WORK IN PROGRESS
 version: '3'
 
 services:
   umami:
     container_name: umami
-    image: ghcr.io/umami-software/umami:postgresql-latest
+    # image: ghcr.io/umami-software/umami:postgresql-latest
+    build:
+      context: .
+      # args:
+        # DATABASE_TYPE: postgreql
+        # BASE_PATH: /umami/
     ports:
       - "3010:3000"
     env_file:
@@ -11,6 +17,8 @@ services:
     depends_on:
       - db
     restart: always
+    networks:
+      - pi-network
   db:
     container_name: umami_db
     image: postgres:15-alpine
@@ -19,5 +27,12 @@ services:
     volumes:
       - umami-db-data:/var/lib/postgresql/data
     restart: always
+    networks:
+      - pi-network
+
 volumes:
   umami-db-data:
+
+networks:
+  pi-network:
+    external: true

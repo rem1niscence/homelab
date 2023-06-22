@@ -4,7 +4,7 @@ version: "3.7"
 services:
   caddy:
     image: caddy:alpine
-    restart: unless-stopped
+    restart: always
     container_name: caddy
     networks:
       - pi-network
@@ -27,6 +27,7 @@ services:
     container_name: tailscale
     image: tailscale/tailscale:latest
     network_mode: host
+    restart: always
     cap_add:
       - NET_ADMIN
       - NET_RAW

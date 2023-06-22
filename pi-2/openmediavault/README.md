@@ -10,7 +10,9 @@ To change OMV port:
 
 ## Plugins I'm using
 
-* openmediavault-compose
-* openmediavault-downloader
-* openmediavault-flashmemory
-* openmediavault-filebrowser
+* compose
+* downloader
+* flashmemory
+* filebrowser
+* usbbackup
+* onedrive

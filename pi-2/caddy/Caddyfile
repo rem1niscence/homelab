@@ -11,11 +11,6 @@
     reverse_proxy /*  host.docker.internal:2010
   }
 
-  # not working
-  handle_path /fm/* {
-    reverse_proxy /*  host.docker.internal:3670
-  }
-
   respond 404
 }
 

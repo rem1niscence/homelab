@@ -11,6 +11,11 @@
     reverse_proxy /*  172.17.0.1:2010
   }
 
+  # not working
+  handle_path /fm/* {
+    reverse_proxy /*  172.17.0.1:3670
+  }
+
   respond 404
 }
 

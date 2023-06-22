@@ -22,7 +22,9 @@ services:
       - $PWD/tailscale/tailscaled.sock:/var/run/tailscale/tailscaled.sock
     env_file:
       - .env
-
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  
   tailscale:
     container_name: tailscale
     image: tailscale/tailscale:latest

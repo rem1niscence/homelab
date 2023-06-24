@@ -17,9 +17,18 @@ To change OMV port:
 * usbbackup
 * onedrive
 
-## Useful random info
+### Mount Samba share in linux
 
-After creating a shared folder with SMB/CIFS, you can connect to it as the root omv user by running 
-```bash
- sudo mount -t cifs  //{hostname/ip}/{shared_folder} /{mount_folder}
-``` 
+1. `sudo apt install smbclient cifs-utils`
+2. `smbclient -L //ip` See which shares are avaiable
+3. `mkidr /mnt/mountFolder`
+
+Mount one time
+4. `sudo mount -t cifs -o username=serverUserName,password=password //myServerIpAdress/sharename /mnt/myFolder/`
+
+Mount permanently
+
+4. `sudo vi /etc/fstab`
+5. `//<your-ip-address>/<mount-name> /mnt/myFolder/ cifs username=YOURUSERNAME,password=YOURPASSWORD,iocharset=utf8,file_mode=0777,dir_mode=0777`
+
+Note: Remember to add the guest device's IP before attempting to connect

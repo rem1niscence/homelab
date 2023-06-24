@@ -16,3 +16,10 @@ To change OMV port:
 * filebrowser
 * usbbackup
 * onedrive
+
+## Useful random info
+
+After creating a shared folder with SMB/CIFS, you can connect to it as the root omv user by running 
+```bash
+ sudo mount -t cifs  //{hostname/ip}/{shared_folder} /{mount_folder}
+``` 

@@ -1,4 +1,10 @@
 (network_paths) {
+  redir /pihole /pihole/admin/
+  redir /pihole/ /pihole/admin/
+  redir /portainer /portainer/
+  redir /grafana /grafana/
+  redir /jellyfin /jellyfin/
+
   handle_path /pihole/* {
     reverse_proxy /* pihole:80
   }
@@ -9,11 +15,16 @@
   handle_path /grafana/* {
     reverse_proxy grafana:3000  
   }
+  
+   handle_path /jellyfin/* {
+            rewrite * /jellyfin{uri}
+            reverse_proxy jellyfin:8096
+   }
 
-  handle_path /umami/* {
-    reverse_proxy /* umami:3000  
-  }
-
+  # Not working
+  # handle_path /umami/* {
+  #   reverse_proxy /* umami:3000  
+  # }
   # @umami {
 	#   header Referer *umami*
   # }

@@ -36,10 +36,10 @@ volumes:
       driver: local
       driver_opts:
         type: cifs
-        # If you get a permissions error when running the instance, try to mount 
+        # If you get a permission error when running the instance, try to mount 
         # and create the jellyfin folder in the same machine the compose is running
-        device: //10.0.0.88/media/jellyfin
-        o: username=client,password=d4gOA16vp,uid=1000,gid=1000,vers=3.0
+        device: "//${CIFS_IP}/${CIFS_PATH}"
+        o: "username=${CIFS_USERNAME},password=${CIFS_PASSWORD},uid=1000,gid=1000,vers=3.0"
     config:
 
 # TODO: Add dockerfile to pre-create the media folders

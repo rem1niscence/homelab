@@ -28,5 +28,5 @@ volumes:
       driver_opts:
         type: cifs
         device: "//${CIFS_IP}/${CIFS_PATH}"
-        o: "username=${CIFS_USERNAME},password=${CIFS_PASSWORD},uid=1000,gid=1000,vers=3.0"
+        o: "username=${CIFS_USERNAME},password=${CIFS_PASSWORD},uid=1000,gid=1000,file_mode=0777,dir_mode=0777,vers=3.0"
     config:

@@ -22,11 +22,14 @@ services:
       - pi-network
     # network_mode: host
     restart: unless-stopped
+    # Run V4L2 hardware acceleration
     devices:
       - "/dev/video10:/dev/video10"
       - "/dev/video11:/dev/video11"
       - "/dev/video12:/dev/video12"
-
+      - "/dev/video18:/dev/video18"
+      - "/dev/video31:/dev/video31"
+      - "/dev/media2:/dev/media2"
 networks:
   pi-network:
     external: true

@@ -4,6 +4,7 @@
   redir /portainer /portainer/
   redir /grafana /grafana/
   redir /jellyfin /jellyfin/
+  redir /torrent /torrent/
 
   handle_path /pihole/* {
     reverse_proxy /* pihole:80
@@ -20,6 +21,10 @@
             rewrite * /jellyfin{uri}
             reverse_proxy jellyfin:8096
    }
+
+  handle_path /torrent/* {
+    reverse_proxy /* qbittorrent:8100  
+  }
 
   # Not working
   # handle_path /umami/* {

@@ -29,6 +29,6 @@ Mount one time
 Mount permanently
 
 4. `sudo vi /etc/fstab`
-5. `//<your-ip-address>/<mount-name> /mnt/myFolder/ cifs username=YOURUSERNAME,password=YOURPASSWORD,iocharset=utf8,file_mode=0777,dir_mode=0777`
+5. `//{ip}/{mount-name} /mnt/myFolder/ cifs uid={user},gid={user},username={usermane},password={password},iocharset=utf8,file_mode=0777,dir_mode=0777`
 
 Note: Remember to add the guest device's IP before attempting to connect

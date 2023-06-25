@@ -1,4 +1,9 @@
 (network_paths) {
+  redir /portainer /portainer/
+  redir /grafana /grafana
+  redir /omv  /omv/
+  redir /syncthing /syncthing/
+
   handle_path /portainer/* {
     reverse_proxy /* portainer:9000
   }
@@ -9,6 +14,10 @@
 
   handle_path /omv/* {
     reverse_proxy /*  host.docker.internal:2010
+  }
+
+  handle_path /syncthing/* {
+    reverse_proxy /*  host.docker.internal:8384
   }
 
   respond 404

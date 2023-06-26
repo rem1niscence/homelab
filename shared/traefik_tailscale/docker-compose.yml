@@ -5,8 +5,6 @@ services:
     # The official v2 Traefik docker image
     image: traefik:v3.0.0-beta3
     container_name: traefik
-    # Enables the web UI and tells Traefik to listen to docker
-    # command: --api.insecure=true --providers.docker
     ports:
       # The HTTP port
       - "443:443"
@@ -17,21 +15,13 @@ services:
     volumes:
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock
-      # - ./traefik.toml:/traefik.toml
-      # - ./traefik_dynamic.toml:/traefik_dynamic.toml
+      - ./traefik.yml:/traefik.yml
+      - ./traefik_dynamic.yml:/traefik_dynamic.yml
       - ./tailscale/tailscaled.sock:/var/run/tailscale/tailscaled.sock
-      - ./letsencrypt:/letsencrypt
     networks:
      - pi-network
-    command:
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.websecure.address=:443"
-      - "--entrypoints.web.address=:80"
-      - "--certificatesresolvers.tsresolver.tailscale=true"
-      - "--log.level=DEBUG"
-      - " --api.dashboard=true"
+    env_file:
+      - .env
 
   tailscale:
     container_name: tailscale

@@ -1,0 +1,19 @@
+http:
+  routers:
+    portainer:
+      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/portainer`)
+      service: portainer
+      middlewares:
+        - portainer-stripprefix
+      tls:
+        certResolver: tsresolver
+  services:
+    portainer:
+      loadBalancer:
+        servers:
+          - url: 'http://portainer:9000'
+  middlewares:
+    portainer-stripprefix:
+      stripPrefix:
+        prefixes:
+          - /portainer

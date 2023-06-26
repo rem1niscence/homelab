@@ -1,0 +1,10 @@
+{
+  "yaml.schemas": {
+    "file:///home/roniel-razer/.vscode/extensions/atlassian.atlascode-2.8.5/resources/schemas/pipelines-schema.json": "bitbucket-pipelines.yml",
+    "file:/home/roniel_razer/.config/Code/User/globalStorage/amazonwebservices.aws-toolkit-vscode/sam.schema.json": [
+      "template.yaml",
+      "template.yml"
+    ],
+    "https://json.schemastore.org/yamllint.json": "file:///Users/roniel-mac/Programming/Linux/rpi_setup/shared/traefik_tailscale/traefik.yml"
+  }
+}

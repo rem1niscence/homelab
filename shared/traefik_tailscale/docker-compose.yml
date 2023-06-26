@@ -1,0 +1,55 @@
+version: '3'
+
+services:
+  traefik:
+    # The official v2 Traefik docker image
+    image: traefik:v3.0.0-beta3
+    container_name: traefik
+    # Enables the web UI and tells Traefik to listen to docker
+    # command: --api.insecure=true --providers.docker
+    ports:
+      # The HTTP port
+      - "443:443"
+      - "443:443/udp"      
+      - "80:80"
+      # The Web UI (enabled by --api.insecure=true)
+      - "8080:8080"
+    volumes:
+      # So that Traefik can listen to the Docker events
+      - /var/run/docker.sock:/var/run/docker.sock
+      # - ./traefik.toml:/traefik.toml
+      # - ./traefik_dynamic.toml:/traefik_dynamic.toml
+      - ./tailscale/tailscaled.sock:/var/run/tailscale/tailscaled.sock
+      - ./letsencrypt:/letsencrypt
+    networks:
+     - pi-network
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.address=:80"
+      - "--certificatesresolvers.tsresolver.tailscale=true"
+      - "--log.level=DEBUG"
+      - " --api.dashboard=true"
+
+  tailscale:
+    container_name: tailscale
+    image: tailscale/tailscale:latest
+    network_mode: host
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    volumes:
+      - /dev/net/tun:/dev/net/tun
+      - ./var/lib:/var/lib
+      - ./tailscale:/tmp
+    environment:
+      - TS_STATE_DIR=/var/lib/tailscale
+    env_file:
+      - .env
+
+networks:
+  pi-network:
+    external: true

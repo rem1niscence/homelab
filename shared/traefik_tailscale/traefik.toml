@@ -1,0 +1,64 @@
+[entryPoints]
+  [entryPoints.web]
+    address = ":80"
+  [entryPoints.websecure]
+    address = ":443"
+
+[certificatesResolvers.tsresolver.tailscale]
+
+[log]
+  level = "DEBUG"
+
+[providers]
+	[providers.file]
+		filename = "traefik_dynamic.toml"
+
+[api]
+  insecure = true
+  dashboard = true
+
+# [entryPoints]
+#   [entryPoints.web]
+#     address = ":80"
+
+# 	[entryPoints.websecure]
+# 		address = ":443"
+
+# [providers]
+# 	[providers.file]
+# 		filename = "traefik_dynamic.toml"
+
+# [certificatesResolvers.tailscaleResolver.tailscale]
+
+# [api]
+# 	debug = true
+#   dashboard = true
+#   insecure = true
+
+# [log]
+# 	level = "DEBUG"
+
+# [entryPoints]
+#   [entryPoints.web]
+#     address = ":80"
+#     # [entryPoints.web.http.redirections.entryPoint]
+#     #   to = "websecure"
+#     #   scheme = "https"
+
+#   [entryPoints.websecure]
+#     address = ":443"
+
+# [certificatesResolvers.myresolver.tailscale]
+
+# [api]
+#   dashboard = true
+
+# [providers.docker]
+#   watch = true
+#   network = "pi-network"
+
+# [providers.file]
+#   filename = "traefik_dynamic.toml"
+
+# [log]
+# 	level = "DEBUG"

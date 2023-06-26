@@ -12,9 +12,16 @@ services:
     restart: unless-stopped
     networks:
      - pi-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.portainer.rule=Host(`pi-6.tail412fa.ts.net`) && PathPrefix(`/portainer`)"  
+      - "traefik.http.routers.portainer.middlewares=portainer-stripprefix"
+      - "traefik.http.middlewares.portainer-stripprefix.stripprefix.prefixes=/portainer"
+      - "traefik.http.services.portainer.loadbalancer.server.port=9000"
+      - traefik.http.routers.portainer.tls.certresolver=tsresolver
 
 volumes:
-  data:
+    data:
 
 networks:
   pi-network:

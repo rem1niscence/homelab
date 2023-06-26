@@ -2,16 +2,12 @@ version: '3'
 
 services:
   traefik:
-    # The official v2 Traefik docker image
-    image: traefik:v3.0.0-beta3
+    image: traefik:v3.0
     container_name: traefik
     ports:
-      # The HTTP port
       - "443:443"
       - "443:443/udp"      
       - "80:80"
-      # The Web UI (enabled by --api.insecure=true)
-      - "8080:8080"
     volumes:
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock
@@ -22,6 +18,8 @@ services:
      - pi-network
     env_file:
       - .env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   tailscale:
     container_name: tailscale

@@ -10,7 +10,7 @@ certificatesResolvers:
   tsresolver:
     tailscale: {}
 api:
-  insecure: true
+  insecure: false
   dashboard: true
 log:
   level: DEBUG

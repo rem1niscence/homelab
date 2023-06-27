@@ -67,7 +67,7 @@ http:
     torrent:
       loadBalancer:
         servers:
-          - url: 'http://qbittorrent:8100'
+          - url: 'http://qbittorrent:8080'
     umami:
       loadBalancer:
         servers:

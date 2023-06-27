@@ -15,6 +15,7 @@ services:
     volumes:
       - config:/config
       - storage:/downloads
+    restart: unless_stopped
 
 networks:
   pi-network:

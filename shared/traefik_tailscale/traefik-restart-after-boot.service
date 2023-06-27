@@ -9,7 +9,7 @@
 # 2. run the following command to activate it:
 # sudo systemctl enable traefik-restart-after-boot.service
 [Unit]
-Description=Restart Docker container after boot
+Description=Restart Traefik container after boot
 After=docker.service
 Wants=docker.service
 

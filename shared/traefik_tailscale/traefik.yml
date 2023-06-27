@@ -1,0 +1,16 @@
+entryPoints:
+  secure:
+    address: ':80'
+  websecure:
+    address: ':443'
+providers:
+  file:
+    filename: traefik_dynamic.yml
+certificatesResolvers:
+  tsresolver:
+    tailscale: {}
+api:
+  insecure: false
+  dashboard: true
+log:
+  level: DEBUG

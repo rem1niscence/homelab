@@ -14,7 +14,7 @@ services:
      - pi-network
 
 volumes:
-  data:
+    data:
 
 networks:
   pi-network:

@@ -1,0 +1,96 @@
+http:
+  routers:
+    api:
+      rule: Host(`{{ env "DOMAIN" }}`)
+      # middlewares:
+      #   - auth
+      service: api@internal
+      tls:
+        certResolver: tsresolver
+    portainer:
+      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/portainer`)
+      service: portainer
+      middlewares:
+        - strip-prefix
+      tls:
+        certResolver: tsresolver
+    grafana:
+      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/grafana`)
+      service: grafana
+      middlewares:
+        - strip-prefix
+      tls:
+        certResolver: tsresolver
+    pihole:
+      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/pihole`)
+      service: pihole
+      middlewares:
+        - strip-prefix
+      tls:
+        certResolver: tsresolver
+    torrent:
+      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/torrent`)
+      service: torrent
+      middlewares:
+        - strip-prefix
+      tls:
+        certResolver: tsresolver  
+    jellyfin:
+      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/jellyfin`)
+      service: jellyfin
+      middlewares:
+        - add-prefix
+        - strip-prefix
+      tls:
+        certResolver: tsresolver
+    umami: # not working yet
+      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/umami`)
+      service: umami
+      middlewares:
+        - strip-prefix
+      tls:
+        certResolver: tsresolver
+
+  services:
+    portainer:
+      loadBalancer:
+        servers:
+          - url: 'http://portainer:9000'
+    grafana:
+      loadBalancer:
+        servers:
+          - url: 'http://grafana:3000'
+    pihole:
+      loadBalancer:
+        servers:
+          - url: 'http://pihole:80'
+    torrent:
+      loadBalancer:
+        servers:
+          - url: 'http://qbittorrent:8100'
+    umami:
+      loadBalancer:
+        servers:
+          - url: 'http://umami:3000'    
+    jellyfin:
+      loadBalancer:
+        servers:
+          - url: 'http://jellyfin:8096'
+
+  middlewares:
+    strip-prefix:
+      stripPrefix:
+        prefixes:
+          - /portainer
+          - /grafana
+          - /pihole
+          - /jellyfin
+          - /torrent
+          - /umami
+    add-prefix:
+      addPrefix:
+        prefix: "/jellyfin"
+    # auth:
+    #   basicAuth:
+    #     users:
+    #       - 'pi-admin:$apr1$pAYi7oll$NQR6hcTYFfIqBpnzpPBL91'

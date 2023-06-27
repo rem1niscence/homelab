@@ -1,13 +1,13 @@
-# On system boot, the caddy container tries to mount the tailscale's socket file
+# On system boot, the traefik container tries to mount the tailscale's socket file
 # which is not yet available as the tailscale container is also booting, this makes
-# the caddy service to fail right away and because it fails before being up for at 
-# least 10 seconds, the restart policy doesn't kick in so a manual reboot of caddy
-# is required. This service file attempts to restart the caddy container once
+# the traefik service to fail right away and because it fails before being up for at 
+# least 10 seconds, the restart policy doesn't kick in so a manual reboot of traefik
+# is required. This service file attempts to restart the traefik container once
 # after at least 20s have passed since system boot in order to give time to
 # docker to mount the tailscale's volume. To make it work: 
 # 1. Place this file in /etc/systemd/system/
 # 2. run the following command to activate it:
-# sudo systemctl enable caddy-restart-after-boot.service
+# sudo systemctl enable traefik-restart-after-boot.service
 [Unit]
 Description=Restart Docker container after boot
 After=docker.service
@@ -15,7 +15,7 @@ Wants=docker.service
 
 [Service]
 ExecStartPre=/bin/sleep 20
-ExecStart=/usr/bin/docker restart caddy
+ExecStart=/usr/bin/docker restart traefik
 Type=oneshot
 RemainAfterExit=yes
 

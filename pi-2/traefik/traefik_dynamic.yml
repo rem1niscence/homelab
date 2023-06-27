@@ -1,0 +1,68 @@
+http:
+  routers:
+    api:
+      rule: Host(`{{ env "DOMAIN" }}`)
+      # middlewares:
+      #   - auth
+      service: api@internal
+      tls:
+        certResolver: tsresolver
+    portainer:
+      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/portainer`)
+      service: portainer
+      middlewares:
+        - strip-prefix
+      tls:
+        certResolver: tsresolver
+    grafana:
+      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/grafana`)
+      service: grafana
+      middlewares:
+        - strip-prefix
+      tls:
+        certResolver: tsresolver
+    omv:
+      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/omv`)
+      service: omv
+      middlewares:
+        - "strip-prefix"
+      tls:
+        certResolver: tsresolver
+    syncthing:
+      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/syncthing`)
+      service: syncthing
+      middlewares:
+        - "strip-prefix"
+      tls:
+        certResolver: tsresolver
+
+  services:
+    portainer:
+      loadBalancer:
+        servers:
+          - url: 'http://portainer:9000'
+    grafana:
+      loadBalancer:
+        servers:
+          - url: 'http://grafana:3000'
+    omv:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:2010"
+    syncthing:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:8384"
+
+  middlewares:
+    strip-prefix:
+      stripPrefix:
+        prefixes:
+          - /portainer
+          - /grafana
+          - /omv
+          - /syncthing
+    # auth:
+    #   basicAuth:
+    #     users:
+    #       - 'pi-admin:$apr1$pAYi7oll$NQR6hcTYFfIqBpnzpPBL91'

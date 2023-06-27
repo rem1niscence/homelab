@@ -86,6 +86,7 @@ http:
           - /pihole
           - /jellyfin
           - /torrent
+          - /umami
     add-prefix:
       addPrefix:
         prefix: "/jellyfin"

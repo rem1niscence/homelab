@@ -46,8 +46,8 @@ http:
     umami: # not working yet
       rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/umami`)
       service: umami
-      middlewares:
-        - strip-prefix
+      # middlewares:
+      #   - strip-prefix
       tls:
         certResolver: tsresolver
 

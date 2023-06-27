@@ -7,9 +7,9 @@ services:
     # image: ghcr.io/umami-software/umami:postgresql-latest
     build:
       context: .
-      # args:
-        # DATABASE_TYPE: postgreql
-        # BASE_PATH: /umami/
+      args:
+        DATABASE_TYPE: postgresql
+        BASE_PATH: /umami
     ports:
       - "3010:3000"
     env_file:

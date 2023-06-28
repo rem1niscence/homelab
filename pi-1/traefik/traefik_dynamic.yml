@@ -1,22 +1,13 @@
 http:
   routers:
-  # Basically, I want homarr to be the homepage but both homar and traefik internal urls do their api
-  # calls with /api as a prefix 🤡🤡🤡. In order to not step on the toes of each I had to manually set
-  # their routes api routes. Will continue updating when I have more 404s.
     homarr:
       rule: Host(`{{ env "DOMAIN" }}`)
       service: homarr
       priority: 1
       tls:
         certResolver: tsresolver
-    homar-docker-api:
-      rule: Host(`{{ env "DOMAIN" }}`) && (PathPrefix(`/api/docker/`) || PathPrefix(`/api/config`))
-      service: homarr
-      priority: 3
-      tls:
-        certResolver: tsresolver
     traefik:
-      rule: Host(`{{ env "DOMAIN" }}`) && (PathPrefix(`/traefik`) || PathPrefix(`/api`))
+      rule: Host(`{{ env "DOMAIN" }}`) && (PathPrefix(`/traefik`) || HeaderRegexp(`Referer`, `.*/traefik/.*`))
       priority: 2
       service: "api@internal"
       middlewares:

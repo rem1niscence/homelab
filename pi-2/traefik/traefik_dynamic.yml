@@ -1,12 +1,12 @@
 http:
   routers:
-    api:
-      rule: Host(`{{ env "DOMAIN" }}`)
-      # middlewares:
-      #   - auth
-      service: api@internal
+    traefik:
+      rule: Host(`{{ env "DOMAIN" }}`) && (PathPrefix(`/traefik`) || PathPrefix(`/api`))
+      service: "api@internal"
+      middlewares:
+        - strip-prefix      
       tls:
-        certResolver: tsresolver
+        certResolver: "tsresolver"
     portainer:
       rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/portainer`)
       service: portainer
@@ -62,6 +62,7 @@ http:
           - /grafana
           - /omv
           - /syncthing
+          - /traefik
     # auth:
     #   basicAuth:
     #     users:

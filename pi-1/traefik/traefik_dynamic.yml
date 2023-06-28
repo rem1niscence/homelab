@@ -1,12 +1,28 @@
 http:
   routers:
-    api:
+  # Basically, I want homarr to be the homepage but both homar and traefik internal urls do their api
+  # calls with /api as a prefix 🤡🤡🤡. In order to not step on the toes of each I had to manually set
+  # their routes api routes. Will continue updating when I have more 404s.
+    homarr:
       rule: Host(`{{ env "DOMAIN" }}`)
-      # middlewares:
-      #   - auth
-      service: api@internal
+      service: homarr
+      priority: 1
       tls:
         certResolver: tsresolver
+    homar-docker-api:
+      rule: Host(`{{ env "DOMAIN" }}`) && (PathPrefix(`/api/docker/`) || PathPrefix(`/api/config`))
+      service: homarr
+      priority: 3
+      tls:
+        certResolver: tsresolver
+    traefik:
+      rule: Host(`{{ env "DOMAIN" }}`) && (PathPrefix(`/traefik`) || PathPrefix(`/api`))
+      priority: 2
+      service: "api@internal"
+      middlewares:
+        - strip-prefix      
+      tls:
+        certResolver: "tsresolver"
     portainer:
       rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/portainer`)
       service: portainer
@@ -38,16 +54,11 @@ http:
     jellyfin:
       rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/jellyfin`)
       service: jellyfin
-      middlewares:
-        - add-prefix
-        - strip-prefix
       tls:
         certResolver: tsresolver
-    umami: # not working yet
+    umami:
       rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/umami`)
       service: umami
-      # middlewares:
-      #   - strip-prefix
       tls:
         certResolver: tsresolver
 
@@ -76,6 +87,10 @@ http:
       loadBalancer:
         servers:
           - url: 'http://jellyfin:8096'
+    homarr:
+      loadBalancer:
+        servers:
+          - url: 'http://homarr:7575'
 
   middlewares:
     strip-prefix:
@@ -84,13 +99,12 @@ http:
           - /portainer
           - /grafana
           - /pihole
-          - /jellyfin
           - /torrent
-          - /umami
-    add-prefix:
-      addPrefix:
-        prefix: "/jellyfin"
-    # auth:
+          - /traefik
+    # api-strip-prefix:
+    #   stripPrefix:
+    #     prefixes:
+    #       - /api    # auth:
     #   basicAuth:
     #     users:
     #       - 'pi-admin:$apr1$pAYi7oll$NQR6hcTYFfIqBpnzpPBL91'

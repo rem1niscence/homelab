@@ -14,6 +14,14 @@ http:
         - strip-prefix      
       tls:
         certResolver: "tsresolver"
+    traefik-redirect:
+      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/reverse-proxy`)
+      priority: 2
+      service: "api@internal"
+      middlewares:
+        - redirect-traefik
+      tls:
+        certResolver: "tsresolver"
     portainer:
       rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/portainer`)
       service: portainer
@@ -32,14 +40,30 @@ http:
       rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/pihole`)
       service: pihole
       middlewares:
-        - strip-prefix
+         - strip-prefix
+      tls:
+        certResolver: tsresolver
+    pihole-redirect:
+      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/pi/admin`)
+      service: pihole
+      middlewares:
+         - redirect-pihole
       tls:
         certResolver: tsresolver
     torrent:
       rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/torrent`)
       service: torrent
+      priority: 4
       middlewares:
         - strip-prefix
+      tls:
+        certResolver: tsresolver  
+    torrent-redirect:
+      rule: Host(`{{ env "DOMAIN" }}`) && Path(`/vuetorrent`)
+      service: torrent
+      priority: 3
+      middlewares:
+        - redirect-torrent
       tls:
         certResolver: tsresolver  
     jellyfin:
@@ -89,13 +113,27 @@ http:
         prefixes:
           - /portainer
           - /grafana
-          - /pihole
+          - /pihole/
           - /torrent
           - /traefik
-    # api-strip-prefix:
-    #   stripPrefix:
-    #     prefixes:
-    #       - /api    # auth:
+          - /homarr
+    # I don't like this either but have to do this workaround until this is fixed: https://github.com/ajnart/homarr/issues/777
+    redirect-pihole:
+      redirectRegex:
+        regex: "^(.*)/pi/admin"
+        replacement: "/pihole/admin/"
+        permanent: true
+    redirect-traefik:
+      redirectRegex:
+        regex: "^(.*)/reverse-proxy"
+        replacement: "/traefik/dashboard/"
+        permanent: true
+    redirect-torrent:
+      redirectRegex:
+        regex: "^(.*)/vuetorrent"
+        replacement: "/torrent/"
+        permanent: true
+
     #   basicAuth:
     #     users:
     #       - 'pi-admin:$apr1$pAYi7oll$NQR6hcTYFfIqBpnzpPBL91'

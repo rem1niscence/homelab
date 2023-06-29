@@ -1,0 +1,19 @@
+# Multiple docker services fail at boot due to resources not available at boot 
+# or containers that they depend on not being ready, and, even though they have
+# a restart policy that should kick in, it does not activate on instances that
+# have not been running for at least 10 seconds. This service attempts to restart
+# such instances after the system is up so they might be more stable.
+# 1. Place docker-restart.sh in /usr/local/bin
+# 2. Place this file in /etc/systemd/system/
+# 3. run the following command to activate it:
+# sudo systemctl enable restart-after-boot.service
+[Unit]
+Description=Restart exited Docker containers after a minute
+
+[Service]
+ExecStart=/usr/local/bin/docker-restart.sh
+Type=oneshot
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

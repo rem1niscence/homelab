@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  dashdot:
+    image: mauricenino/dashdot
+    container_name: dashdot
+    ports:
+      - 8443:3001
+    volumes:
+      - /:/mnt/host:ro
+    privileged: true
+    environment:
+      - DASHDOT_SHOW_HOST=true
+      - DASHDOT_CUSTOM_HOST=pi-N.local # Change on the PI
+      - DASHDOT_SHOW_DASH_VERSION=bottom_right
+      - DASHDOT_ENABLE_CPU_TEMPS=true
+      - DASHDOT_ALWAYS_SHOW_PERCENTAGES=true
+      - DASHDOT_ACCEPT_OOKLA_EUL=true
+      - DASHDOT_SPEED_TEST_INTERVAL=10 # minutes
+    networks:
+      - pi-network
+
+networks:
+  pi-network:
+    external: true

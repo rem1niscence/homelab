@@ -76,36 +76,72 @@ http:
       service: umami
       tls:
         certResolver: tsresolver
+    dashdot:
+      rule: Host(`{{ env "DOMAIN" }}`) && (PathPrefix(`/dashdot`) || HeaderRegexp(`Referer`, `.*/dashdot/.*`))
+      middlewares:
+        - strip-prefix
+      service: dashdot
+      tls:
+        certResolver: tsresolver
+    # ---- Dashdot ------
+    # This is all homarr"s fault, they"re hitting the wrong endpoints of dashdot
+    dashdot-redirect:
+      rule: Host(`{{ env "DOMAIN" }}`) && Path(`/dot`)
+      middlewares:
+        - redirect-dashdot
+      service: dashdot
+      tls:
+        certResolver: tsresolver
+    dashdot-api:
+      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/api/modules/dashdot`)
+      service: dashdot
+      middlewares:
+        - strip-prefix
+      tls:
+        certResolver: tsresolver
+    dashdot-storage-api:
+      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/api/modules/dashdot/storage`)
+      service: dashdot
+      middlewares:
+        - dashdot-storage-path-replace
+      tls:
+        certResolver: tsresolver
+    # --- !Dashdot ------
 
   services:
     portainer:
       loadBalancer:
         servers:
-          - url: 'http://portainer:9000'
+          - url: "http://portainer:9000"
     grafana:
       loadBalancer:
         servers:
-          - url: 'http://grafana:3000'
+          - url: "http://grafana:3000"
     pihole:
       loadBalancer:
         servers:
-          - url: 'http://pihole:80'
+          - url: "http://pihole:80"
     torrent:
       loadBalancer:
         servers:
-          - url: 'http://qbittorrent:8080'
+          - url: "http://qbittorrent:8080"
     umami:
       loadBalancer:
         servers:
-          - url: 'http://umami:3000'    
+          - url: "http://umami:3000"    
     jellyfin:
       loadBalancer:
         servers:
-          - url: 'http://jellyfin:8096'
+          - url: "http://jellyfin:8096"
     homarr:
       loadBalancer:
         servers:
-          - url: 'http://homarr:7575'
+          - url: "http://homarr:7575"
+    dashdot:
+      loadBalancer:
+        servers:
+          - url: "http://dashdot:3001"
+    
 
   middlewares:
     strip-prefix:
@@ -117,7 +153,9 @@ http:
           - /torrent
           - /traefik
           - /homarr
-    # I don't like this either but have to do this workaround until this is fixed: https://github.com/ajnart/homarr/issues/777
+          - /dashdot
+          - /api/modules/dashdot
+    # I don"t like this either but have to do this workaround until this is fixed: https://github.com/ajnart/homarr/issues/777
     redirect-pihole:
       redirectRegex:
         regex: "^(.*)/pi/admin"
@@ -133,7 +171,17 @@ http:
         regex: "^(.*)/vuetorrent"
         replacement: "/torrent/"
         permanent: true
-
+    
+    # ---- Dashdot ------
+    redirect-dashdot:
+      redirectRegex:
+        regex: "^(.*)/dot"
+        replacement: "/dashdot/"
+        permanent: true
+    dashdot-storage-path-replace:
+      replacePath:
+        path: "/load/storage"
+    # --- !Dashdot ------     
     #   basicAuth:
     #     users:
-    #       - 'pi-admin:$apr1$pAYi7oll$NQR6hcTYFfIqBpnzpPBL91'
+    #       - "pi-admin:$apr1$pAYi7oll$NQR6hcTYFfIqBpnzpPBL91"

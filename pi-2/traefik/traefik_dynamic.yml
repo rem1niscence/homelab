@@ -35,16 +35,47 @@ http:
         - "strip-prefix"
       tls:
         certResolver: tsresolver
+    dashdot:
+      rule: Host(`{{ env "DOMAIN" }}`) && (PathPrefix(`/dashdot`) || HeaderRegexp(`Referer`, `.*/dashdot/.*`))
+      middlewares:
+        - strip-prefix
+      service: dashdot
+      tls:
+        certResolver: tsresolver
+    # ---- Dashdot ------
+    # This is all homarr"s fault, they"re hitting the wrong endpoints of dashdot
+    dashdot-redirect:
+      rule: Host(`{{ env "DOMAIN" }}`) && Path(`/dot`)
+      middlewares:
+        - redirect-dashdot
+      service: dashdot
+      tls:
+        certResolver: tsresolver
+    dashdot-api:
+      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/api/modules/dashdot`)
+      service: dashdot
+      middlewares:
+        - strip-prefix
+      tls:
+        certResolver: tsresolver
+    dashdot-storage-api:
+      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/api/modules/dashdot/storage`)
+      service: dashdot
+      middlewares:
+        - dashdot-storage-path-replace
+      tls:
+        certResolver: tsresolver
+    # --- !Dashdot ------
 
   services:
     portainer:
       loadBalancer:
         servers:
-          - url: 'http://portainer:9000'
+          - url: "http://portainer:9000"
     grafana:
       loadBalancer:
         servers:
-          - url: 'http://grafana:3000'
+          - url: "http://grafana:3000"
     omv:
       loadBalancer:
         servers:
@@ -53,6 +84,10 @@ http:
       loadBalancer:
         servers:
           - url: "http://host.docker.internal:8384"
+    dashdot:
+      loadBalancer:
+        servers:
+          - url: "http://dashdot:3001"
 
   middlewares:
     strip-prefix:
@@ -63,7 +98,20 @@ http:
           - /omv
           - /syncthing
           - /traefik
+          - /dashdot
+          - /api/modules/dashdot
+
+    # ---- Dashdot ------
+    redirect-dashdot:
+      redirectRegex:
+        regex: "^(.*)/dot"
+        replacement: "/dashdot/"
+        permanent: true
+    dashdot-storage-path-replace:
+      replacePath:
+        path: "/load/storage"
+    # --- !Dashdot ------     
     # auth:
     #   basicAuth:
     #     users:
-    #       - 'pi-admin:$apr1$pAYi7oll$NQR6hcTYFfIqBpnzpPBL91'
+    #       - "pi-admin:$apr1$pAYi7oll$NQR6hcTYFfIqBpnzpPBL91"

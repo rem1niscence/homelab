@@ -71,9 +71,26 @@ http:
       service: jellyfin
       tls:
         certResolver: tsresolver
+    jellyseerr:
+      rule: Host(`{{ env "DOMAIN" }}`) && (PathPrefix(`/jellyseerr`)
+      service: jellyseerr
+      middlewares:
+        - strip-prefix      
+      tls:
+        certResolver: tsresolver
     sonarr:
       rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/sonarr`)
       service: sonarr
+      tls:
+        certResolver: tsresolver
+    radarr:
+      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/radarr`)
+      service: radarr
+      tls:
+        certResolver: tsresolver
+    prowlarr:
+      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/prowlarr`)
+      service: prowlarr
       tls:
         certResolver: tsresolver
     umami:
@@ -138,6 +155,10 @@ http:
       loadBalancer:
         servers:
           - url: "http://jellyfin:8096"
+    jellyseerr:
+      loadBalancer:
+        servers:
+          - url: "http://jellyseerr:5055"
     homarr:
       loadBalancer:
         servers:
@@ -150,6 +171,14 @@ http:
       loadBalancer:
         servers:
           - url: "http://sonarr:8989"    
+    radarr:
+      loadBalancer:
+        servers:
+          - url: "http://radarr:7878"    
+    prowlarr:
+      loadBalancer:
+        servers:
+          - url: "http://prowlarr:9696"
 
   middlewares:
     strip-prefix:
@@ -163,6 +192,7 @@ http:
           - /homarr
           - /dashdot
           - /api/modules/dashdot
+          - /jellyseerr
     # I don"t like this either but have to do this workaround until this is fixed: https://github.com/ajnart/homarr/issues/777
     redirect-pihole:
       redirectRegex:

@@ -11,7 +11,7 @@ services:
     volumes:
       # I'm hosting the files on the pi-2 so this one is focused on
       # video processing rather than storage
-      - config:/config
+      - jellyfin_config:/config
       - media:/data
     ports:
       - 8096:8096
@@ -31,6 +31,20 @@ services:
       - "/dev/video31:/dev/video31"
       - "/dev/media2:/dev/media2"
 
+  jellyseerr: 
+      image: fallenbagel/jellyseerr:latest
+      container_name: jellyseerr
+      environment:
+          # - LOG_LEVEL=debug
+         - TZ=Etc/UTC
+      ports:
+          - 5055:5055
+      volumes:
+          - jellyseerr_config:/app/config
+      restart: unless-stopped
+      networks: 
+        - pi-network
+
 networks:
   pi-network:
     external: true
@@ -45,13 +59,20 @@ volumes:
         # and create the jellyfin folder in the same machine the compose is running
         device: "//${CIFS_IP}/${CIFS_MEDIA_PATH}"
         o: "username=${CIFS_USERNAME},password=${CIFS_PASSWORD},uid=1000,gid=1000,vers=3.0"
-    config:
+    jellyfin_config:
       driver: local
       driver_opts:
         type: cifs
         # If you get a permission error when running the instance, try to mount 
         # and create the jellyfin folder in the same machine the compose is running
-        device: "//${CIFS_IP}/${CIFS_CONFIG_PATH}"
+        device: "//${CIFS_IP}/${CIFS_JELLYFIN_CONFIG_PATH}"
         o: "username=${CIFS_USERNAME},password=${CIFS_PASSWORD},uid=1000,gid=1000,vers=3.0,nobrl"
-
+    jellyseerr_config:
+      driver: local
+      driver_opts:
+        type: cifs
+        # If you get a permission error when running the instance, try to mount 
+        # and create the jellyfin folder in the same machine the compose is running
+        device: "//${CIFS_IP}/${CIFS_JELLYSEERR_CONFIG_PATH}"
+        o: "username=${CIFS_USERNAME},password=${CIFS_PASSWORD},uid=1000,gid=1000,vers=3.0,nobrl"
 # TODO: Add dockerfile to pre-create the media folders

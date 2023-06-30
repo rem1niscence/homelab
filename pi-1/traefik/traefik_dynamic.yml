@@ -71,6 +71,11 @@ http:
       service: jellyfin
       tls:
         certResolver: tsresolver
+    sonarr:
+      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/sonarr`)
+      service: sonarr
+      tls:
+        certResolver: tsresolver
     umami:
       rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/umami`)
       service: umami
@@ -141,7 +146,10 @@ http:
       loadBalancer:
         servers:
           - url: "http://dashdot:3001"
-    
+    sonarr:
+      loadBalancer:
+        servers:
+          - url: "http://sonarr:8989"    
 
   middlewares:
     strip-prefix:

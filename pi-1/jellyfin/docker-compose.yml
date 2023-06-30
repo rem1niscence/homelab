@@ -30,10 +30,12 @@ services:
       - "/dev/video18:/dev/video18"
       - "/dev/video31:/dev/video31"
       - "/dev/media2:/dev/media2"
+
 networks:
   pi-network:
     external: true
 
+# TODO: Mount a single volume when https://github.com/moby/moby/pull/45687 is merged
 volumes:
     media:
       driver: local
@@ -41,8 +43,15 @@ volumes:
         type: cifs
         # If you get a permission error when running the instance, try to mount 
         # and create the jellyfin folder in the same machine the compose is running
-        device: "//${CIFS_IP}/${CIFS_PATH}"
+        device: "//${CIFS_IP}/${CIFS_MEDIA_PATH}"
         o: "username=${CIFS_USERNAME},password=${CIFS_PASSWORD},uid=1000,gid=1000,vers=3.0"
     config:
+      driver: local
+      driver_opts:
+        type: cifs
+        # If you get a permission error when running the instance, try to mount 
+        # and create the jellyfin folder in the same machine the compose is running
+        device: "//${CIFS_IP}/${CIFS_CONFIG_PATH}"
+        o: "username=${CIFS_USERNAME},password=${CIFS_PASSWORD},uid=1000,gid=1000,vers=3.0,nobrl"
 
 # TODO: Add dockerfile to pre-create the media folders

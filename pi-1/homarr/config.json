@@ -1,0 +1,1463 @@
+{
+	"schemaVersion": 1,
+	"configProperties": {
+		"name": "main"
+	},
+	"categories": [
+		{
+			"id": "47af36c0-47c1-4e5b-bfc7-ad645ee6a33f",
+			"position": 1,
+			"name": "Pi 1",
+			"type": "category"
+		},
+		{
+			"id": "cecbc367-13aa-46df-87d8-277e83c37c7c",
+			"name": "Pi 2",
+			"position": 2,
+			"type": "category"
+		}
+	],
+	"wrappers": [
+		{
+			"id": "default",
+			"position": 0
+		},
+		{
+			"id": "47af36c0-47c1-4e5b-bfc7-ad645ee6a326",
+			"position": 1
+		},
+		{
+			"id": "ba363665-6c8b-4d9d-80d6-270e9909d1f9",
+			"position": 2
+		}
+	],
+	"apps": [
+		{
+			"id": "53b2d56c-4a45-46be-bcbf-3d45ba5ce8c0",
+			"name": "Traefik",
+			"url": "http://traefik:80",
+			"appearance": {
+				"iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/traefik.png"
+			},
+			"network": {
+				"enabledStatusChecker": true,
+				"statusCodes": [
+					"200"
+				]
+			},
+			"behaviour": {
+				"isOpeningNewTab": true,
+				"externalUrl": "https://pi-1.tail412fa.ts.net/reverse-proxy"
+			},
+			"area": {
+				"type": "category",
+				"properties": {
+					"id": "47af36c0-47c1-4e5b-bfc7-ad645ee6a33f"
+				}
+			},
+			"shape": {
+				"lg": {
+					"location": {
+						"x": 2,
+						"y": 0
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				},
+				"sm": {
+					"location": {
+						"x": 2,
+						"y": 0
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				},
+				"md": {
+					"location": {
+						"x": 5,
+						"y": 0
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				}
+			},
+			"integration": {
+				"type": null,
+				"properties": []
+			}
+		},
+		{
+			"id": "3cee7b0c-3cd6-441f-a66e-dd46b2e66bfc",
+			"name": "Traefik",
+			"url": "https://pi-2.tail412fa.ts.net/",
+			"appearance": {
+				"iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/traefik.png"
+			},
+			"network": {
+				"enabledStatusChecker": true,
+				"statusCodes": [
+					"200",
+					"301",
+					"302",
+					"304",
+					"307",
+					"308"
+				]
+			},
+			"behaviour": {
+				"isOpeningNewTab": true,
+				"externalUrl": "https://pi-2.tail412fa.ts.net/"
+			},
+			"area": {
+				"type": "category",
+				"properties": {
+					"id": "cecbc367-13aa-46df-87d8-277e83c37c7c"
+				}
+			},
+			"shape": {
+				"lg": {
+					"location": {
+						"x": 2,
+						"y": 0
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				},
+				"sm": {
+					"location": {
+						"x": 2,
+						"y": 0
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				},
+				"md": {
+					"location": {
+						"x": 5,
+						"y": 0
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				}
+			},
+			"integration": {
+				"type": null,
+				"properties": []
+			}
+		},
+		{
+			"id": "653e81b3-05ac-43f3-9b91-519124180908",
+			"name": "grafana",
+			"url": "http://grafana:3000/grafana",
+			"appearance": {
+				"iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/grafana.png"
+			},
+			"network": {
+				"enabledStatusChecker": true,
+				"statusCodes": [
+					"200"
+				]
+			},
+			"behaviour": {
+				"isOpeningNewTab": true,
+				"externalUrl": "https://pi-1.tail412fa.ts.net/grafana/d/rYdddlPWk/node-exporter-full?orgId=1&refresh=5s"
+			},
+			"area": {
+				"type": "category",
+				"properties": {
+					"id": "47af36c0-47c1-4e5b-bfc7-ad645ee6a33f"
+				}
+			},
+			"shape": {
+				"lg": {
+					"location": {
+						"x": 1,
+						"y": 0
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				},
+				"sm": {
+					"location": {
+						"x": 1,
+						"y": 1
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				},
+				"md": {
+					"location": {
+						"x": 1,
+						"y": 0
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				}
+			},
+			"integration": {
+				"type": null,
+				"properties": []
+			}
+		},
+		{
+			"id": "854f13d8-cb9a-47e8-8fb5-50ca3ca87bc4",
+			"name": "File Explorer",
+			"url": "https://pi-2.tail412fa.ts.net:3670/",
+			"appearance": {
+				"iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/filebrowser.png"
+			},
+			"network": {
+				"enabledStatusChecker": true,
+				"statusCodes": [
+					"200",
+					"301",
+					"302",
+					"304",
+					"307",
+					"308"
+				]
+			},
+			"behaviour": {
+				"isOpeningNewTab": true,
+				"externalUrl": "https://pi-2.tail412fa.ts.net:3670/"
+			},
+			"area": {
+				"type": "category",
+				"properties": {
+					"id": "cecbc367-13aa-46df-87d8-277e83c37c7c"
+				}
+			},
+			"shape": {
+				"lg": {
+					"location": {
+						"x": 4,
+						"y": 0
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				},
+				"sm": {
+					"location": {
+						"x": 2,
+						"y": 1
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				},
+				"md": {
+					"location": {
+						"x": 3,
+						"y": 0
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				}
+			},
+			"integration": {
+				"type": null,
+				"properties": []
+			}
+		},
+		{
+			"id": "70f5e196-cc76-448b-b15d-dbc84d29994e",
+			"name": "Portainer",
+			"url": "https://homarr.dev",
+			"appearance": {
+				"iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/portainer.png"
+			},
+			"network": {
+				"enabledStatusChecker": true,
+				"statusCodes": [
+					"200",
+					"301",
+					"302",
+					"304",
+					"307",
+					"308"
+				]
+			},
+			"behaviour": {
+				"isOpeningNewTab": true,
+				"externalUrl": "https://pi-2.tail412fa.ts.net/portainer"
+			},
+			"area": {
+				"type": "category",
+				"properties": {
+					"id": "cecbc367-13aa-46df-87d8-277e83c37c7c"
+				}
+			},
+			"shape": {
+				"lg": {
+					"location": {
+						"x": 0,
+						"y": 0
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				},
+				"md": {
+					"location": {
+						"x": 0,
+						"y": 0
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				},
+				"sm": {
+					"location": {
+						"x": 0,
+						"y": 0
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				}
+			},
+			"integration": {
+				"type": null,
+				"properties": []
+			}
+		},
+		{
+			"id": "6fdf9a4c-f5d6-4b5c-a44c-c4cc6392e1f2",
+			"name": "Syncthing",
+			"url": "https://pi-2.tail412fa.ts.net/syncthing/",
+			"appearance": {
+				"iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/resiliosync.png"
+			},
+			"network": {
+				"enabledStatusChecker": true,
+				"statusCodes": [
+					"200",
+					"301",
+					"302",
+					"304",
+					"307",
+					"308"
+				]
+			},
+			"behaviour": {
+				"isOpeningNewTab": true,
+				"externalUrl": "https://pi-2.tail412fa.ts.net/syncthing/"
+			},
+			"area": {
+				"type": "category",
+				"properties": {
+					"id": "cecbc367-13aa-46df-87d8-277e83c37c7c"
+				}
+			},
+			"shape": {
+				"lg": {
+					"location": {
+						"x": 5,
+						"y": 0
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				},
+				"sm": {
+					"location": {
+						"x": 1,
+						"y": 1
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				},
+				"md": {
+					"location": {
+						"x": 4,
+						"y": 0
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				}
+			},
+			"integration": {
+				"type": null,
+				"properties": []
+			}
+		},
+		{
+			"id": "82157400-8a10-4579-9e85-693426172659",
+			"name": "sonarr",
+			"url": "http://sonar:8989",
+			"appearance": {
+				"iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/sonarr.png"
+			},
+			"network": {
+				"enabledStatusChecker": true,
+				"statusCodes": [
+					"200"
+				],
+				"okStatus": [
+					200
+				]
+			},
+			"behaviour": {
+				"isOpeningNewTab": true,
+				"externalUrl": "https://pi-1.tail412fa.ts.net/sonarr"
+			},
+			"area": {
+				"type": "category",
+				"properties": {
+					"id": "47af36c0-47c1-4e5b-bfc7-ad645ee6a33f"
+				}
+			},
+			"shape": {
+				"lg": {
+					"location": {
+						"x": 4,
+						"y": 0
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				}
+			},
+			"integration": {
+				"type": null,
+				"properties": []
+			}
+		},
+		{
+			"id": "9e5d3928-5f75-417c-832d-37bd2e393d45",
+			"name": "jellyfin",
+			"url": "http://jellyfin:8096/jellyfin",
+			"appearance": {
+				"iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/jellyfin.png"
+			},
+			"network": {
+				"enabledStatusChecker": true,
+				"statusCodes": [
+					"200"
+				]
+			},
+			"behaviour": {
+				"isOpeningNewTab": true,
+				"externalUrl": "https://pi-1.tail412fa.ts.net/jellyfin"
+			},
+			"area": {
+				"type": "category",
+				"properties": {
+					"id": "47af36c0-47c1-4e5b-bfc7-ad645ee6a33f"
+				}
+			},
+			"shape": {
+				"lg": {
+					"location": {
+						"x": 3,
+						"y": 0
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				},
+				"sm": {
+					"location": {
+						"x": 0,
+						"y": 1
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				},
+				"md": {
+					"location": {
+						"x": 3,
+						"y": 0
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				}
+			},
+			"integration": {
+				"type": "jellyfin",
+				"properties": [
+					{
+						"field": "username",
+						"type": "public",
+						"value": "remini",
+						"isDefined": true
+					},
+					{
+						"field": "password",
+						"type": "private",
+						"value": null,
+						"isDefined": true
+					}
+				]
+			}
+		},
+		{
+			"id": "bc41939b-8ec7-4a0e-b94c-4769d85a6e70",
+			"name": "OpenMediaVault",
+			"url": "https://pi-2.tail412fa.ts.net/omv/",
+			"appearance": {
+				"iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/openmediavault.png"
+			},
+			"network": {
+				"enabledStatusChecker": true,
+				"statusCodes": [
+					"200",
+					"301",
+					"302",
+					"304",
+					"307",
+					"308"
+				]
+			},
+			"behaviour": {
+				"isOpeningNewTab": true,
+				"externalUrl": "https://pi-2.tail412fa.ts.net/omv/"
+			},
+			"area": {
+				"type": "category",
+				"properties": {
+					"id": "cecbc367-13aa-46df-87d8-277e83c37c7c"
+				}
+			},
+			"shape": {
+				"lg": {
+					"location": {
+						"x": 3,
+						"y": 0
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				},
+				"sm": {
+					"location": {
+						"x": 1,
+						"y": 0
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				},
+				"md": {
+					"location": {
+						"x": 2,
+						"y": 0
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				}
+			},
+			"integration": {
+				"type": null,
+				"properties": []
+			}
+		},
+		{
+			"id": "6ad5d874-b113-4ce7-b861-b6f0d610b569",
+			"name": "Vuetorrent",
+			"url": "http://qbittorrent:8080",
+			"appearance": {
+				"iconUrl": "https://camo.githubusercontent.com/5af08cf46945190d543368f23fa6bee8a58ae0945f83fbefedadc2ab891c76f5/68747470733a2f2f63646e2e6a7364656c6976722e6e65742f67682f574461616e2f567565546f7272656e742f567565546f7272656e742d6c6f676f2e706e67"
+			},
+			"network": {
+				"enabledStatusChecker": true,
+				"statusCodes": [
+					"200"
+				]
+			},
+			"behaviour": {
+				"isOpeningNewTab": true,
+				"externalUrl": "https://pi-1.tail412fa.ts.net/vuetorrent"
+			},
+			"area": {
+				"type": "category",
+				"properties": {
+					"id": "47af36c0-47c1-4e5b-bfc7-ad645ee6a33f"
+				}
+			},
+			"shape": {
+				"lg": {
+					"location": {
+						"x": 5,
+						"y": 0
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				},
+				"md": {
+					"location": {
+						"x": 4,
+						"y": 0
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				},
+				"sm": {
+					"location": {
+						"x": 2,
+						"y": 1
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				}
+			},
+			"integration": {
+				"type": "qBittorrent",
+				"properties": [
+					{
+						"field": "username",
+						"type": "public",
+						"value": "pi-admin",
+						"isDefined": true
+					},
+					{
+						"field": "password",
+						"type": "private",
+						"value": null,
+						"isDefined": true
+					}
+				]
+			}
+		},
+		{
+			"id": "ac745a69-6bec-40d7-89e5-fe90a81fd3fe",
+			"name": "pihole",
+			"url": "http://pihole:80",
+			"appearance": {
+				"iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons@master/png/pi-hole.png"
+			},
+			"network": {
+				"enabledStatusChecker": true,
+				"statusCodes": [
+					"200",
+					"301"
+				]
+			},
+			"behaviour": {
+				"isOpeningNewTab": true,
+				"externalUrl": "https://pi-1.tail412fa.ts.net/pi/admin"
+			},
+			"area": {
+				"type": "category",
+				"properties": {
+					"id": "47af36c0-47c1-4e5b-bfc7-ad645ee6a33f"
+				}
+			},
+			"shape": {
+				"lg": {
+					"location": {
+						"x": 6,
+						"y": 0
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				},
+				"md": {
+					"location": {
+						"x": 2,
+						"y": 0
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				},
+				"sm": {
+					"location": {
+						"x": 1,
+						"y": 0
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				}
+			},
+			"integration": {
+				"type": "pihole",
+				"properties": [
+					{
+						"field": "password",
+						"type": "private",
+						"value": null,
+						"isDefined": true
+					}
+				]
+			}
+		},
+		{
+			"id": "ac892525-2505-4c20-bf2c-5fc5365193a2",
+			"name": "umami",
+			"url": "http://umami:3000/umami",
+			"appearance": {
+				"iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/umami.png"
+			},
+			"network": {
+				"enabledStatusChecker": true,
+				"statusCodes": [
+					"200"
+				]
+			},
+			"behaviour": {
+				"isOpeningNewTab": true,
+				"externalUrl": "https://pi-1.tail412fa.ts.net/umami"
+			},
+			"area": {
+				"type": "category",
+				"properties": {
+					"id": "47af36c0-47c1-4e5b-bfc7-ad645ee6a33f"
+				}
+			},
+			"shape": {
+				"lg": {
+					"location": {
+						"x": 7,
+						"y": 0
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				},
+				"sm": {
+					"location": {
+						"x": 0,
+						"y": 2
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				},
+				"md": {
+					"location": {
+						"x": 0,
+						"y": 1
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				}
+			},
+			"integration": {
+				"type": null,
+				"properties": []
+			}
+		},
+		{
+			"id": "f344d527-79a1-4512-a09b-6b6097072916",
+			"name": "portainer",
+			"url": "http://portainer:9000",
+			"appearance": {
+				"iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/portainer.png"
+			},
+			"network": {
+				"enabledStatusChecker": true,
+				"statusCodes": [
+					"200"
+				]
+			},
+			"behaviour": {
+				"isOpeningNewTab": true,
+				"externalUrl": "https://pi-1.tail412fa.ts.net/portainer"
+			},
+			"area": {
+				"type": "category",
+				"properties": {
+					"id": "47af36c0-47c1-4e5b-bfc7-ad645ee6a33f"
+				}
+			},
+			"shape": {
+				"lg": {
+					"location": {
+						"x": 0,
+						"y": 0
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				},
+				"md": {
+					"location": {
+						"x": 0,
+						"y": 0
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				},
+				"sm": {
+					"location": {
+						"x": 0,
+						"y": 0
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				}
+			},
+			"integration": {
+				"type": null,
+				"properties": []
+			}
+		},
+		{
+			"id": "5023d2cc-047c-493b-8c1c-de5c12d680e2",
+			"name": "Grafana",
+			"url": "https://pi-2.tail412fa.ts.net/grafana/",
+			"appearance": {
+				"iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/grafana.png"
+			},
+			"network": {
+				"enabledStatusChecker": true,
+				"statusCodes": [
+					"200",
+					"301",
+					"302",
+					"304",
+					"307",
+					"308"
+				]
+			},
+			"behaviour": {
+				"isOpeningNewTab": true,
+				"externalUrl": "https://pi-2.tail412fa.ts.net/grafana/d/rYdddlPWk/node-exporter-full?orgId=1&refresh=5s"
+			},
+			"area": {
+				"type": "category",
+				"properties": {
+					"id": "cecbc367-13aa-46df-87d8-277e83c37c7c"
+				}
+			},
+			"shape": {
+				"lg": {
+					"location": {
+						"x": 1,
+						"y": 0
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				},
+				"sm": {
+					"location": {
+						"x": 0,
+						"y": 1
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				},
+				"md": {
+					"location": {
+						"x": 1,
+						"y": 0
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				}
+			},
+			"integration": {
+				"type": null,
+				"properties": []
+			}
+		}
+	],
+	"widgets": [
+		{
+			"id": "dbcb6717-3a49-432e-9c4c-e8f29a55ece0",
+			"type": "media-server",
+			"properties": {},
+			"area": {
+				"type": "wrapper",
+				"properties": {
+					"id": "default"
+				}
+			},
+			"shape": {
+				"sm": {
+					"location": {
+						"x": 0,
+						"y": 8
+					},
+					"size": {
+						"width": 3,
+						"height": 2
+					}
+				},
+				"md": {
+					"location": {
+						"x": 2,
+						"y": 2
+					},
+					"size": {
+						"width": 4,
+						"height": 2
+					}
+				},
+				"lg": {
+					"location": {
+						"x": 11,
+						"y": 0
+					},
+					"size": {
+						"width": 3,
+						"height": 2
+					}
+				}
+			}
+		},
+		{
+			"id": "3557ac45-d30e-485e-9c36-d91d84aa9f65",
+			"type": "dlspeed",
+			"properties": {},
+			"area": {
+				"type": "wrapper",
+				"properties": {
+					"id": "default"
+				}
+			},
+			"shape": {
+				"sm": {
+					"location": {
+						"x": 0,
+						"y": 10
+					},
+					"size": {
+						"width": 3,
+						"height": 2
+					}
+				},
+				"md": {
+					"location": {
+						"x": 0,
+						"y": 2
+					},
+					"size": {
+						"width": 2,
+						"height": 2
+					}
+				},
+				"lg": {
+					"location": {
+						"x": 6,
+						"y": 0
+					},
+					"size": {
+						"width": 2,
+						"height": 2
+					}
+				}
+			}
+		},
+		{
+			"id": "3f42402e-8643-45c4-98b4-ac9309e21af8",
+			"type": "torrents-status",
+			"properties": {
+				"displayCompletedTorrents": true,
+				"displayStaleTorrents": true,
+				"labelFilterIsWhitelist": true,
+				"labelFilter": []
+			},
+			"area": {
+				"type": "wrapper",
+				"properties": {
+					"id": "default"
+				}
+			},
+			"shape": {
+				"sm": {
+					"location": {
+						"x": 0,
+						"y": 12
+					},
+					"size": {
+						"width": 3,
+						"height": 2
+					}
+				},
+				"md": {
+					"location": {
+						"x": 3,
+						"y": 4
+					},
+					"size": {
+						"width": 3,
+						"height": 2
+					}
+				},
+				"lg": {
+					"location": {
+						"x": 8,
+						"y": 0
+					},
+					"size": {
+						"width": 3,
+						"height": 2
+					}
+				}
+			}
+		},
+		{
+			"id": "0201a6ae-245b-472e-83c8-53eb3741f8e3",
+			"type": "bookmark",
+			"properties": {
+				"items": [
+					{
+						"id": "a5fd860d-5d37-4ac0-b2b3-a41613fa956a",
+						"name": "Tailscale Console",
+						"href": "https://login.tailscale.com/admin/machines",
+						"iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/tailscale.png",
+						"openNewTab": true
+					}
+				],
+				"layout": "autoGrid"
+			},
+			"area": {
+				"type": "wrapper",
+				"properties": {
+					"id": "default"
+				}
+			},
+			"shape": {
+				"sm": {
+					"location": {
+						"x": 0,
+						"y": 14
+					},
+					"size": {
+						"width": 3,
+						"height": 1
+					}
+				},
+				"md": {
+					"location": {
+						"x": 4,
+						"y": 1
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				},
+				"lg": {
+					"location": {
+						"x": 14,
+						"y": 1
+					},
+					"size": {
+						"width": 2,
+						"height": 1
+					}
+				}
+			}
+		},
+		{
+			"id": "33e300a7-d6a5-4643-9bfa-cd2c31f28e4b",
+			"type": "dashdot",
+			"properties": {
+				"dashName": "Pi 2",
+				"url": "https://pi-2.tail412fa.ts.net/dot",
+				"usePercentages": true,
+				"columns": 2,
+				"graphHeight": 115,
+				"graphsOrder": [
+					{
+						"key": "storage",
+						"subValues": {
+							"enabled": true,
+							"compactView": true,
+							"span": 2,
+							"multiView": false
+						}
+					},
+					{
+						"key": "network",
+						"subValues": {
+							"enabled": true,
+							"compactView": true,
+							"span": 2
+						}
+					},
+					{
+						"key": "cpu",
+						"subValues": {
+							"enabled": true,
+							"multiView": false,
+							"span": 1
+						}
+					},
+					{
+						"key": "ram",
+						"subValues": {
+							"enabled": true,
+							"span": 1
+						}
+					},
+					{
+						"key": "gpu",
+						"subValues": {
+							"enabled": false,
+							"span": 1
+						}
+					}
+				]
+			},
+			"area": {
+				"type": "wrapper",
+				"properties": {
+					"id": "default"
+				}
+			},
+			"shape": {
+				"sm": {
+					"location": {
+						"x": 0,
+						"y": 0
+					},
+					"size": {
+						"width": 3,
+						"height": 2
+					}
+				},
+				"md": {
+					"location": {
+						"x": 2,
+						"y": 0
+					},
+					"size": {
+						"width": 2,
+						"height": 2
+					}
+				},
+				"lg": {
+					"location": {
+						"x": 2,
+						"y": 0
+					},
+					"size": {
+						"width": 2,
+						"height": 2
+					}
+				}
+			}
+		},
+		{
+			"id": "d9f66058-7fb9-4d5d-a814-c509441de407",
+			"type": "dns-hole-summary",
+			"properties": {
+				"usePiHoleColors": true
+			},
+			"area": {
+				"type": "wrapper",
+				"properties": {
+					"id": "default"
+				}
+			},
+			"shape": {
+				"sm": {
+					"location": {
+						"x": 0,
+						"y": 4
+					},
+					"size": {
+						"width": 3,
+						"height": 2
+					}
+				},
+				"md": {
+					"location": {
+						"x": 0,
+						"y": 4
+					},
+					"size": {
+						"width": 3,
+						"height": 2
+					}
+				},
+				"lg": {
+					"location": {
+						"x": 4,
+						"y": 0
+					},
+					"size": {
+						"width": 2,
+						"height": 2
+					}
+				}
+			}
+		},
+		{
+			"id": "971aa859-8570-49a1-8d34-dd5c7b3638d1",
+			"type": "date",
+			"properties": {
+				"display24HourFormat": true
+			},
+			"area": {
+				"type": "wrapper",
+				"properties": {
+					"id": "default"
+				}
+			},
+			"shape": {
+				"sm": {
+					"location": {
+						"x": 0,
+						"y": 0
+					},
+					"size": {
+						"width": 3,
+						"height": 1
+					}
+				},
+				"md": {
+					"location": {
+						"x": 5,
+						"y": 1
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				},
+				"lg": {
+					"location": {
+						"x": 15,
+						"y": 0
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				}
+			}
+		},
+		{
+			"id": "e3004052-6b83-480e-b458-56e8ccdca5f0",
+			"type": "weather",
+			"properties": {
+				"displayInFahrenheit": false,
+				"location": "Santo%20Domingo"
+			},
+			"area": {
+				"type": "wrapper",
+				"properties": {
+					"id": "default"
+				}
+			},
+			"shape": {
+				"md": {
+					"location": {
+						"x": 4,
+						"y": 0
+					},
+					"size": {
+						"width": 2,
+						"height": 1
+					}
+				},
+				"sm": {
+					"location": {
+						"x": 0,
+						"y": 1
+					},
+					"size": {
+						"width": 3,
+						"height": 1
+					}
+				},
+				"lg": {
+					"location": {
+						"x": 14,
+						"y": 0
+					},
+					"size": {
+						"width": 1,
+						"height": 1
+					}
+				}
+			}
+		},
+		{
+			"id": "379d63bd-ed40-4f44-b88d-785490a3952f",
+			"type": "dashdot",
+			"properties": {
+				"dashName": "Pi 1",
+				"url": "https://pi-1.tail412fa.ts.net/dot",
+				"usePercentages": true,
+				"columns": 2,
+				"graphHeight": 115,
+				"graphsOrder": [
+					{
+						"key": "storage",
+						"subValues": {
+							"enabled": true,
+							"compactView": true,
+							"span": 2,
+							"multiView": false
+						}
+					},
+					{
+						"key": "network",
+						"subValues": {
+							"enabled": true,
+							"compactView": true,
+							"span": 2
+						}
+					},
+					{
+						"key": "cpu",
+						"subValues": {
+							"enabled": true,
+							"multiView": false,
+							"span": 1
+						}
+					},
+					{
+						"key": "ram",
+						"subValues": {
+							"enabled": true,
+							"span": 1
+						}
+					},
+					{
+						"key": "gpu",
+						"subValues": {
+							"enabled": false,
+							"span": 1
+						}
+					}
+				]
+			},
+			"area": {
+				"type": "wrapper",
+				"properties": {
+					"id": "default"
+				}
+			},
+			"shape": {
+				"sm": {
+					"location": {
+						"x": 0,
+						"y": 4
+					},
+					"size": {
+						"width": 3,
+						"height": 2
+					}
+				},
+				"md": {
+					"location": {
+						"x": 0,
+						"y": 0
+					},
+					"size": {
+						"width": 2,
+						"height": 2
+					}
+				},
+				"lg": {
+					"location": {
+						"x": 0,
+						"y": 0
+					},
+					"size": {
+						"width": 2,
+						"height": 2
+					}
+				}
+			}
+		}
+	],
+	"settings": {
+		"common": {
+			"searchEngine": {
+				"type": "duckDuckGo",
+				"properties": {}
+			}
+		},
+		"customization": {
+			"layout": {
+				"enabledLeftSidebar": false,
+				"enabledRightSidebar": false,
+				"enabledDocker": true,
+				"enabledPing": true,
+				"enabledSearchbar": true
+			},
+			"pageTitle": "Pi's Den",
+			"logoImageUrl": "/imgs/logo/logo.png",
+			"faviconUrl": "/imgs/favicon/favicon-squared.png",
+			"backgroundImageUrl": "",
+			"customCss": "",
+			"colors": {
+				"primary": "red",
+				"secondary": "yellow",
+				"shade": 7
+			},
+			"appOpacity": 100,
+			"metaTitle": "Pi's Den 🥧",
+			"gridstack": {
+				"columnCountSmall": 3,
+				"columnCountMedium": 6,
+				"columnCountLarge": 16
+			}
+		}
+	}
+}

@@ -35,6 +35,37 @@ http:
         - "strip-prefix"
       tls:
         certResolver: tsresolver
+    torrent:
+      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/torrent`)
+      service: torrent
+      priority: 4
+      middlewares:
+        - strip-prefix
+      tls:
+        certResolver: tsresolver  
+    torrent-redirect:
+      rule: Host(`{{ env "DOMAIN" }}`) && Path(`/vuetorrent`)
+      service: torrent
+      priority: 3
+      middlewares:
+        - redirect-torrent
+      tls:
+        certResolver: tsresolver  
+    sonarr:
+      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/sonarr`)
+      service: sonarr
+      tls:
+        certResolver: tsresolver
+    radarr:
+      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/radarr`)
+      service: radarr
+      tls:
+        certResolver: tsresolver
+    prowlarr:
+      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/prowlarr`)
+      service: prowlarr
+      tls:
+        certResolver: tsresolver
     dashdot:
       rule: Host(`{{ env "DOMAIN" }}`) && (PathPrefix(`/dashdot`) || HeaderRegexp(`Referer`, `.*/dashdot/.*`))
       middlewares:
@@ -88,6 +119,22 @@ http:
       loadBalancer:
         servers:
           - url: "http://dashdot:3001"
+    torrent:
+      loadBalancer:
+        servers:
+          - url: "http://qbittorrent:8080"
+    sonarr:
+      loadBalancer:
+        servers:
+          - url: "http://sonarr:8989"    
+    radarr:
+      loadBalancer:
+        servers:
+          - url: "http://radarr:7878"    
+    prowlarr:
+      loadBalancer:
+        servers:
+          - url: "http://prowlarr:9696"
 
   middlewares:
     strip-prefix:
@@ -98,9 +145,14 @@ http:
           - /omv
           - /syncthing
           - /traefik
+          - /torrent
           - /dashdot
           - /api/modules/dashdot
-
+    redirect-torrent:
+      redirectRegex:
+        regex: "^(.*)/vuetorrent"
+        replacement: "/torrent/"
+        permanent: true
     # ---- Dashdot ------
     redirect-dashdot:
       redirectRegex:

@@ -19,6 +19,9 @@ services:
     restart: always
     networks:
       - pi-network
+    # Ignore by Watchtower because it's not using a remote image
+    labels:
+      - com.centurylinklabs.watchtower.enable=false
   db:
     container_name: umami_db
     image: postgres:15-alpine

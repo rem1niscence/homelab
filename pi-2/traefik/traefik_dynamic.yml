@@ -1,102 +1,50 @@
 http:
   routers:
     traefik:
-      rule: Host(`{{ env "DOMAIN" }}`) && (PathPrefix(`/traefik`) || PathPrefix(`/api`))
+      rule: Host(`traefik.{{ env "DOMAIN" }}`)
       service: "api@internal"
       middlewares:
-        - strip-prefix      
-      tls:
-        certResolver: "tsresolver"
+        - simple-auth
     portainer:
-      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/portainer`)
+      rule: Host(`portainer.{{ env "DOMAIN" }}`)
       service: portainer
-      middlewares:
-        - strip-prefix
-      tls:
-        certResolver: tsresolver
     grafana:
-      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/grafana`)
+      rule: Host(`grafana.{{ env "DOMAIN" }}`)
       service: grafana
-      middlewares:
-        - strip-prefix
-      tls:
-        certResolver: tsresolver
     omv:
-      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/omv`)
+      rule: Host(`omv.{{ env "DOMAIN" }}`)
       service: omv
-      middlewares:
-        - "strip-prefix"
-      tls:
-        certResolver: tsresolver
     syncthing:
-      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/syncthing`)
+      rule: Host(`syncthing.{{ env "DOMAIN" }}`)
       service: syncthing
-      middlewares:
-        - "strip-prefix"
-      tls:
-        certResolver: tsresolver
     torrent:
-      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/torrent`)
+      rule: Host(`torrent.{{ env "DOMAIN" }}`)
       service: torrent
-      priority: 4
-      middlewares:
-        - strip-prefix
-      tls:
-        certResolver: tsresolver  
-    torrent-redirect:
-      rule: Host(`{{ env "DOMAIN" }}`) && Path(`/vuetorrent`)
-      service: torrent
-      priority: 3
-      middlewares:
-        - redirect-torrent
-      tls:
-        certResolver: tsresolver  
     sonarr:
-      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/sonarr`)
+      rule: Host(`sonarr.{{ env "DOMAIN" }}`)
       service: sonarr
-      tls:
-        certResolver: tsresolver
     radarr:
-      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/radarr`)
+      rule: Host(`radarr.{{ env "DOMAIN" }}`)
       service: radarr
-      tls:
-        certResolver: tsresolver
     prowlarr:
-      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/prowlarr`)
+      rule: Host(`prowlarr.{{ env "DOMAIN" }}`)
       service: prowlarr
-      tls:
-        certResolver: tsresolver
     dashdot:
-      rule: Host(`{{ env "DOMAIN" }}`) && (PathPrefix(`/dashdot`) || HeaderRegexp(`Referer`, `.*/dashdot/.*`))
-      middlewares:
-        - strip-prefix
+      rule: Host(`dashdot.{{ env "DOMAIN" }}`)
       service: dashdot
-      tls:
-        certResolver: tsresolver
-    # ---- Dashdot ------
-    # This is all homarr"s fault, they"re hitting the wrong endpoints of dashdot
-    dashdot-redirect:
-      rule: Host(`{{ env "DOMAIN" }}`) && Path(`/dot`)
-      middlewares:
-        - redirect-dashdot
-      service: dashdot
-      tls:
-        certResolver: tsresolver
+   # homar is hitting the wrong endpoints of dashdot
     dashdot-api:
-      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/api/modules/dashdot`)
+      rule: Path(`/api/modules/dashdot/info`)
       service: dashdot
+      priority: 2
       middlewares:
         - strip-prefix
-      tls:
-        certResolver: tsresolver
-    dashdot-storage-api:
-      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/api/modules/dashdot/storage`)
-      service: dashdot
-      middlewares:
-        - dashdot-storage-path-replace
-      tls:
-        certResolver: tsresolver
-    # --- !Dashdot ------
+    # dashdot-storage-api:
+    #   rule: PathPrefix(`/api/modules/dashdot/storage`)
+    #   priority: 1
+    #   service: dashdot
+    #   middlewares:
+    #     - dashdot-storage-path-replace
 
   services:
     portainer:
@@ -140,30 +88,11 @@ http:
     strip-prefix:
       stripPrefix:
         prefixes:
-          - /portainer
-          - /grafana
-          - /omv
-          - /syncthing
-          - /traefik
-          - /torrent
-          - /dashdot
           - /api/modules/dashdot
-    redirect-torrent:
-      redirectRegex:
-        regex: "^(.*)/vuetorrent"
-        replacement: "/torrent/"
-        permanent: true
-    # ---- Dashdot ------
-    redirect-dashdot:
-      redirectRegex:
-        regex: "^(.*)/dot"
-        replacement: "/dashdot/"
-        permanent: true
     dashdot-storage-path-replace:
       replacePath:
         path: "/load/storage"
-    # --- !Dashdot ------     
-    # auth:
-    #   basicAuth:
-    #     users:
-    #       - "pi-admin:$apr1$pAYi7oll$NQR6hcTYFfIqBpnzpPBL91"
+    simple-auth:
+      basicAuth:
+        users:
+          - "pi-admin:$apr1$pAYi7oll$NQR6hcTYFfIqBpnzpPBL91"

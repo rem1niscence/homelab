@@ -8,35 +8,24 @@ services:
       - "443:443"
       - "443:443/udp"      
       - "80:80"
+    environment:
+      - ACME_DNS_API_BASE=https://auth.acme-dns.io
+      - ACME_DNS_STORAGE_PATH=/acme-dns
     volumes:
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock
       - ./traefik.yml:/traefik.yml
       - ./traefik_dynamic.yml:/traefik_dynamic.yml
-      - ./tailscale/tailscaled.sock:/var/run/tailscale/tailscaled.sock
+      # If you want to use tailscale magic DNS
+      # - ../tailscale/tailscaled.sock:/var/run/tailscale/tailscaled.sock
+      - ./acme/acme.json:/acme.json
+      - ./acme/acme-dns:/acme-dns 
     networks:
      - pi-network
     env_file:
       - .env
     extra_hosts:
       - "host.docker.internal:host-gateway"
-
-  tailscale:
-    container_name: tailscale
-    image: tailscale/tailscale:latest
-    network_mode: host
-    restart: unless-stopped
-    cap_add:
-      - NET_ADMIN
-      - NET_RAW
-    volumes:
-      - /dev/net/tun:/dev/net/tun
-      - ./var/lib:/var/lib
-      - ./tailscale:/tmp
-    environment:
-      - TS_STATE_DIR=/var/lib/tailscale
-    env_file:
-      - .env
 
 networks:
   pi-network:

@@ -1,0 +1,52 @@
+entryPoints:
+  insecure:
+    address: ':80'
+  websecure:
+    address: ':443'
+    http:
+      tls:
+        # If you're using tailscale magic DNS, uncomment this one and comment
+        # the one below. NOTE: at the time of this writing, tailscale doesn't
+        # support multiple subdomains with MagicDNS, you can only use the one
+        # assigned to your machine name. You can follow the issue here:
+        # https://github.com/tailscale/tailscale/issues/1543
+        # certResolver: tsresolver
+        # domains:
+        #   - main: {tailscale_domain}
+        #     sans:
+        #       - "*.tail412fa.ts.net"
+        certResolver: leresolver
+        domains:
+          - main: ""
+            sans:
+              - ""
+
+providers:
+  file:
+    filename: traefik_dynamic.yml
+
+certificatesResolvers:
+  # tsresolver:
+  #   tailscale: {}
+
+  leresolver:
+    acme:
+      # domain email: i.e admin@example. Must be already configured 
+      storage: acme.json
+      keyType: EC384
+      dnsChallenge:
+        provider: acme-dns
+
+api:
+  insecure: false
+  dashboard: true
+
+metrics:
+  prometheus: 
+    buckets: [0.1,0.3,1.2,5.0]
+    addEntryPointsLabels: true
+    addRoutersLabels: true
+    addServicesLabels: true
+
+log:
+  level: DEBUG

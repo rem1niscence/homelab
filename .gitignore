@@ -1,3 +1,6 @@
 .env
 
 .vscode
+
+# generated files of dns validation
+acme/

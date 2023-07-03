@@ -1,112 +1,55 @@
+# If you're using tailscale domain, subdomains won't work
+# TODO: Split traefik into two for tailscale and custom domain
 http:
   routers:
+    traefik:
+      rule: Host(`traefik.{{ env "DOMAIN" }}`)
+      service: "api@internal"
+      middlewares:
+        - simple-auth
     homarr:
       rule: Host(`{{ env "DOMAIN" }}`)
       service: homarr
-      priority: 1
-      tls:
-        certResolver: tsresolver
-    traefik:
-      rule: Host(`{{ env "DOMAIN" }}`) && (PathPrefix(`/traefik`) || HeaderRegexp(`Referer`, `.*/traefik/.*`))
-      priority: 2
-      service: "api@internal"
-      middlewares:
-        - strip-prefix      
-      tls:
-        certResolver: "tsresolver"
-    traefik-redirect:
-      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/reverse-proxy`)
-      priority: 2
-      service: "api@internal"
-      middlewares:
-        - redirect-traefik
-      tls:
-        certResolver: "tsresolver"
     portainer:
-      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/portainer`)
+      rule: Host(`portainer.{{ env "DOMAIN" }}`)
       service: portainer
-      middlewares:
-        - strip-prefix
-      tls:
-        certResolver: tsresolver
     grafana:
-      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/grafana`)
+      rule: Host(`grafana.{{ env "DOMAIN" }}`)
       service: grafana
-      middlewares:
-        - strip-prefix
-      tls:
-        certResolver: tsresolver
     pihole:
-      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/pihole`)
+      rule: Host(`pihole.{{ env "DOMAIN" }}`)
       service: pihole
-      middlewares:
-         - strip-prefix
-      tls:
-        certResolver: tsresolver
-    pihole-redirect:
-      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/pi/admin`)
-      service: pihole
-      middlewares:
-         - redirect-pihole
-      tls:
-        certResolver: tsresolver
-    torrent-redirect:
-      rule: Host(`{{ env "DOMAIN" }}`) && Path(`/vuetorrent`)
-      service: torrent
-      priority: 3
-      middlewares:
-        - redirect-torrent
-      tls:
-        certResolver: tsresolver  
     jellyfin:
-      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/jellyfin`)
+      rule: Host(`jellyfin.{{ env "DOMAIN" }}`)
       service: jellyfin
-      tls:
-        certResolver: tsresolver
     jellyseerr:
-      rule: Host(`{{ env "DOMAIN" }}`) && (PathPrefix(`/jellyseerr`)
+      rule: Host(`jellyseerr.{{ env "DOMAIN" }}`)
       service: jellyseerr
-      middlewares:
-        - strip-prefix      
-      tls:
-        certResolver: tsresolver
     umami:
-      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/umami`)
+      rule: Host(`analytics.{{ env "DOMAIN" }}`)
       service: umami
-      tls:
-        certResolver: tsresolver
+    uptime-kuma:
+      rule: Host(`uptime.{{ env "DOMAIN" }}`)
+      service: uptime-kuma
     dashdot:
-      rule: Host(`{{ env "DOMAIN" }}`) && (PathPrefix(`/dashdot`) || HeaderRegexp(`Referer`, `.*/dashdot/.*`))
-      middlewares:
-        - strip-prefix
+      rule: Host(`dashdot.{{ env "DOMAIN" }}`)
       service: dashdot
-      tls:
-        certResolver: tsresolver
-    # ---- Dashdot ------
-    # This is all homarr"s fault, they"re hitting the wrong endpoints of dashdot
-    dashdot-redirect:
-      rule: Host(`{{ env "DOMAIN" }}`) && Path(`/dot`)
-      middlewares:
-        - redirect-dashdot
-      service: dashdot
-      tls:
-        certResolver: tsresolver
+    # homar is hitting the wrong endpoints of dashdot
     dashdot-api:
-      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/api/modules/dashdot`)
+      rule: PathPrefix(`/api/modules/dashdot`)
       service: dashdot
       middlewares:
         - strip-prefix
       tls:
         certResolver: tsresolver
     dashdot-storage-api:
-      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/api/modules/dashdot/storage`)
+      rule: PathPrefix(`/api/modules/dashdot/storage`)
       service: dashdot
       middlewares:
         - dashdot-storage-path-replace
       tls:
         certResolver: tsresolver
     # --- !Dashdot ------
-
   services:
     portainer:
       loadBalancer:
@@ -152,40 +95,20 @@ http:
       loadBalancer:
         servers:
           - url: "http://prowlarr:9696"
+    uptime-kuma:
+      loadBalancer:
+        servers:
+          - url: "http://uptime-kuma:3001"  
 
   middlewares:
     strip-prefix:
       stripPrefix:
         prefixes:
-          - /portainer
-          - /grafana
-          - /pihole/
-          - /traefik
-          - /homarr
-          - /dashdot
           - /api/modules/dashdot
-          - /jellyseerr
-    # I don"t like this either but have to do this workaround until this is fixed: https://github.com/ajnart/homarr/issues/777
-    redirect-pihole:
-      redirectRegex:
-        regex: "^(.*)/pi/admin"
-        replacement: "/pihole/admin/"
-        permanent: true
-    redirect-traefik:
-      redirectRegex:
-        regex: "^(.*)/reverse-proxy"
-        replacement: "/traefik/dashboard/"
-        permanent: true
-    # ---- Dashdot ------
-    redirect-dashdot:
-      redirectRegex:
-        regex: "^(.*)/dot"
-        replacement: "/dashdot/"
-        permanent: true
     dashdot-storage-path-replace:
       replacePath:
         path: "/load/storage"
-    # --- !Dashdot ------     
-    #   basicAuth:
-    #     users:
-    #       - "pi-admin:$apr1$pAYi7oll$NQR6hcTYFfIqBpnzpPBL91"
+    simple-auth:
+      basicAuth:
+        users:
+          - "pi-admin:$apr1$pAYi7oll$NQR6hcTYFfIqBpnzpPBL91"

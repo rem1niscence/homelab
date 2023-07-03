@@ -38,7 +38,7 @@ certificatesResolvers:
         provider: acme-dns
 
 api:
-  insecure: false
+  insecure: true
   dashboard: true
 
 metrics:
@@ -48,5 +48,5 @@ metrics:
     addRoutersLabels: true
     addServicesLabels: true
 
-log:
-  level: DEBUG
+# log:
+#   level: DEBUG

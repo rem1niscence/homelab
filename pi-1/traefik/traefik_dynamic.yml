@@ -42,14 +42,8 @@ http:
         - strip-prefix
       tls:
         certResolver: tsresolver
-    dashdot-storage-api:
-      rule: PathPrefix(`/api/modules/dashdot/storage`)
-      service: dashdot
-      middlewares:
-        - dashdot-storage-path-replace
-      tls:
-        certResolver: tsresolver
     # --- !Dashdot ------
+
   services:
     portainer:
       loadBalancer:

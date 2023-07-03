@@ -36,15 +36,8 @@ http:
     dashdot-api:
       rule: Path(`/api/modules/dashdot/info`)
       service: dashdot
-      priority: 2
       middlewares:
         - strip-prefix
-    # dashdot-storage-api:
-    #   rule: PathPrefix(`/api/modules/dashdot/storage`)
-    #   priority: 1
-    #   service: dashdot
-    #   middlewares:
-    #     - dashdot-storage-path-replace
 
   services:
     portainer:
@@ -89,9 +82,6 @@ http:
       stripPrefix:
         prefixes:
           - /api/modules/dashdot
-    dashdot-storage-path-replace:
-      replacePath:
-        path: "/load/storage"
     simple-auth:
       basicAuth:
         users:

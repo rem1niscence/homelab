@@ -29,6 +29,9 @@ http:
     prowlarr:
       rule: Host(`prowlarr.{{ env "DOMAIN" }}`)
       service: prowlarr
+    owncloud:
+      rule: Host(`cloud.{{ env "DOMAIN" }}`)
+      service: owncloud
     dashdot:
       rule: Host(`dashdot.{{ env "DOMAIN" }}`)
       service: dashdot
@@ -76,6 +79,10 @@ http:
       loadBalancer:
         servers:
           - url: "http://prowlarr:9696"
+    owncloud:
+      loadBalancer:
+        servers:
+          - url: "http://owncloud:8080"
 
   middlewares:
     strip-prefix:

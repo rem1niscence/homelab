@@ -12,9 +12,9 @@ entryPoints:
         # https://github.com/tailscale/tailscale/issues/1543
         # certResolver: tsresolver
         # domains:
-        #   - main: {tailscale_domain}
+        #   - main: {domain}
         #     sans:
-        #       - "*.tail412fa.ts.net"
+        #       - "{*.domain.com}"
         certResolver: leresolver
         domains:
           - main: ""

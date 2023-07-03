@@ -1,0 +1,16 @@
+version: '3'
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    container_name: uptime-kuma
+    restart: always
+    ports:
+      - "3011:3001"
+    volumes:
+      - ./data:/app/data
+    networks:
+      - pi-network
+
+networks:
+  pi-network:
+    external: true

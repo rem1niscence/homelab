@@ -3,13 +3,7 @@ version: '3'
 
 services:
   umami:
-    container_name: umami
-    # image: ghcr.io/umami-software/umami:postgresql-latest
-    build:
-      context: .
-      args:
-        DATABASE_TYPE: postgresql
-        BASE_PATH: /umami
+    image: ghcr.io/umami-software/umami:postgresql-latest
     ports:
       - "3010:3000"
     env_file:
@@ -19,9 +13,6 @@ services:
     restart: always
     networks:
       - pi-network
-    # Ignore by Watchtower because it's not using a remote image
-    labels:
-      - com.centurylinklabs.watchtower.enable=false
   db:
     container_name: umami_db
     image: postgres:15-alpine

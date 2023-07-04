@@ -14,6 +14,9 @@ services:
       - .env
     volumes:
       - ../../storage/cloud:/mnt/data
+      # Following volumes are only valid according to my use case so they
+      # won't be referenced on the env.example
+      - ${SYNCTHING_HOST_PATH}:${SYNCTHING_CONTAINER_PATH}
     networks:
       - pi-network
 

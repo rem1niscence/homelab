@@ -17,9 +17,9 @@ entryPoints:
         #       - "{*.domain.com}"
         certResolver: leresolver
         domains:
-          - main: ""
+          - main: "{domain}"
             sans:
-              - ""
+              - "{*.domain}"
 
 providers:
   file:

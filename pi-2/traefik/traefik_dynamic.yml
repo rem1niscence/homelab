@@ -4,7 +4,7 @@ http:
       rule: Host(`traefik.{{ env "DOMAIN" }}`)
       service: "api@internal"
       middlewares:
-        - simple-auth
+        - admin-auth
     portainer:
       rule: Host(`portainer.{{ env "DOMAIN" }}`)
       service: portainer
@@ -32,6 +32,11 @@ http:
     owncloud:
       rule: Host(`cloud.{{ env "DOMAIN" }}`)
       service: owncloud
+    filebrowser:
+      rule: Host(`filebrowser.{{ env "DOMAIN" }}`)
+      service: filebrowser
+      middlewares:
+        - filebrowser-auth
     dashdot:
       rule: Host(`dashdot.{{ env "DOMAIN" }}`)
       service: dashdot
@@ -83,13 +88,21 @@ http:
       loadBalancer:
         servers:
           - url: "http://owncloud:8080"
+    filebrowser:
+      loadBalancer:
+        servers:
+          - url: "http://filebrowser:8080"
 
   middlewares:
     strip-prefix:
       stripPrefix:
         prefixes:
           - /api/modules/dashdot
-    simple-auth:
+    admin-auth:
       basicAuth:
         users:
           - "pi-admin:$apr1$pAYi7oll$NQR6hcTYFfIqBpnzpPBL91"
+    filebrowser-auth:
+      basicAuth:
+          users:
+            - "pi-admin:$apr1$YSPb8oZy$XVlpJs3/hhS6n18GH9Q0k0"

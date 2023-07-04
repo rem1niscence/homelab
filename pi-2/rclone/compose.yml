@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  rclone:
+    image: rclone/rclone
+    container_name: rclone
+    volumes:
+      - ./config:/config/rclone
+      - ${STORAGE_PATH}:/data
+    env_file:
+      - .env
+    command: "rcd --rc-web-gui --rc-addr :5572 --rc-user ${RCLONE_USER} --rc-pass ${RCLONE_PASSWORD} --rc-serve"
+    ports:
+      - 5572:5572
+    networks:
+      - pi-network
+
+networks:
+  pi-network:
+    external: true
+
+#  docker container exec rclone rclone sync gdrive: /data/gdrive

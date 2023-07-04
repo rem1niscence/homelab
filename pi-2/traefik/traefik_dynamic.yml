@@ -37,12 +37,15 @@ http:
       service: filebrowser
       middlewares:
         - filebrowser-auth
+    rclone:
+      rule: Host(`rclone.{{ env "DOMAIN" }}`)
+      service: rclone
     dashdot:
       rule: Host(`dashdot.{{ env "DOMAIN" }}`)
       service: dashdot
    # homar is hitting the wrong endpoints of dashdot
     dashdot-api:
-      rule: Path(`/api/modules/dashdot/info`)
+      rule: Host(`dashdot.{{ env "DOMAIN" }}`) && Path(`/api/modules/dashdot/info`)
       service: dashdot
       middlewares:
         - strip-prefix
@@ -75,11 +78,11 @@ http:
     sonarr:
       loadBalancer:
         servers:
-          - url: "http://sonarr:8989"    
+          - url: "http://sonarr:8989"
     radarr:
       loadBalancer:
         servers:
-          - url: "http://radarr:7878"    
+          - url: "http://radarr:7878"
     prowlarr:
       loadBalancer:
         servers:
@@ -92,6 +95,10 @@ http:
       loadBalancer:
         servers:
           - url: "http://filebrowser:8080"
+    rclone:
+      loadBalancer:
+        servers:
+          - url: "http://rclone:5572"
 
   middlewares:
     strip-prefix:

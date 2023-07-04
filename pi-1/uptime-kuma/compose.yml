@@ -1,4 +1,4 @@
-version: '3'
+version: '3.7'
 services:
   uptime-kuma:
     image: louislam/uptime-kuma:alpine
@@ -10,6 +10,10 @@ services:
       - ./data:/app/data
     networks:
       - pi-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.08'
 
 networks:
   pi-network:

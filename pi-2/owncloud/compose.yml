@@ -8,8 +8,8 @@ services:
     ports:
       - 8095:8080
     depends_on:
-      - db
-      - redis
+      - owncloud-mariadb
+      - owncloud-redis
     env_file:
       - .env
     volumes:
@@ -17,9 +17,9 @@ services:
     networks:
       - pi-network
 
-  db:
+  owncloud-mariadb:
     image: mariadb:latest
-    container_name: owncloud_mariadb
+    container_name: owncloud-mariadb
     restart: unless-stopped
     env_file:
       - .env
@@ -28,9 +28,9 @@ services:
     networks:
       - pi-network
 
-  redis:
+  owncloud-redis:
     image:  redis:alpine
-    container_name: owncloud_redis
+    container_name: owncloud-redis
     restart: unless-stopped
     environment:
       - REDIS_DATABASES=1

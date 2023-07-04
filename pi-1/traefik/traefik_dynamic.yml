@@ -40,8 +40,6 @@ http:
       service: dashdot
       middlewares:
         - strip-prefix
-      tls:
-        certResolver: tsresolver
     # --- !Dashdot ------
 
   services:

@@ -31,6 +31,9 @@ http:
     uptime-kuma:
       rule: Host(`uptime.{{ env "DOMAIN" }}`)
       service: uptime-kuma
+    komga:
+      rule: Host(`komga.{{ env "DOMAIN" }}`)
+      service: komga
     dashdot:
       rule: Host(`dashdot.{{ env "DOMAIN" }}`)
       service: dashdot
@@ -91,6 +94,10 @@ http:
       loadBalancer:
         servers:
           - url: "http://uptime-kuma:3001"  
+    komga:
+      loadBalancer:
+        servers:
+          - url: "http://komga:25600"  
 
   middlewares:
     strip-prefix:

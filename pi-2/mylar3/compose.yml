@@ -1,0 +1,24 @@
+version: "2.1"
+services:
+  mylar3:
+    image: lscr.io/linuxserver/mylar3:latest
+    container_name: mylar3
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    env_file:
+      - .env
+    volumes:
+      - ./config:/config
+      - ${COMICS_PATH}:/comics
+      - ${DOWNLOADS_PATH}:/downloads
+    ports:
+      - 8090:8090
+    restart: unless-stopped
+    networks:
+      - pi-network
+
+networks:
+  pi-network:
+    external: true

@@ -40,6 +40,9 @@ http:
     rclone:
       rule: Host(`rclone.{{ env "DOMAIN" }}`)
       service: rclone
+    mylar3:
+      rule: Host(`comics.{{ env "DOMAIN" }}`)
+      service: mylar3
     dashdot:
       rule: Host(`dashdot.{{ env "DOMAIN" }}`)
       service: dashdot
@@ -99,6 +102,10 @@ http:
       loadBalancer:
         servers:
           - url: "http://rclone:5572"
+    mylar3:
+      loadBalancer:
+        servers:
+          - url: "http://mylar3:8090"
 
   middlewares:
     strip-prefix:

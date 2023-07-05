@@ -43,6 +43,9 @@ http:
     mylar3:
       rule: Host(`comics.{{ env "DOMAIN" }}`)
       service: mylar3
+    firefly:
+      rule: Host(`firefly.{{ env "DOMAIN" }}`)
+      service: firefly
     dashdot:
       rule: Host(`dashdot.{{ env "DOMAIN" }}`)
       service: dashdot
@@ -106,6 +109,10 @@ http:
       loadBalancer:
         servers:
           - url: "http://mylar3:8090"
+    firefly:
+      loadBalancer:
+        servers:
+          - url: "http://firefly:8080"  
 
   middlewares:
     strip-prefix:

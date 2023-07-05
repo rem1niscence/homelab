@@ -18,13 +18,13 @@ services:
       - pi-network
 
   owncloud-mariadb:
-    image: mariadb:latest
+    image: linuxserver/mariadb
     container_name: owncloud-mariadb
     restart: unless-stopped
     env_file:
       - .env
     volumes:
-      - ./mysql:/var/lib/mysql
+      - ./db:/config
     networks:
       - pi-network
 

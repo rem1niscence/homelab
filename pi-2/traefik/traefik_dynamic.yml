@@ -49,6 +49,9 @@ http:
     vaultwarden:
       rule: Host(`vaultwarden.{{ env "DOMAIN" }}`)
       service: vaultwarden
+    duplicacy:
+      rule: Host(`duplicacy.{{ env "DOMAIN" }}`)
+      service: duplicacy
     dashdot:
       rule: Host(`dashdot.{{ env "DOMAIN" }}`)
       service: dashdot
@@ -120,6 +123,10 @@ http:
       loadBalancer:
         servers:
           - url: "http://vaultwarden:80"  
+    duplicacy:
+      loadBalancer:
+        servers:
+          - url: "http://duplicacy:3875"  
 
   middlewares:
     strip-prefix:

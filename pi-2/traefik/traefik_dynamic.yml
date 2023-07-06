@@ -52,6 +52,9 @@ http:
     duplicacy:
       rule: Host(`duplicacy.{{ env "DOMAIN" }}`)
       service: duplicacy
+    paperless:
+      rule: Host(`paperless.{{ env "DOMAIN" }}`)
+      service: paperless
     dashdot:
       rule: Host(`dashdot.{{ env "DOMAIN" }}`)
       service: dashdot
@@ -127,6 +130,11 @@ http:
       loadBalancer:
         servers:
           - url: "http://duplicacy:3875"  
+    paperless:
+      loadBalancer:
+        servers:
+          - url: "http://paperless:8000"  
+
 
   middlewares:
     strip-prefix:

@@ -13,8 +13,8 @@ services:
       - ./config:/config
       - ${COMICS_PATH}:/comics
       - ${DOWNLOADS_PATH}:/downloads
-    ports:
-      - 8090:8090
+    # ports:
+      # - 8090:8090
     restart: unless-stopped
     networks:
       - pi-network

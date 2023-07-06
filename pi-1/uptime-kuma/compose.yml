@@ -4,8 +4,8 @@ services:
     image: louislam/uptime-kuma:alpine
     container_name: uptime-kuma
     restart: always
-    ports:
-      - "3011:3001"
+    # ports:
+      # - "3011:3001"
     volumes:
       - ./data:/app/data
     networks:

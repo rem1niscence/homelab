@@ -8,8 +8,8 @@ services:
     volumes:
       - config:/config
       - data:/data
-    ports:
-      - 25600:25600
+    # ports:
+      # - 25600:25600
     user: "1000:1000"
     restart: unless-stopped
     networks:

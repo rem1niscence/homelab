@@ -5,8 +5,8 @@ services:
     image: owncloud/server
     container_name: owncloud
     restart: unless-stopped
-    ports:
-      - 8095:8080
+    # ports:
+      # - 8095:8080
     depends_on:
       - owncloud-mariadb
       - owncloud-redis

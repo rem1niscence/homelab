@@ -4,8 +4,8 @@ services:
   dashdot:
     image: mauricenino/dashdot
     container_name: dashdot
-    ports:
-      - 8443:3001
+    # ports:
+      # - 8443:3001
     volumes:
       - /:/mnt/host:ro
     privileged: true

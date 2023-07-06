@@ -5,8 +5,8 @@ services:
     image: saspus/duplicacy-web:latest
     container_name: duplicacy
     hostname: duplicacy
-    ports:
-      - 3875:3875
+    # ports:
+      # - 3875:3875
     environment:
       - USR_ID=1000
       - GRP_ID=1000

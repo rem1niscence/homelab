@@ -4,8 +4,8 @@ version: '3'
 services:
   umami:
     image: ghcr.io/umami-software/umami:postgresql-latest
-    ports:
-      - "3010:3000"
+    # ports:
+      # - "3010:3000"
     env_file:
       - .env
     depends_on:

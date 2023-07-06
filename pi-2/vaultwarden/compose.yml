@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  vaultwarden:
+    image: vaultwarden/server:alpine
+    container_name: vaultwarden
+    volumes:
+      - ../../container/vaultwarden/data:/data
+    ports:
+      - 11000:80
+    env_file:
+      - .env
+    networks:
+      - pi-network
+
+networks:
+  pi-network:
+    external: true

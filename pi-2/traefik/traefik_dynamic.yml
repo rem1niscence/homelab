@@ -46,6 +46,9 @@ http:
     firefly:
       rule: Host(`firefly.{{ env "DOMAIN" }}`)
       service: firefly
+    vaultwarden:
+      rule: Host(`vaultwarden.{{ env "DOMAIN" }}`)
+      service: vaultwarden
     dashdot:
       rule: Host(`dashdot.{{ env "DOMAIN" }}`)
       service: dashdot
@@ -113,6 +116,10 @@ http:
       loadBalancer:
         servers:
           - url: "http://firefly:8080"  
+    vaultwarden:
+      loadBalancer:
+        servers:
+          - url: "http://vaultwarden:80"  
 
   middlewares:
     strip-prefix:

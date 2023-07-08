@@ -35,7 +35,7 @@ services:
     image: alpine
     restart: unless-stopped
     container_name: firefly_cron
-    command: sh -c "echo \"0 3 * * * wget -qO- http://firefly:8080/api/v1/cron/5951b141610c25ccda5c63b4ca20aeba\" | crontab - && crond -f -L /dev/stdout"
+    command: sh -c "echo \"0 3 * * * wget -qO- http://firefly:8080/api/v1/cron/5951b141610c25ccda5c63b4ca20aeba" | crontab - && crond -f -L /dev/stdout"
     networks:
       - pi-network
 

@@ -11,6 +11,7 @@ To change OMV port:
 ## Plugins I'm using
 
 * openmediavault-sharerootfs
+* resetperms
 * compose
 * downloader
 * flashmemory

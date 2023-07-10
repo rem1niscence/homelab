@@ -56,7 +56,3 @@ spec:
         hostPath:
           path: /
           type: Directory
-      dnsConfig:
-        options:
-        - name: ndots
-          value: "1"

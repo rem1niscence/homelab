@@ -4,7 +4,7 @@ metadata:
   name: portainer-config-pv
 spec:
   capacity:
-    storage: 1G  # Adjust based on your needs
+    storage: 1G
   accessModes:
     - ReadWriteMany
   nfs:

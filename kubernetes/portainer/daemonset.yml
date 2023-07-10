@@ -1,0 +1,54 @@
+# TODO: Delete this service as is not needed in k8s
+# I keep it here as an example of individual config mounts for daemon sets
+apiVersion: apps/v1
+# Might have to convert this into a StatefulSet for more stable dns-names in the future
+kind: DaemonSet
+metadata:
+  namespace: portainer
+  name: portainer-daemonset
+  labels:
+    app: portainer
+spec:
+  selector:
+    matchLabels:
+      app: portainer
+  template:
+    metadata:
+      labels:
+        app: portainer
+    spec:
+      tolerations:
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
+        effect: NoSchedule
+      - key: node-role.kubernetes.io/master
+        operator: Exists
+        effect: NoSchedule
+      restartPolicy: Always
+      containers:
+      - name: portainer
+        image: portainer/portainer-ce:latest
+        securityContext:
+        ports:
+        - containerPort: 9000
+          # TODO: Remove once traefik is setup
+          hostPort: 9000
+        env:
+        - name: POD_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        volumeMounts:
+        - name: config
+          mountPath: /data
+          subPathExpr: $(POD_NODE_NAME)/data
+        - name: docker-socket
+          mountPath: /var/run/docker.sock
+      volumes:
+      - name: config
+        persistentVolumeClaim:
+          claimName: config-pvc
+      - name: docker-socket
+        hostPath:
+          path: /var/run/docker.sock
+          type: Socket

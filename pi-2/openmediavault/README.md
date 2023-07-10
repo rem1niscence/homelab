@@ -10,6 +10,8 @@ To change OMV port:
 
 ## Plugins I'm using
 
+* openmediavault-sharerootfs
+* resetperms
 * compose
 * downloader
 * flashmemory
@@ -31,4 +33,5 @@ Mount permanently
 4. `sudo vi /etc/fstab`
 5. `//{ip}/{mount-name} /mnt/myFolder/ cifs uid={user},gid={user},username={usermane},password={password},iocharset=utf8,file_mode=0777,dir_mode=0777`
 
+Note: If the service you want to mount requires a sqlite db, add `nobrl` to the list of options above
 Note: Remember to add the guest device's IP before attempting to connect

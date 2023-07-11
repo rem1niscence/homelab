@@ -43,15 +43,15 @@ spec:
         env:
         # Store the state in a k8s secret
         - name: TS_KUBE_SECRET
-          value: "tailscale-config"
+          value: "tailscale-secrets"
         - name: TS_USERSPACE
           value: "false"
         - name: TS_AUTHKEY
           valueFrom:
             secretKeyRef:
-              name: tailscale-config
+              name: tailscale-secrets
               key: TS_AUTH_KEY
-              optional: true
+              optional: false
         - name: TS_DEST_IP
           value: "10.42.0.1" # Not a valid IP yet
         - name: TS_AUTH_ONCE

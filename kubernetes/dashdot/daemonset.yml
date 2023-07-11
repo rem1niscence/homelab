@@ -22,7 +22,7 @@ spec:
       - key: node-role.kubernetes.io/master
         operator: Exists
         effect: NoSchedule
-      restartPolicy: Always
+      restartPolicy: OnFailure
       containers:
       - name: dashdot
         image: mauricenino/dashdot

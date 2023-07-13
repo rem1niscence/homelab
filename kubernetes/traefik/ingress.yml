@@ -1,0 +1,38 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: traefik-dashboard
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+    traefik.ingress.kubernetes.io/router.middlewares: kube-system-dashboard-rewrite@kubernetescrd,kube-system-dashboard-auth@kubernetescrd
+spec:
+  rules:
+  - host: "dashboard.traefik.10.0.0.88.sslip.io"
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: traefik-dashboard
+            port:
+              number: 9000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: traefik-dashboard-api
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: kube-system-dashboard-auth@kubernetescrd
+spec:
+  rules:
+  - host: "dashboard.traefik.10.0.0.88.sslip.io"
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/api/"
+        backend:
+          service:
+            name: traefik-dashboard
+            port:
+              number: 9000

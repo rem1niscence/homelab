@@ -20,12 +20,10 @@ traefik:
 	@kubectl apply -f ./traefik/secrets.yml
 	@kubectl apply -f ./traefik/middleware.yml
 	@sed -e "s;{{DOMAIN}};$${DOMAIN};g" ./traefik/ingress-routes.yml | kubectl apply -f -
-	@sed -e "s;{{DOMAIN}};$${DOMAIN};g" ./traefik/cert-manager.yml | kubectl apply -f -
 	@kubectl patch ingressroute/traefik-dashboard-secure --type=json --patch-file ./traefik/patch-dashboard-service.yml
-	@kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.7.0/cert-manager.yaml
-	@sed -e "s;{{CLOUDFARE_TOKEN}};$(CLOUDFARE_TOKEN);g" ./tailscale/operator.yml \
-	@sed -e "s;{{EMAIL}};$(EMAIL);g" ./tailscale/operator.yml \
-	@sed -e "s;{{DOMAIN}};$(DOMAIN);g" ./tailscale/operator.yml | kubectl apply -f -
+	@sed -e "s;{{CLOUDFARE_TOKEN}};$(CLOUDFARE_TOKEN);g" ./traefik/tls.yml \
+	@sed -e "s;{{EMAIL}};$(EMAIL);g" ./traefik/tls.yml \
+	@sed -e "s;{{DOMAIN}};$(DOMAIN);g" ./traefik/tls.yml | kubectl apply -f -
 	@echo "done ✅. Bear in mind that the certificate validation may take several minutes, after that, restart the pods behind traefik's reverse proxy in order for this to take effect"
 
 .PHONY: paperless

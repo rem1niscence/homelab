@@ -4,7 +4,7 @@ metadata:
   name: traefik-dashboard-secure
 spec:
   entryPoints:
-  - web
+  - websecure
   routes:
   - kind: Rule
     match: Host(`traefik.{{DOMAIN}}`)

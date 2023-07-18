@@ -21,6 +21,6 @@ fi
 
 kubectl apply -f "./$path/deployment.yml"
 kubectl apply -f "./$path/service.yml"
-sed -e "s;{{DOMAIN}};$domain;g" "./$path/ingress-route.yml" | kubectl apply -f -
+sed -e "s;{{DOMAIN}};$domain;g" "./$path/ingress-routes.yml" | kubectl apply -f -
 
 echo "done ✅"

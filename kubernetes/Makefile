@@ -31,13 +31,6 @@ paperless:
 	$(call check_vars, DOMAIN)
 	./setup_application.sh paperless $${DOMAIN} true
 
-.PHONY: namespaces
-namespaces:
-	@echo "creating all used namespaces"
-	@kubectl create namespace tailscale
-	@kubectl create namespace paperless
-	@echo "done ✅"
-
 .PHONY: iptables
 iptables:
 	@sudo apt update && sudo apt upgrade -y

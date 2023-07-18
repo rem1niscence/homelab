@@ -1,26 +1,48 @@
 #!/bin/bash
 
-path=$1
+app=$1
 domain=$2
-volume=$3
 
-echo "setting up $path"
+kubectl create namespace $app
 
-set -o allexport
-source "./$path/.env"
-set +o allexport
+echo "setting up $app"
 
-envsubst < "./$path/secrets.yml" > "./$path/secrets-processed.yml"
-
-kubectl apply -f "./$path/secrets-processed.yml"
-
-if [ "$volume" = "true" ]; then
-    kubectl apply -f "./$path/pv.yml"
-    kubectl apply -f "./$path/pvc.yml"
+if [ -f "./$app/volumes.yml" ]; then
+    kubectl apply -f "./$app/volumes.yml"
+    # wait for volumes to mount
+    echo "waiting for volumes to be mounted..."
+    sleep 10
 fi
 
-kubectl apply -f "./$path/deployment.yml"
-kubectl apply -f "./$path/service.yml"
-sed -e "s;{{DOMAIN}};$domain;g" "./$path/ingress-routes.yml" | kubectl apply -f -
+set -o allexport
+if [ -f "./$app/.env" ]; then
+    source "./$app/.env"
+fi
+set +o allexport
+
+if [ -f "./$app/secrets.yml" ]; then
+    envsubst < "./$app/secrets.yml" > "./$app/secrets-processed.yml"
+    kubectl apply -f "./$app/secrets-processed.yml"
+fi
+
+if [ -f "./$app/service.yml" ]; then
+    kubectl apply -f "./$app/service.yml"
+fi
+
+if [ -f "./$app/ingress-routes.yml" ]; then
+    sed -e "s;{{DOMAIN}};$domain;g" "./$app/ingress-routes.yml" | kubectl apply -f -
+fi
+
+if [ -f "./$app/manifest.yml" ]; then
+    kubectl apply -f "./$app/manifest.yml"
+fi
+
+if [ -f "./$app/deployment.yml" ]; then
+    kubectl apply -f "./$app/deployment.yml"
+fi
+
+if [ -f "./$app/daemonset.yml" ]; then
+    kubectl apply -f "./$app/daemonset.yml"
+fi
 
 echo "done ✅"

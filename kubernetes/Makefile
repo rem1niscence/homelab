@@ -26,11 +26,6 @@ traefik:
 	@sed -e "s;{{DOMAIN}};$(DOMAIN);g" ./traefik/tls.yml | kubectl apply -f -
 	@echo "done ✅. Bear in mind that the certificate validation may take several minutes, after that, restart the pods behind traefik's reverse proxy in order for this to take effect"
 
-.PHONY: paperless
-paperless:
-	$(call check_vars, DOMAIN)
-	./setup_application.sh paperless $${DOMAIN} true
-
 .PHONY: dashboard
 dashboard:
 	@echo "setting up the kubernetes dashboard"
@@ -40,6 +35,15 @@ dashboard:
 	@k3s kubectl create -f ./dashboard/rbac.yml
 	k3s kubectl -n kubernetes-dashboard create token admin-user
 	@echo "done ✅. Use the token to log in into the dashboard"
+
+.PHONY: paperless
+paperless:
+	$(call check_vars, DOMAIN)
+	./setup_application.sh paperless $${DOMAIN} true
+
+.PHONY: dashdot
+dashdot:
+	@kubectl apply -f ./dashdot/daemonset.yml
 
 .PHONY: iptables
 iptables:

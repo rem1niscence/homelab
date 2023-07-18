@@ -31,6 +31,16 @@ paperless:
 	$(call check_vars, DOMAIN)
 	./setup_application.sh paperless $${DOMAIN} true
 
+.PHONY: dashboard
+dashboard:
+	@echo "setting up the kubernetes dashboard"
+	$(call check_vars, DOMAIN)
+	@kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml
+	@sed -e "s;{{DOMAIN}};$(DOMAIN);g" ./dashboard/ingress-routes.yml | kubectl apply -f -
+	@k3s kubectl create -f ./dashboard/rbac.yml
+	k3s kubectl -n kubernetes-dashboard create token admin-user
+	@echo "done ✅. Use the token to log in into the dashboard"
+
 .PHONY: iptables
 iptables:
 	@sudo apt update && sudo apt upgrade -y

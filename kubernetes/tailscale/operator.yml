@@ -97,8 +97,8 @@ metadata:
   name: operator-oauth
   namespace: tailscale
 stringData:
-  client_id: "${OAUTH_CLIENT_ID}"
-  client_secret: "${OAUTH_CLIENT_SECRET}"
+  client_id: "{{OAUTH_CLIENT_ID}}"
+  client_secret: "{{OAUTH_CLIENT_SECRET}}"
 ---
 apiVersion: apps/v1
 kind: Deployment

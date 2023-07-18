@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pihole
+spec:
+  capacity:
+    storage: 100M
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 10.0.0.88
+    path: /container/pihole
+  storageClassName: local-path
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: pihole
+  name: pihole
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 100M
+  volumeName: pihole
+  storageClassName: local-path

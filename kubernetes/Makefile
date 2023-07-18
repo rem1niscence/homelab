@@ -36,14 +36,16 @@ dashboard:
 	k3s kubectl -n kubernetes-dashboard create token admin-user
 	@echo "done ✅. Use the token to log in into the dashboard"
 
-.PHONY: paperless
-paperless:
+.PHONY: pihole
+pihole:
 	$(call check_vars, DOMAIN)
-	./setup_application.sh paperless $${DOMAIN} true
+	./setup_application.sh pihole $${DOMAIN}
+	@kubectl annotate service pihole -n pihole tailscale.com/hostname="k3s-pihole" 
+	@kubectl annotate service pihole -n pihole tailscale.com/expose="true" 
 
-.PHONY: dashdot
-dashdot:
-	@kubectl apply -f ./dashdot/daemonset.yml
+.PHONY: app
+app:
+	$(call check_vars, APP DOMAIN)
 
 .PHONY: iptables
 iptables:

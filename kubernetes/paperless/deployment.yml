@@ -21,15 +21,13 @@ spec:
           image: ghcr.io/paperless-ngx/paperless-ngx
           ports:
           - containerPort: 8000
-            # TODO: Remove once traefik is setup
-            hostPort: 8000
           livenessProbe:
             exec:
               command:
               - sh
               - -c
               - "curl -fs -S --max-time 2 http://localhost:8000"
-            initialDelaySeconds: 30
+            initialDelaySeconds: 60
             timeoutSeconds: 10
             periodSeconds: 10
             failureThreshold: 5
@@ -40,6 +38,8 @@ spec:
             value: "1000"
           - name: PAPERLESS_REDIS
             value: "redis://redis:6379"
+          - name: PAPERLESS_PORT
+            value: "8000"
           - name: PAPERLESS_URL
             valueFrom:
               secretKeyRef:

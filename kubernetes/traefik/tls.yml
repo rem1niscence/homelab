@@ -24,7 +24,7 @@ spec:
         cloudflare:
           apiTokenSecretRef:
             key: api-token
-            name: cloudflare-api-token-secret
+            name: cloudflare-api-token
           email: "{{EMAIL}}"
 ---
 apiVersion: cert-manager.io/v1
@@ -49,3 +49,4 @@ metadata:
 spec:
   defaultCertificate:
     secretName: wildcard-secret
+  

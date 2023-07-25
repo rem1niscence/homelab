@@ -7,7 +7,6 @@ kubectl apply -f ./$path/cluster-role.yml
 
 kubectl apply -f ./$path/service-account.yml
 
-sed -e "s;{{DOMAIN}};$domain;g" "./$path/config-map.yml" | kubectl apply -f -
 
 set -o allexport
 if [ -f "./$path/.env" ]; then
@@ -18,6 +17,11 @@ envsubst < "./$path/secrets.yml" > "./$path/secrets-processed.yml"
 rm "./$path/secrets.yml"
 mv "./$path/secrets-processed.yml" "./$path/secrets.yml" 
 kubectl apply -f "./$path/secrets.yml"
+
+envsubst < "./$path/config-map.yml" > "./$path/config-map-processed.yml"
+rm "./$path/config-map.yml"
+mv "./$path/config-map-processed.yml" "./$path/config-map.yml" 
+sed -e "s;{{DOMAIN}};$domain;g" "./$path/config-map.yml" | kubectl apply -f -
 
 kubectl apply -f ./$path/deployment.yml
 

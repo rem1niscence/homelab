@@ -8,8 +8,12 @@ metadata:
 data:
   kubernetes.yaml: |
     mode: cluster
-  settings.yaml: ""
-  #settings.yaml: |
+  settings.yaml: |
+    title: Roniel's homepage
+    layout:
+      Widgets:
+        style: row
+        columns: 4
   #  providers:
   #    longhorn:
   #      url: https://longhorn.my.network
@@ -23,7 +27,7 @@ data:
         - Tailscale:
             icon: tailscale.svg
             href: https://login.tailscale.com/admin/machines
-            description: Wireguard VPN as a service
+            description: Wireguard VPN as a service edits
         - Traefik:
             icon: traefik.svg
             href: https://traefik.{{DOMAIN}}/
@@ -31,18 +35,23 @@ data:
         - Kubernetes:
             icon: kubernetes-dashboard.png
             href: https://dashboard.{{DOMAIN}}/
-            description: Kubernetes's dashboard
-
     - Documents & Files:
         - Paperless:
             icon: paperless-ngx.svg
             href: https://paperless.{{DOMAIN}}/
             description: Digital document manager
-
     - Media:
         - My Third Service:
             href: http://localhost/
             description: Homepage is 😎
+    - Widgets:
+        - Pi-hole:
+            icon: pi-hole.svg 
+            href: https://pihole.{{DOMAIN}}
+            widget:
+              type: pihole
+              url: http://pihole.pihole:3000
+              key: ${PIHOLE_API_KEY}
   widgets.yaml: |
     - kubernetes:
         cluster:
@@ -66,4 +75,5 @@ data:
     - search:
         provider: google
         target: _blank
+
   docker.yaml: ""

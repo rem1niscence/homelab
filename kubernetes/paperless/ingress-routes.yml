@@ -7,7 +7,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-  - match: Host(`paperless.{{DOMAIN}}`)
+  - match: Host("paperless.rnserver.online")
     kind: Rule
     services:
     - name: paperless

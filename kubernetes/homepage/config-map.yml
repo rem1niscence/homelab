@@ -17,19 +17,29 @@ data:
     - Developer:
         - Github:
             - abbr: GH
-              href: https://github.com/
+              href: https://github.com/rem1niscence
   services.yaml: |
-    - My First Group:
-        - My First Service:
-            href: http://localhost/
-            description: Homepage is awesome
+    - Admin:
+        - Tailscale:
+            icon: tailscale.svg
+            href: https://login.tailscale.com/admin/machines
+            description: Wireguard VPN as a service
+        - Traefik:
+            icon: traefik.svg
+            href: https://traefik.{{DOMAIN}}/
+            description: Reverse proxy
+        - Kubernetes:
+            icon: kubernetes-dashboard.png
+            href: https://dashboard.{{DOMAIN}}/
+            description: Kubernetes's dashboard
 
-    - My Second Group:
-        - My Second Service:
-            href: http://localhost/
-            description: Homepage is the best
+    - Documents & Files:
+        - Paperless:
+            icon: paperless-ngx.svg
+            href: https://paperless.{{DOMAIN}}/
+            description: Digital document manager
 
-    - My Third Group:
+    - Media:
         - My Third Service:
             href: http://localhost/
             description: Homepage is 😎
@@ -51,7 +61,9 @@ data:
         expanded: true
         cpu: true
         memory: true
+        cputemp: true
+        uptime: true
     - search:
-        provider: duckduckgo
+        provider: google
         target: _blank
   docker.yaml: ""

@@ -8,10 +8,14 @@ tailscale:
 	@echo "setting up tailscale"
 	@sed -e "s;{{OAUTH_CLIENT_ID}};$(OAUTH_CLIENT_ID);g" ./tailscale/operator.yml \
 	| sed -e "s;{{OAUTH_CLIENT_SECRET}};$(OAUTH_CLIENT_SECRET);g" | kubectl apply -f -
-	sleep 15
-	@kubectl annotate service traefik tailscale.com/hostname="k3s-traefik" -n kube-system
-	@kubectl annotate service traefik tailscale.com/expose="true" -n kube-system
+	sleep 5
 	@echo "done ✅"
+
+.PHONY: tailscale-expose
+tailscale-expose:
+	$(call check_vars NAMESPACE SERVICE HOSTNAME)
+	@kubectl annotate service -n $(NAMESPACE) $(SERVICE) tailscale.com/hostname="$(HOSTNAME)"
+	@kubectl annotate service -n $(NAMESPACE) $(SERVICE) tailscale.com/expose="true"
 
 .PHONY: traefik
 traefik:
@@ -41,20 +45,15 @@ dashboard:
 	@kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml
 	@sed -e "s;{{DOMAIN}};$(DOMAIN);g" ./dashboard/ingress-routes.yml | kubectl apply -f -
 	@k3s kubectl create -f ./dashboard/rbac.yml
-	k3s kubectl -n kubernetes-dashboard create token admin-user --duration=1000h
+	@k3s kubectl -n kubernetes-dashboard create token admin-user --duration=1000h
 	@echo "done ✅. Use the token to log in into the dashboard"
 
-.PHONY: pihole
-pihole:
-	$(call check_vars, DOMAIN)
-	./setup_application.sh pihole $${DOMAIN}
-	@kubectl annotate service pihole -n pihole tailscale.com/hostname="k3s-pihole" 
-	@kubectl annotate service pihole -n pihole tailscale.com/expose="true" 
 
 .PHONY: app
 app:
 	$(call check_vars, NAME DOMAIN)
 	./setup_application.sh $${NAME} $${DOMAIN}
+	@echo "If you have a deployment.yml remember to run it manually"
 
 .PHONY: cifs
 cifs:
@@ -71,3 +70,9 @@ iptables:
 	@update-alternatives --set iptables /usr/sbin/iptables-legacy
 	@update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
 	@reboot 
+
+.PHONY: ipv6_reload
+ipv6_reload:
+	systemctl stop k3s
+	modprobe ip6table_filter
+	systemctl start k3s

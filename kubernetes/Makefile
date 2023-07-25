@@ -60,12 +60,12 @@ app:
 	$(call check_vars, NAME DOMAIN)
 	./setup_application.sh $${NAME} $${DOMAIN}
 
-.PHONY: cifs
-cifs:
-	@curl -skSL https://raw.githubusercontent.com/kubernetes-csi/csi-driver-smb/v1.11.0/deploy/install-driver.sh | bash -s v1.11.0 --
-	sleep 10
-	@kubectl -n kube-system get pod -o wide -l app=csi-smb-controller
-	@kubectl -n kube-system get pod -o wide -l app=csi-smb-node
+.PHONY: rm-app
+rm-app:
+	$(call check_vars, APP_PATH)
+	for file in $(APP_PATH)/*.yml; do \
+		sudo kubectl delete -f "$$file"; \
+	done
 
 .PHONY: iptables
 iptables:

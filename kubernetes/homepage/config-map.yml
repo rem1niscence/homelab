@@ -35,6 +35,7 @@ data:
         - Kubernetes:
             icon: kubernetes-dashboard.png
             href: https://dashboard.{{DOMAIN}}/
+            description: Kubernete's dashboard
     - Documents & Files:
         - Paperless:
             icon: paperless-ngx.svg

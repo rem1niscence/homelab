@@ -17,6 +17,12 @@ tailscale-expose:
 	@kubectl annotate service -n $(NAMESPACE) $(SERVICE) tailscale.com/hostname="$(HOSTNAME)"
 	@kubectl annotate service -n $(NAMESPACE) $(SERVICE) tailscale.com/expose="true"
 
+.PHONY: tailscale-unexpose
+tailscale-unexpose:
+	$(call check_vars NAMESPACE SERVICE)
+	@kubectl annotate service -n $(NAMESPACE) $(SERVICE) tailscale.com/hostname-
+	@kubectl annotate service -n $(NAMESPACE) $(SERVICE) tailscale.com/expose-
+
 .PHONY: traefik
 traefik:
 	$(call check_vars, DOMAIN)
@@ -53,7 +59,6 @@ dashboard:
 app:
 	$(call check_vars, NAME DOMAIN)
 	./setup_application.sh $${NAME} $${DOMAIN}
-	@echo "If you have a deployment.yml remember to run it manually"
 
 .PHONY: cifs
 cifs:

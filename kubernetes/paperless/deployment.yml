@@ -18,7 +18,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: paperless
-          image: ghcr.io/paperless-ngx/paperless-ngx
+          image: paperlessngx/paperless-ngx:latest
           ports:
           - containerPort: 8000
           livenessProbe:
@@ -67,16 +67,16 @@ spec:
           volumeMounts:
           - name: config
             mountPath: /usr/src/paperless/data
-            subPath: data
-          - name: config
-            mountPath: /usr/src/paperless/media
-            subPath: media
-          - name: storage
-            mountPath: /usr/src/paperless/export
-            subPath: export
-          - name: storage
-            mountPath: /usr/src/paperless/consume
-            subPath: consume
+            # subPath: data
+          # - name: config
+          #   mountPath: /usr/src/paperless/media
+          #   subPath: media
+          # - name: storage
+            # mountPath: /usr/src/paperless/export
+            # subPath: export
+          # - name: storage
+          #   mountPath: /usr/src/paperless/consume
+          #   subPath: consume
       volumes:
       - name: config
         persistentVolumeClaim:

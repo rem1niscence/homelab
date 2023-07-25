@@ -3,6 +3,7 @@
 # install vim if not already
 sudo apt install -y vim
 
+# TODO: Perform zed replace
 # Enable missing locales (check first which ones you're missing)
 sudo vim /etc/locale.gen
 

@@ -1,14 +1,14 @@
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
-  name: paperless
-  namespace: paperless
+  name: pihole
+  namespace: pihole
 spec:
   entryPoints:
     - websecure
   routes:
-  - match: Host("paperless.rnserver.online")
+  - match: Host(`pihole.{{DOMAIN}}`)
     kind: Rule
     services:
-    - name: paperless
-      port: 8000
+    - name: pihole
+      port: 3000

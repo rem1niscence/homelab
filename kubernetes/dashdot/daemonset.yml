@@ -40,8 +40,6 @@ spec:
         env:
         - name: DASHDOT_SHOW_HOST
           value: "true"
-        - name: DASHDOT_CUSTOM_HOST
-          value: pi
         - name: DASHDOT_SHOW_DASH_VERSION
           value: "bottom_right"
         - name: DASHDOT_ENABLE_CPU_TEMPS

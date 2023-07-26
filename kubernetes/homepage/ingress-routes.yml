@@ -1,0 +1,22 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: homepage
+  namespace: homepage
+  labels:
+    app.kubernetes.io/name: homepage
+  annotations:
+    gethomepage.dev/description: "Dynamically Detected Homepage"
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/group: "Cluster Management"
+    gethomepage.dev/icon: "homepage.png"
+    gethomepage.dev/name: "Homepage"
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`{{DOMAIN}}`)
+    kind: Rule
+    services:
+    - name: homepage
+      port: 3000

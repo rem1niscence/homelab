@@ -5,6 +5,13 @@ domain=$2
 
 kubectl create namespace $app
 
+# Use the app's custom setup
+if [ -f "./$app/setup.sh" ]; then
+    chmod +x "./$app/setup.sh"
+    "./$app/setup.sh" $app $domain
+    exit 0
+fi
+
 echo "setting up $app"
 
 if [ -f "./$app/volumes.yml" ]; then

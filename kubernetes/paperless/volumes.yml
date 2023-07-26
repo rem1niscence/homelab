@@ -25,7 +25,7 @@ spec:
     - ReadWriteMany
   nfs:
     server: 10.0.0.95
-    path: /mnt/ssd_2tb/media/paperless
+    path: /mnt/main_drive/storage/paperless
   storageClassName: local-path
   mountOptions:
     - vers=4.0

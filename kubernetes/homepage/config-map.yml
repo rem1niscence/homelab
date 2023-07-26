@@ -84,5 +84,9 @@ data:
     - search:
         provider: google
         target: _blank
-
+    - openmeteo:
+        latitude: 18.4719
+        longitude: -69.8923
+        units: metric
+        cache: 5
   docker.yaml: ""

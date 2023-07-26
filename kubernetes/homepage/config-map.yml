@@ -36,6 +36,14 @@ data:
             icon: kubernetes-dashboard.png
             href: https://dashboard.{{DOMAIN}}/
             description: Kubernete's dashboard
+        - TrueNAS SCALE:
+            icon: truenas-scale.png
+            href: ${TRUENAS_URL}
+            description: NAS System
+        - True Command:
+            icon: truenas.png
+            href: https://true-command.{{DOMAIN}}
+            description: TrueNAS Clusters Manager
     - Documents & Files:
         - Paperless:
             icon: paperless-ngx.svg

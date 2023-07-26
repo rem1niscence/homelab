@@ -1,0 +1,27 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: https-redirect
+  namespace: truenas
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: truenas
+  namespace: truenas
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`truenas.rnserver.space`)
+    kind: Rule
+    services:
+    - name: truenas
+      port: 80
+    middlewares:
+      - name: https-redirect
+        namespace: truenas

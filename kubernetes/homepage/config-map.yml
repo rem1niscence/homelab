@@ -48,7 +48,7 @@ data:
     - Widgets:
         - Pi-hole:
             icon: pi-hole.svg 
-            href: https://pihole.{{DOMAIN}}
+            href: https://pihole.{{DOMAIN}}/admin
             widget:
               type: pihole
               url: http://pihole.pihole:3000

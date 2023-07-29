@@ -13,4 +13,4 @@
 
 # You need to apply the ingress_routes first
 # Apply with this command:
-# kubectl patch ingressroute/traefik-dashboard-secure --type=json --patch-file patch_dashboard_service.yml
+# kubectl patch ingressroute/traefik-dashboard-secure --type=json --patch-file patch-dashboard-service.yml

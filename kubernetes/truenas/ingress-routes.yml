@@ -17,7 +17,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-  - match: Host(`truenas.rnserver.space`)
+  - match: Host(`truenas.{{DOMAIN}}`)
     kind: Rule
     services:
     - name: truenas

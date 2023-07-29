@@ -33,6 +33,11 @@ traefik:
 	@kubectl patch ingressroute/traefik-dashboard-secure --type=json --patch-file ./traefik/patch-dashboard-service.yml
 	@echo "done ✅"
 
+.PHONY: change-domain
+change-domain:
+	$(call check_vars, APP_PATH DOMAIN)
+	@sed -e "s;{{DOMAIN}};$(DOMAIN);g" "./$(APP_PATH)/ingress-routes.yml" | kubectl apply -f -
+
 .PHONY: tls
 tls:
 	$(call check_vars, DOMAIN CLOUDFARE_TOKEN EMAIL)
@@ -49,11 +54,9 @@ dashboard:
 	@echo "setting up the kubernetes dashboard"
 	$(call check_vars, DOMAIN)
 	@kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml
-	@sed -e "s;{{DOMAIN}};$(DOMAIN);g" ./dashboard/ingress-routes.yml | kubectl apply -f -
-	@k3s kubectl create -f ./dashboard/rbac.yml
+	./setup_application.sh dashboard $${DOMAIN}
 	@k3s kubectl -n kubernetes-dashboard create token admin-user --duration=1000h
 	@echo "done ✅. Use the token to log in into the dashboard"
-
 
 .PHONY: app
 app:
@@ -74,7 +77,11 @@ iptables:
 	@iptables -F
 	@update-alternatives --set iptables /usr/sbin/iptables-legacy
 	@update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
-	@reboot 
+	@reboot
+
+.PHONY: install-helm
+install-helm:
+	@curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
 .PHONY: ipv6_reload
 ipv6_reload:

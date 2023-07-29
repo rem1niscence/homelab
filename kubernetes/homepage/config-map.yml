@@ -27,18 +27,18 @@ data:
         - Tailscale:
             icon: tailscale.svg
             href: https://login.tailscale.com/admin/machines
-            description: Wireguard VPN as a service edits
+            description: Wireguard VPN as a service
         - Traefik:
             icon: traefik.svg
-            href: https://traefik.{{DOMAIN}}/
+            href: https://traefik.{{DOMAIN}}
             description: Reverse proxy
         - Kubernetes:
             icon: kubernetes-dashboard.png
-            href: https://dashboard.{{DOMAIN}}/
+            href: https://dashboard.{{DOMAIN}}
             description: Kubernete's dashboard
         - TrueNAS SCALE:
             icon: truenas-scale.png
-            href: ${TRUENAS_URL}
+            href: https://truenas.{{DOMAIN}}/ui/
             description: NAS System
         - True Command:
             icon: truenas.png
@@ -79,10 +79,14 @@ data:
         expanded: true
         cpu: true
         memory: true
-        cputemp: true
+        cputemp: false # Not working for now
         uptime: true
     - search:
         provider: google
         target: _blank
-
+    - openmeteo:
+        latitude: 18.4719
+        longitude: -69.8923
+        units: metric
+        cache: 5
   docker.yaml: ""

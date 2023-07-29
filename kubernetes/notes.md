@@ -1,8 +1,5 @@
 ### Handy commands
 
-Get all pods excluding ones from kube system
-`kubectl get pods --all-namespaces --field-selector 'metadata.namespace!=kube-system' -o wide` 
-
 Get cluster ip:
 `kubectl get service/kubernetes -n default -o jsonpath='{.spec.clusterIP}'` 
 

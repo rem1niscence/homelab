@@ -11,4 +11,4 @@ spec:
     kind: Rule
     services:
     - name: true-command
-      port: 80
+      port: 85

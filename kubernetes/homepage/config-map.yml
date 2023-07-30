@@ -14,6 +14,9 @@ data:
       Widgets:
         style: row
         columns: 4
+      Media:
+        style: row
+        columns: 4
     providers:
       longhorn:
         url: http://longhorn-frontend.longhorn-system
@@ -28,10 +31,6 @@ data:
             icon: tailscale.svg
             href: https://login.tailscale.com/admin/machines
             description: Wireguard VPN as a service
-        - Traefik:
-            icon: traefik.svg
-            href: https://traefik.{{DOMAIN}}
-            description: Reverse proxy
         - Kubernetes:
             icon: kubernetes-dashboard.png
             href: https://dashboard.{{DOMAIN}}
@@ -55,6 +54,13 @@ data:
             href: https://longhorn.{{DOMAIN}}
             description: Cloud-native distributed storage for K8S
     - Widgets:
+        - Traefik:
+            icon: traefik.svg
+            href: https://traefik.{{DOMAIN}}
+            description: Reverse proxy
+            widget:
+              type: traefik
+              url: http://traefik-api.kube-system:9000
         - Pi-hole:
             icon: pi-hole.svg 
             href: https://pihole.{{DOMAIN}}/admin
@@ -72,6 +78,7 @@ data:
               url: http://qbittorrent.qbittorrent:8080
               username: ${QBITTORRENT_USERNAME}
               password: ${QBITTORRENT_PASSWORD}
+    - Media:
         - Jellyfin:
             icon: jellyfin.svg
             href: https://jellyfin.{{DOMAIN}}
@@ -82,6 +89,14 @@ data:
               key: ${JELLYFIN_API_KEY}
               enableBlocks: true
               enableNowPlaying: true
+        - Radarr:
+            icon: radarr.svg
+            href: https://radarr.{{DOMAIN}}
+            description: Movie indexer engine
+            widget:
+              type: radarr
+              url: http://radarr.servarr:7878
+              key: ${RADARR_API_KEY}
   widgets.yaml: |
     - kubernetes:
         cluster:

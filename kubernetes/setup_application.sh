@@ -26,10 +26,6 @@ if [ -f "./$app/secrets.yml" ]; then
     mv "./$app/secrets-processed.yml" "./$app/secrets.yml" 
 fi
 
-if [ -f "./$app/ingress-routes.yml" ]; then
-    sed -e "s;{{DOMAIN}};$domain;g" "./$app/ingress-routes.yml" | kubectl apply -f -
-fi
-
 kubectl apply -f ./$app
 
 echo "done ✅"

@@ -62,6 +62,7 @@ dashboard:
 app:
 	$(call check_vars, NAME DOMAIN)
 	./setup_application.sh $${NAME} $${DOMAIN}
+	@make APP_PATH=$${NAME} change-domain
 
 .PHONY: rm-app
 rm-app:

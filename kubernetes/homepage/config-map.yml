@@ -14,9 +14,9 @@ data:
       Widgets:
         style: row
         columns: 4
-  #  providers:
-  #    longhorn:
-  #      url: https://longhorn.my.network
+    providers:
+      longhorn:
+        url: http://longhorn-frontend.longhorn-system
   bookmarks.yaml: |
     - Developer:
         - Github:
@@ -47,12 +47,13 @@ data:
     - Documents & Files:
         - Paperless:
             icon: paperless-ngx.svg
-            href: https://paperless.{{DOMAIN}}/
+            href: https://paperless.{{DOMAIN}}
             description: Digital document manager
-    - Media:
-        - My Third Service:
-            href: http://localhost/
-            description: Homepage is 😎
+    - Media & Storage:
+        - Longhorn:
+            icon: longhorn.svg
+            href: https://longhorn.{{DOMAIN}}
+            description: Distributed block storage for k8s
     - Widgets:
         - Pi-hole:
             icon: pi-hole.svg 
@@ -79,8 +80,13 @@ data:
         expanded: true
         cpu: true
         memory: true
-        cputemp: false # Not working for now
+        cputemp: true # Not working for now
         uptime: true
+    - longhorn:
+        expanded: true
+        total: true
+        labels: true
+        nodes: false
     - search:
         provider: google
         target: _blank

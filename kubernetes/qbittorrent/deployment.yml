@@ -30,7 +30,7 @@ spec:
               value: "Etc/UTC"
           volumeMounts:
           - name: data
-            mountPath: /storage
+            mountPath: /data
           - name: config
             mountPath: /config
       volumes:

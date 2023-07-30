@@ -4,7 +4,7 @@ metadata:
   name: true-command
   namespace: true-command
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
     - port: 85
       targetPort: 80

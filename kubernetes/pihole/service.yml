@@ -4,7 +4,7 @@ metadata:
   name: pihole
   namespace: pihole
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
     - name: admin-tcp
       protocol: TCP

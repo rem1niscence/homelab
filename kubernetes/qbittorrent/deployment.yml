@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: qbittorrent
+  name: qbittorrent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qbittorrent
+  template:
+    metadata:
+      labels:
+        app: qbittorrent
+    spec:
+      containers:
+        - name: qbittorrent
+          # qbittorrent with vuetorrent preinstalled
+          image: cr.hotio.dev/hotio/qbittorrent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: UMASK
+              value: "002"
+            - name: TZ
+              value: "Etc/UTC"
+          volumeMounts:
+          - name: download
+            mountPath: /downloads
+          - name: config
+            mountPath: /config
+      volumes:
+      - name: download
+        persistentVolumeClaim:
+          claimName: download-pvc
+      - name: config
+        persistentVolumeClaim:
+          claimName: config-pvc

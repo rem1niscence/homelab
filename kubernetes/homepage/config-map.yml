@@ -62,6 +62,15 @@ data:
               type: pihole
               url: http://pihole.pihole:3000
               key: ${PIHOLE_API_KEY}
+        - qBittorrent:
+            icon: qbittorrent.svg
+            href: https://torrent.{{DOMAIN}}
+            description: Open-source torrent software
+            widget:
+              type: qbittorrent
+              url: http://qbittorrent.qbittorrent:8080
+              username: ${QBITTORRENT_USERNAME}
+              password: ${QBITTORRENT_PASSWORD}
   widgets.yaml: |
     - kubernetes:
         cluster:

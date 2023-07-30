@@ -49,6 +49,16 @@ data:
             href: https://paperless.{{DOMAIN}}
             description: Digital document manager
     - Media & Storage:
+        - Jellyfin:
+            icon: jellyfin.svg
+            href: https://jellyfin.{{DOMAIN}}
+            description: Media server for movies & shows
+            widget:
+              type: jellyfin
+              url: http://jellyfin.jellyfin:8096
+              key: ${JELLYFIN_API_KEY}
+              enableBlocks: true
+              enableNowPlaying: true
         - Longhorn:
             icon: longhorn.svg
             href: https://longhorn.{{DOMAIN}}
@@ -79,16 +89,6 @@ data:
               username: ${QBITTORRENT_USERNAME}
               password: ${QBITTORRENT_PASSWORD}
     - Media:
-        - Jellyfin:
-            icon: jellyfin.svg
-            href: https://jellyfin.{{DOMAIN}}
-            description: Media server for movies & shows
-            widget:
-              type: jellyfin
-              url: http://jellyfin.jellyfin:8096
-              key: ${JELLYFIN_API_KEY}
-              enableBlocks: true
-              enableNowPlaying: true
         - Radarr:
             icon: radarr.svg
             href: https://radarr.{{DOMAIN}}
@@ -97,6 +97,14 @@ data:
               type: radarr
               url: http://radarr.servarr:7878
               key: ${RADARR_API_KEY}
+        - Prowlarr:
+            icon: prowlarr.svg
+            href: https://prowlarr.{{DOMAIN}}
+            description: Meta-search application for torrents
+            widget:
+              type: prowlarr
+              url: http://prowlarr.servarr:9696
+              key: ${PROWLARR_API_KEY}
   widgets.yaml: |
     - kubernetes:
         cluster:

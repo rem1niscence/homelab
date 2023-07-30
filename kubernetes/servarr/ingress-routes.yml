@@ -12,3 +12,19 @@ spec:
     services:
     - name: radarr
       port: 7878
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  namespace: servarr
+  name: prowlarr
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`prowlarr.{{DOMAIN}}`)
+    kind: Rule
+    services:
+    - name: prowlarr
+      port: 9696
+---

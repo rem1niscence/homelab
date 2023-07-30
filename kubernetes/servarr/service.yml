@@ -10,3 +10,16 @@ spec:
     - protocol: TCP
       port: 7878
       targetPort: 7878
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: servarr
+  name: prowlarr
+spec:
+  selector:
+    app: prowlarr
+  ports:
+    - protocol: TCP
+      port: 9696
+      targetPort: 9696

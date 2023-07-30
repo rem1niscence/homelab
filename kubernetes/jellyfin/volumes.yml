@@ -4,7 +4,7 @@ metadata:
   name: jellyfin-data-pv
 spec:
   capacity:
-    storage: 2.5T
+    storage: 3T
   accessModes:
     - ReadWriteMany
   nfs:
@@ -24,7 +24,7 @@ spec:
     - ReadWriteMany
   resources:
     requests:
-      storage: 2.5T
+      storage: 3T
   volumeName: jellyfin-data-pv
   storageClassName: local-path
 ---

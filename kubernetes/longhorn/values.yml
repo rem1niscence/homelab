@@ -1,0 +1,17 @@
+defaultSettings:
+  defaultDataPath: "/longhorn"
+  backupTarget: nfs://10.0.0.95:/mnt/main_drive/longhorn-backup
+  upgradeChecker: true
+  defaultReplicaCount: 2
+
+ingress:
+  enabled: true
+  host: longhorn.local
+
+# Apply with:
+# helm upgrade longhorn longhorn/longhorn --namespace longhorn-system -f values.yml
+# NOTE: You might have to add the k3s kubeconfig path with --kubeconfig /etc/rancher/k3s/k3s.yaml
+# if you're having permission issues
+
+# Check more settings here
+# https://longhorn.io/docs/1.5.0/advanced-resources/deploy/customizing-default-settings/#using-helm

@@ -42,3 +42,18 @@ spec:
     services:
     - name: sonarr-anime
       port: 8989
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  namespace: servarr
+  name: sonarr-tv
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`sonarr-tv.{{DOMAIN}}`)
+    kind: Rule
+    services:
+    - name: sonarr-tv
+      port: 8990

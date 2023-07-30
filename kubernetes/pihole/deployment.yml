@@ -13,6 +13,8 @@ spec:
       labels:
         app: pihole
     spec:
+      nodeSelector:
+        type: pi
       containers:
       - name: pihole
         image: pihole/pihole:latest

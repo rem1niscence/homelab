@@ -28,3 +28,17 @@ spec:
     - name: prowlarr
       port: 9696
 ---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  namespace: servarr
+  name: sonarr-anime
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`sonarr-anime.{{DOMAIN}}`)
+    kind: Rule
+    services:
+    - name: sonarr-anime
+      port: 8989

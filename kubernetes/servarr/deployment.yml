@@ -14,7 +14,7 @@ spec:
         app: radarr
     spec:
       nodeSelector:
-        type: pi
+        type: secondary
       containers:
       - name: radarr
         image: lscr.io/linuxserver/radarr:latest
@@ -39,6 +39,48 @@ spec:
       - name: config
         persistentVolumeClaim:
           claimName: radarr-config-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: servarr
+  name: sonarr-anime
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sonarr-anime
+  template:
+    metadata:
+      labels:
+        app: sonarr-anime
+    spec:
+      nodeSelector:
+        type: secondary
+      containers:
+      - name: sonarr-anime
+        image: lscr.io/linuxserver/sonarr:latest
+        ports:
+        - containerPort: 8989
+        env:
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1000"
+        - name: TZ
+          value: "Etc/UTC"
+        volumeMounts:
+          - name: data
+            mountPath: /data
+          - name: config
+            mountPath: /config
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: data-pvc
+      - name: config
+        persistentVolumeClaim:
+          claimName: sonarr-anime-config-pvc
 ---
 apiVersion: apps/v1
 kind: Deployment

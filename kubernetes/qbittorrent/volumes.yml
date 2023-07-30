@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: qbittorrent-download-pv
+  name: qbittorrent-storage-pv
 spec:
   capacity:
     storage: 200G
@@ -9,7 +9,7 @@ spec:
     - ReadWriteMany
   nfs:
     server: 10.0.0.95
-    path: /mnt/main_drive/storage/downloads
+    path: /mnt/main_drive/storage
   storageClassName: local-path
   mountOptions:
     - vers=4.0
@@ -18,14 +18,14 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   namespace: qbittorrent
-  name: download-pvc
+  name: storage-pvc
 spec:
   accessModes:
     - ReadWriteMany
   resources:
     requests:
       storage: 200G
-  volumeName: qbittorrent-download-pv
+  volumeName: qbittorrent-storage-pv
   storageClassName: local-path
 ---
 apiVersion: v1

@@ -29,14 +29,14 @@ spec:
             - name: TZ
               value: "Etc/UTC"
           volumeMounts:
-          - name: download
-            mountPath: /downloads
+          - name: storage
+            mountPath: /storage
           - name: config
             mountPath: /config
       volumes:
-      - name: download
+      - name: storage
         persistentVolumeClaim:
-          claimName: download-pvc
+          claimName: storage-pvc
       - name: config
         persistentVolumeClaim:
           claimName: config-pvc

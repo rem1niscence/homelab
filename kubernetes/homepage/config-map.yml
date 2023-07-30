@@ -39,11 +39,11 @@ data:
         - TrueNAS SCALE:
             icon: truenas-scale.png
             href: https://truenas.{{DOMAIN}}/ui/
-            description: NAS System
+            description: Open-source storage operating system
         - True Command:
             icon: truenas.png
             href: https://true-command.{{DOMAIN}}
-            description: TrueNAS Clusters Manager
+            description:  Management tool for TrueNAS systems.
     - Documents & Files:
         - Paperless:
             icon: paperless-ngx.svg
@@ -53,11 +53,12 @@ data:
         - Longhorn:
             icon: longhorn.svg
             href: https://longhorn.{{DOMAIN}}
-            description: Distributed block storage for k8s
+            description: Cloud-native distributed storage for K8S
     - Widgets:
         - Pi-hole:
             icon: pi-hole.svg 
             href: https://pihole.{{DOMAIN}}/admin
+            description: Network-wide ad blocker
             widget:
               type: pihole
               url: http://pihole.pihole:3000
@@ -71,6 +72,16 @@ data:
               url: http://qbittorrent.qbittorrent:8080
               username: ${QBITTORRENT_USERNAME}
               password: ${QBITTORRENT_PASSWORD}
+        - Jellyfin:
+            icon: jellyfin.svg
+            href: https://jellyfin.{{DOMAIN}}
+            description: Media server for movies & shows
+            widget:
+              type: jellyfin
+              url: http://jellyfin.jellyfin:8096
+              key: ${JELLYFIN_API_KEY}
+              enableBlocks: true
+              enableNowPlaying: true
   widgets.yaml: |
     - kubernetes:
         cluster:

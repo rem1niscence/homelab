@@ -88,6 +88,14 @@ data:
               url: http://qbittorrent.qbittorrent:8080
               username: ${QBITTORRENT_USERNAME}
               password: ${QBITTORRENT_PASSWORD}
+        - Bazarr:
+            icon: bazarr.svg  
+            href: https://bazarr.{{DOMAIN}}
+            description: Subtitle management for media
+            widget:
+              type: bazarr
+              url: http://bazarr.servarr:6767
+              key: ${BAZARR_API_KEY}
     - Media:
         - Radarr:
             icon: radarr.svg
@@ -108,7 +116,7 @@ data:
         - Jellyseerr:
             icon: jellyseerr.svg
             href: https://jellyseerr.{{DOMAIN}}
-            description: Media management tool
+            description: Media request management
             widget:
               type: jellyseerr
               url: http://jellyseerr.jellyfin:5055

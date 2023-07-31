@@ -67,3 +67,16 @@ spec:
     requests:
       storage: 1G
   storageClassName: longhorn
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: servarr
+  name: bazarr-config-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1G
+  storageClassName: longhorn

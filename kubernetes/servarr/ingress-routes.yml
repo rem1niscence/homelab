@@ -42,3 +42,18 @@ spec:
     services:
     - name: sonarr
       port: 8989
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  namespace: servarr
+  name: bazarr
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`bazarr.{{DOMAIN}}`)
+    kind: Rule
+    services:
+    - name: bazarr
+      port: 6767

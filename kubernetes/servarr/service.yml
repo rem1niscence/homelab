@@ -28,24 +28,11 @@ apiVersion: v1
 kind: Service
 metadata:
   namespace: servarr
-  name: sonarr-anime
+  name: sonarr
 spec:
   selector:
-    app: sonarr-anime
+    app: sonarr
   ports:
     - protocol: TCP
       port: 8989
-      targetPort: 8989
----
-apiVersion: v1
-kind: Service
-metadata:
-  namespace: servarr
-  name: sonarr-tv
-spec:
-  selector:
-    app: sonarr-tv
-  ports:
-    - protocol: TCP
-      port: 8990
       targetPort: 8989

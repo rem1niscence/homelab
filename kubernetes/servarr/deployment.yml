@@ -44,21 +44,21 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: servarr
-  name: sonarr-anime
+  name: sonarr
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: sonarr-anime
+      app: sonarr
   template:
     metadata:
       labels:
-        app: sonarr-anime
+        app: sonarr
     spec:
       nodeSelector:
         type: secondary
       containers:
-      - name: sonarr-anime
+      - name: sonarr
         image: lscr.io/linuxserver/sonarr:latest
         ports:
         - containerPort: 8989
@@ -80,49 +80,7 @@ spec:
           claimName: data-pvc
       - name: config
         persistentVolumeClaim:
-          claimName: sonarr-anime-config-pvc
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  namespace: servarr
-  name: sonarr-tv
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: sonarr-tv
-  template:
-    metadata:
-      labels:
-        app: sonarr-tv
-    spec:
-      nodeSelector:
-        type: secondary
-      containers:
-      - name: sonarr-tv
-        image: lscr.io/linuxserver/sonarr:latest
-        ports:
-        - containerPort: 8989
-        env:
-        - name: PUID
-          value: "1000"
-        - name: PGID
-          value: "1000"
-        - name: TZ
-          value: "Etc/UTC"
-        volumeMounts:
-          - name: data
-            mountPath: /data
-          - name: config
-            mountPath: /config
-      volumes:
-      - name: data
-        persistentVolumeClaim:
-          claimName: data-pvc
-      - name: config
-        persistentVolumeClaim:
-          claimName: sonarr-tv-config-pvc
+          claimName: sonarr-config-pvc
 ---
 apiVersion: apps/v1
 kind: Deployment

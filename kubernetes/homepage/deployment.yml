@@ -22,6 +22,8 @@ spec:
       automountServiceAccountToken: true
       dnsPolicy: ClusterFirst
       enableServiceLinks: true
+      nodeSelector:
+        type: main
       containers:
         - name: homepage
           image: "ghcr.io/benphelps/homepage:latest"

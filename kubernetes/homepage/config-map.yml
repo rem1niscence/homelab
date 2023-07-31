@@ -14,6 +14,9 @@ data:
       Widgets:
         style: row
         columns: 4
+      Media:
+        style: row
+        columns: 4
     providers:
       longhorn:
         url: http://longhorn-frontend.longhorn-system
@@ -28,10 +31,6 @@ data:
             icon: tailscale.svg
             href: https://login.tailscale.com/admin/machines
             description: Wireguard VPN as a service
-        - Traefik:
-            icon: traefik.svg
-            href: https://traefik.{{DOMAIN}}
-            description: Reverse proxy
         - Kubernetes:
             icon: kubernetes-dashboard.png
             href: https://dashboard.{{DOMAIN}}
@@ -39,29 +38,97 @@ data:
         - TrueNAS SCALE:
             icon: truenas-scale.png
             href: https://truenas.{{DOMAIN}}/ui/
-            description: NAS System
+            description: Open-source storage operating system
         - True Command:
             icon: truenas.png
             href: https://true-command.{{DOMAIN}}
-            description: TrueNAS Clusters Manager
+            description:  Management tool for TrueNAS systems.
     - Documents & Files:
         - Paperless:
             icon: paperless-ngx.svg
             href: https://paperless.{{DOMAIN}}
             description: Digital document manager
     - Media & Storage:
+        - Jellyfin:
+            icon: jellyfin.svg
+            href: https://jellyfin.{{DOMAIN}}
+            description: Media server for movies & shows
+            widget:
+              type: jellyfin
+              url: http://jellyfin.jellyfin:8096
+              key: ${JELLYFIN_API_KEY}
+              enableBlocks: true
+              enableNowPlaying: true
         - Longhorn:
             icon: longhorn.svg
             href: https://longhorn.{{DOMAIN}}
-            description: Distributed block storage for k8s
+            description: Cloud-native distributed storage for K8S
     - Widgets:
+        - Traefik:
+            icon: traefik.svg
+            href: https://traefik.{{DOMAIN}}
+            description: Reverse proxy
+            widget:
+              type: traefik
+              url: http://traefik-api.kube-system:9000
         - Pi-hole:
             icon: pi-hole.svg 
             href: https://pihole.{{DOMAIN}}/admin
+            description: Network-wide ad blocker
             widget:
               type: pihole
               url: http://pihole.pihole:3000
               key: ${PIHOLE_API_KEY}
+        - qBittorrent:
+            icon: qbittorrent.svg
+            href: https://torrent.{{DOMAIN}}
+            description: Open-source torrent software
+            widget:
+              type: qbittorrent
+              url: http://qbittorrent.qbittorrent:8080
+              username: ${QBITTORRENT_USERNAME}
+              password: ${QBITTORRENT_PASSWORD}
+        - Jellyseerr:
+            icon: jellyseerr.svg
+            href: https://jellyseerr.{{DOMAIN}}
+            description: Media management tool
+            widget:
+              type: jellyseerr
+              url: http://jellyseerr.jellyfin:5055
+              key: ${JELLYSEERR_API_KEY}
+    - Media:
+        - Radarr:
+            icon: radarr.svg
+            href: https://radarr.{{DOMAIN}}
+            description: Movie indexer engine
+            widget:
+              type: radarr
+              url: http://radarr.servarr:7878
+              key: ${RADARR_API_KEY}
+        - Sonarr (Anime):
+            icon: sonarr.svg
+            href: https://sonarr-anime.{{DOMAIN}}
+            description: Anime indexer engine
+            widget:
+              type: sonarr
+              url: http://sonarr-anime.servarr:8989
+              key: ${SONARR_ANIME_API_KEY}
+        - Sonarr (TV):
+            icon: sonarr.svg
+            href: https://sonarr-tv.{{DOMAIN}}
+            description: TV Shows indexer engine
+            widget:
+              type: sonarr
+              url: http://sonarr-TV.servarr:8990
+              key: ${SONARR_TV_API_KEY}
+        - Prowlarr:
+            icon: prowlarr.svg
+            href: https://prowlarr.{{DOMAIN}}
+            description: Meta-search application for torrents
+            widget:
+              type: prowlarr
+              url: http://prowlarr.servarr:9696
+              key: ${PROWLARR_API_KEY}
   widgets.yaml: |
     - kubernetes:
         cluster:

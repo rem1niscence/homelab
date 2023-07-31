@@ -1,0 +1,174 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: servarr
+  name: radarr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: radarr
+  template:
+    metadata:
+      labels:
+        app: radarr
+    spec:
+      nodeSelector:
+        type: secondary
+      containers:
+      - name: radarr
+        image: lscr.io/linuxserver/radarr:latest
+        ports:
+        - containerPort: 7878
+        env:
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1000"
+        - name: TZ
+          value: "Etc/UTC"
+        volumeMounts:
+          - name: data
+            mountPath: /data
+          - name: config
+            mountPath: /config
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: data-pvc
+      - name: config
+        persistentVolumeClaim:
+          claimName: radarr-config-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: servarr
+  name: sonarr-anime
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sonarr-anime
+  template:
+    metadata:
+      labels:
+        app: sonarr-anime
+    spec:
+      nodeSelector:
+        type: secondary
+      containers:
+      - name: sonarr-anime
+        image: lscr.io/linuxserver/sonarr:latest
+        ports:
+        - containerPort: 8989
+        env:
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1000"
+        - name: TZ
+          value: "Etc/UTC"
+        volumeMounts:
+          - name: data
+            mountPath: /data
+          - name: config
+            mountPath: /config
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: data-pvc
+      - name: config
+        persistentVolumeClaim:
+          claimName: sonarr-anime-config-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: servarr
+  name: sonarr-tv
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sonarr-tv
+  template:
+    metadata:
+      labels:
+        app: sonarr-tv
+    spec:
+      nodeSelector:
+        type: secondary
+      containers:
+      - name: sonarr-tv
+        image: lscr.io/linuxserver/sonarr:latest
+        ports:
+        - containerPort: 8989
+        env:
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1000"
+        - name: TZ
+          value: "Etc/UTC"
+        volumeMounts:
+          - name: data
+            mountPath: /data
+          - name: config
+            mountPath: /config
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: data-pvc
+      - name: config
+        persistentVolumeClaim:
+          claimName: sonarr-tv-config-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: servarr
+  name: prowlarr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prowlarr
+  template:
+    metadata:
+      labels:
+        app: prowlarr
+    spec:
+      nodeSelector:
+        type: pi
+      containers:
+      - name: prowlarr
+        image: lscr.io/linuxserver/prowlarr:latest
+        ports:
+        - containerPort: 9696
+        env:
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1000"
+        - name: TZ
+          value: "Etc/UTC"
+        volumeMounts:
+          - name: data
+            mountPath: /data
+          - name: config
+            mountPath: /config
+      - name: flaresolverr
+        image: ghcr.io/flaresolverr/flaresolverr:latest
+        ports:
+        - containerPort: 8191
+        env:
+        - name: LOG_LEVEL
+          value: "info"
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: data-pvc
+      - name: config
+        persistentVolumeClaim:
+          claimName: prowlarr-config-pvc

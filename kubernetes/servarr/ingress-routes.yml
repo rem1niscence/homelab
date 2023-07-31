@@ -1,0 +1,59 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  namespace: servarr
+  name: radarr
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`radarr.{{DOMAIN}}`)
+    kind: Rule
+    services:
+    - name: radarr
+      port: 7878
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  namespace: servarr
+  name: prowlarr
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`prowlarr.{{DOMAIN}}`)
+    kind: Rule
+    services:
+    - name: prowlarr
+      port: 9696
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  namespace: servarr
+  name: sonarr-anime
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`sonarr-anime.{{DOMAIN}}`)
+    kind: Rule
+    services:
+    - name: sonarr-anime
+      port: 8989
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  namespace: servarr
+  name: sonarr-tv
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`sonarr-tv.{{DOMAIN}}`)
+    kind: Rule
+    services:
+    - name: sonarr-tv
+      port: 8990

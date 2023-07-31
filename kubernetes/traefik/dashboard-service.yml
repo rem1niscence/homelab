@@ -1,0 +1,13 @@
+# Service to target traefik's api internally
+apiVersion: v1
+kind: Service
+metadata:
+  name: traefik-api
+  namespace: kube-system
+spec:
+  selector:
+    app.kubernetes.io/name: traefik
+  ports:
+    - protocol: TCP
+      port: 9000
+      targetPort: 9000

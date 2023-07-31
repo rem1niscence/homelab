@@ -39,3 +39,35 @@ spec:
       - name: config
         persistentVolumeClaim:
           claimName: config-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jellyseerr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jellyseerr
+  template:
+    metadata:
+      labels:
+        app: jellyseerr
+    spec:
+      nodeSelector:
+        type: pi
+      containers:
+      - name: jellyseerr
+        image: fallenbagel/jellyseerr:latest
+        env:
+        - name: TZ
+          value: "Etc/UTC"
+        ports:
+        - containerPort: 5055
+        volumeMounts:
+          - name: config
+            mountPath: /app/config
+      volumes:
+      - name: config
+        persistentVolumeClaim:
+          claimName: jellyseerr-config-pvc

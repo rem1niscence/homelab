@@ -40,3 +40,16 @@ spec:
     requests:
       storage: 30G
   storageClassName: longhorn
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: jellyfin
+  name: jellyseerr-config-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1G
+  storageClassName: longhorn

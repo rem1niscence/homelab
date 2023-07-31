@@ -88,6 +88,14 @@ data:
               url: http://qbittorrent.qbittorrent:8080
               username: ${QBITTORRENT_USERNAME}
               password: ${QBITTORRENT_PASSWORD}
+        - Jellyseerr:
+            icon: jellyseerr.svg
+            href: https://jellyseerr.{{DOMAIN}}
+            description: Media management tool
+            widget:
+              type: jellyseerr
+              url: http://jellyseerr.jellyfin:5055
+              key: ${JELLYSEERR_API_KEY}
     - Media:
         - Radarr:
             icon: radarr.svg

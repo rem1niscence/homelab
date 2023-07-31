@@ -12,3 +12,18 @@ spec:
     services:
     - name: jellyfin
       port: 8096
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  namespace: jellyfin
+  name: jellyseerr
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`jellyseerr.{{DOMAIN}}`)
+    kind: Rule
+    services:
+    - name: jellyseerr
+      port: 5055

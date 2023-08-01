@@ -71,6 +71,11 @@ rm-app:
 		sudo kubectl delete -f "$$file"; \
 	done
 
+.PHONY: longhorn
+longhorn:
+	$(call check_vars, HOSTNAME)
+	./rancher/setup.sh $${HOSTNAME}
+
 .PHONY: iptables
 iptables:
 	@sudo apt update && sudo apt upgrade -y

@@ -1,0 +1,14 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: syncthing
+  namespace: syncthing
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`syncthing.{{DOMAIN}}`)
+    kind: Rule
+    services:
+    - name: syncthing
+      port: 8384

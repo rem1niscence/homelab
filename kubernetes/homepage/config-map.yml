@@ -14,7 +14,7 @@ data:
       Widgets:
         style: row
         columns: 4
-      Media:
+      Apps:
         style: row
         columns: 4
     providers:
@@ -26,47 +26,6 @@ data:
             - abbr: GH
               href: https://github.com/rem1niscence
   services.yaml: |
-    - Admin:
-        - Tailscale:
-            icon: tailscale.svg
-            href: https://login.tailscale.com/admin/machines
-            description: Wireguard VPN as a service
-        - Kubernetes:
-            icon: kubernetes-dashboard.png
-            href: https://dashboard.{{DOMAIN}}
-            description: Kubernete's dashboard
-        - TrueNAS SCALE:
-            icon: truenas-scale.png
-            href: https://truenas.{{DOMAIN}}/ui/
-            description: Open-source storage operating system
-        - True Command:
-            icon: truenas.png
-            href: https://true-command.{{DOMAIN}}
-            description:  Management tool for TrueNAS systems.
-    - Documents & Files:
-        - Rancher:
-            icon: rancher.svg
-            href: https://rancher.{{DOMAIN}}
-            description: Kubernetes management platform
-        - Paperless:
-            icon: paperless-ngx.svg
-            href: https://paperless.{{DOMAIN}}
-            description: Digital document manager
-    - Media & Storage:
-        - Jellyfin:
-            icon: jellyfin.svg
-            href: https://jellyfin.{{DOMAIN}}
-            description: Media server for movies & shows
-            widget:
-              type: jellyfin
-              url: http://jellyfin.jellyfin:8096
-              key: ${JELLYFIN_API_KEY}
-              enableBlocks: true
-              enableNowPlaying: true
-        - Longhorn:
-            icon: longhorn.svg
-            href: https://longhorn.{{DOMAIN}}
-            description: Cloud-native distributed storage for K8S
     - Widgets:
         - Traefik:
             icon: traefik.svg
@@ -75,6 +34,22 @@ data:
             widget:
               type: traefik
               url: http://traefik-api.kube-system:9000
+        - TrueNAS SCALE:
+            icon: truenas-scale.png
+            href: https://truenas.{{DOMAIN}}/ui/
+            description: Open-source storage operating system
+            widget:
+                type: truenas
+                url: http://truenas.truenas
+                key: ${TRUENAS_API_KEY}
+        - Tailscale:
+            icon: tailscale.svg
+            href: https://login.tailscale.com/admin/machines
+            description: Wireguard VPN as a service
+            widget:
+              type: tailscale
+              deviceid: ${TAILSCALE_DEVICE_ID}
+              key: ${TAILSCALE_AUTH_KEY}
         - Pi-hole:
             icon: pi-hole.svg 
             href: https://pihole.{{DOMAIN}}/admin
@@ -100,7 +75,6 @@ data:
               type: bazarr
               url: http://bazarr.servarr:6767
               key: ${BAZARR_API_KEY}
-    - Media:
         - Radarr:
             icon: radarr.svg
             href: https://radarr.{{DOMAIN}}
@@ -117,6 +91,16 @@ data:
               type: sonarr
               url: http://sonarr.servarr:8989
               key: ${SONARR_API_KEY}
+        - Jellyfin:
+            icon: jellyfin.svg
+            href: https://jellyfin.{{DOMAIN}}
+            description: Media server for movies & shows
+            widget:
+              type: jellyfin
+              url: http://jellyfin.jellyfin:8096
+              key: ${JELLYFIN_API_KEY}
+              enableBlocks: true
+              enableNowPlaying: false
         - Jellyseerr:
             icon: jellyseerr.svg
             href: https://jellyseerr.{{DOMAIN}}
@@ -133,6 +117,31 @@ data:
               type: prowlarr
               url: http://prowlarr.servarr:9696
               key: ${PROWLARR_API_KEY}
+    - Apps:
+        - Rancher:
+            icon: rancher.svg
+            href: https://rancher.{{DOMAIN}}
+            description: Kubernetes management platform
+        - Kubernetes:
+            icon: kubernetes-dashboard.png
+            href: https://dashboard.{{DOMAIN}}
+            description: Kubernete's dashboard
+        - True Command:
+            icon: truenas.png
+            href: https://true-command.{{DOMAIN}}
+            description:  Management tool for TrueNAS systems.
+        - Syncthing:
+            icon: syncthing.svg
+            href: https://syncthing.{{DOMAIN}}
+            description: File synchronization across devices
+        - Paperless:
+            icon: paperless-ngx.svg
+            href: https://paperless.{{DOMAIN}}
+            description: Digital document manager
+        - Longhorn:
+            icon: longhorn.svg
+            href: https://longhorn.{{DOMAIN}}
+            description: Cloud-native distributed storage for K8S
   widgets.yaml: |
     - kubernetes:
         cluster:

@@ -14,7 +14,7 @@ spec:
         app: syncthing
     spec:
       nodeSelector:
-        type: secondary
+        type: pi
       containers:
       - name: syncthing
         image: lscr.io/linuxserver/syncthing:latest

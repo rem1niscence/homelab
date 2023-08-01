@@ -48,6 +48,10 @@ data:
             icon: paperless-ngx.svg
             href: https://paperless.{{DOMAIN}}
             description: Digital document manager
+        - Rancher:
+            icon: rancher.svg
+            href: https://rancher.{{DOMAIN}}
+            description: Kubernetes management platform
     - Media & Storage:
         - Jellyfin:
             icon: jellyfin.svg

@@ -44,14 +44,14 @@ data:
             href: https://true-command.{{DOMAIN}}
             description:  Management tool for TrueNAS systems.
     - Documents & Files:
-        - Paperless:
-            icon: paperless-ngx.svg
-            href: https://paperless.{{DOMAIN}}
-            description: Digital document manager
         - Rancher:
             icon: rancher.svg
             href: https://rancher.{{DOMAIN}}
             description: Kubernetes management platform
+        - Paperless:
+            icon: paperless-ngx.svg
+            href: https://paperless.{{DOMAIN}}
+            description: Digital document manager
     - Media & Storage:
         - Jellyfin:
             icon: jellyfin.svg

@@ -142,6 +142,10 @@ data:
             icon: longhorn.svg
             href: https://longhorn.{{DOMAIN}}
             description: Cloud-native distributed storage for K8S
+        - Keel.sh:
+            icon: mdi-alpha-k-box-outline
+            href: https://keel.{{DOMAIN}}
+            description: K8S image updater
   widgets.yaml: |
     - kubernetes:
         cluster:

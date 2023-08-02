@@ -13,6 +13,8 @@ spec:
       labels:
         app: speedtest-tracker
     spec:
+      nodeSelector:
+        type: pi
       containers:
         - name: speedtest-tracker
           image: ghcr.io/alexjustesen/speedtest-tracker:latest

@@ -4,6 +4,7 @@ metadata:
   namespace: jellyfin
   name: jellyfin
 spec:
+  type: LoadBalancer
   ports:
     - port: 8096
       targetPort: 8096

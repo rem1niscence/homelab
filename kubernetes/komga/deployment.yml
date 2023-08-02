@@ -1,36 +1,40 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: speedtest-tracker
-  name: speedtest-tracker
+  namespace: komga
+  name: komga
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: speedtest-tracker
+      app: komga
   template:
     metadata:
       labels:
-        app: speedtest-tracker
+        app: komga
     spec:
+      securityContext:
+        fsGroup: 1000
+        runAsUser: 1000
       nodeSelector:
-        type: secondary
+        type: pi
       containers:
-        - name: speedtest-tracker
-          image: ghcr.io/alexjustesen/speedtest-tracker:latest
+        - name: komga
+          image: gotson/komga
           env:
-            - name: PUID
-              value: "1000"
-            - name: PGID
-              value: "1000"
             - name: TZ
-              value: "Etc/UTC"
+              value: Etc/UTC
           ports:
-            - containerPort: 80
+            - containerPort: 25600
           volumeMounts:
+            - name: data
+              mountPath: /data
             - name: config
               mountPath: /config
       volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data-pvc
         - name: config
           persistentVolumeClaim:
             claimName: config-pvc

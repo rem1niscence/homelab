@@ -144,6 +144,16 @@ data:
               type: uptimekuma
               url: http://uptime.uptime:3001
               slug: services
+        - Komga:
+            icon: komga.svg
+            href: https://komga.{{DOMAIN}}
+            ping: http://komga.komga:25600
+            description: Digital comics/manga server and reader
+            widget:
+              type: komga
+              url: http://komga.komga:25600
+              username: ${KOMGA_URSERNAME}
+              password: ${KOMGA_PASSWORD}
     - Apps:
         - Rancher:
             icon: rancher.svg

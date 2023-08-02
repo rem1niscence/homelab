@@ -163,6 +163,11 @@ data:
             href: https://keel.{{DOMAIN}}
             ping: http://keel.kube-system:9300
             description: K8S image updater
+        - Rclone:
+            icon: rclone.svg
+            href: https://rclone.{{DOMAIN}}
+            ping: http://rclone.rclone:5572
+            description: Tool for syncing files across clouds
   widgets.yaml: |
     - kubernetes:
         cluster:

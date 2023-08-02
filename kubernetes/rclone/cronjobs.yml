@@ -1,0 +1,3 @@
+#  docker container exec rclone rclone sync gdrive: /data/gdrive
+
+# TODO: Set up providers first

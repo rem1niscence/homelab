@@ -37,6 +37,7 @@ data:
         - TrueNAS SCALE:
             icon: truenas-scale.png
             href: https://truenas.{{DOMAIN}}/ui/
+            ping: http://truenas.truenas
             description: Open-source storage operating system
             widget:
                 type: truenas
@@ -45,6 +46,7 @@ data:
         - Tailscale:
             icon: tailscale.svg
             href: https://login.tailscale.com/admin/machines
+            ping: https://login.tailscale.com/admin/machines
             description: Wireguard VPN as a service
             widget:
               type: tailscale
@@ -53,6 +55,7 @@ data:
         - Pi-hole:
             icon: pi-hole.svg 
             href: https://pihole.{{DOMAIN}}/admin
+            ping: http://pihole.pihole:3000
             description: Network-wide ad blocker
             widget:
               type: pihole
@@ -61,6 +64,7 @@ data:
         - qBittorrent:
             icon: qbittorrent.svg
             href: https://torrent.{{DOMAIN}}
+            ping: http://qbittorrent.qbittorrent:8080
             description: Open-source torrent software
             widget:
               type: qbittorrent
@@ -70,6 +74,7 @@ data:
         - Bazarr:
             icon: bazarr.svg  
             href: https://bazarr.{{DOMAIN}}
+            ping: http://bazarr.servarr:6767
             description: Subtitle management for media
             widget:
               type: bazarr
@@ -78,6 +83,7 @@ data:
         - Radarr:
             icon: radarr.svg
             href: https://radarr.{{DOMAIN}}
+            ping: http://radarr.servarr:7878
             description: Movie indexer engine
             widget:
               type: radarr
@@ -86,6 +92,7 @@ data:
         - Sonarr:
             icon: sonarr.svg  
             href: https://sonarr.{{DOMAIN}}
+            ping: http://sonarr.servarr:8989
             description: Anime/TV indexer engine
             widget:
               type: sonarr
@@ -94,6 +101,7 @@ data:
         - Jellyfin:
             icon: jellyfin.svg
             href: https://jellyfin.{{DOMAIN}}
+            ping: http://jellyfin.jellyfin:8096
             description: Media server for movies & shows
             widget:
               type: jellyfin
@@ -104,6 +112,7 @@ data:
         - Jellyseerr:
             icon: jellyseerr.svg
             href: https://jellyseerr.{{DOMAIN}}
+            ping: http://jellyseerr.jellyfin:5055
             description: Media request management
             widget:
               type: jellyseerr
@@ -112,6 +121,7 @@ data:
         - Prowlarr:
             icon: prowlarr.svg
             href: https://prowlarr.{{DOMAIN}}
+            ping: http://prowlarr.servarr:9696
             description: Meta-search application for torrents
             widget:
               type: prowlarr
@@ -121,30 +131,37 @@ data:
         - Rancher:
             icon: rancher.svg
             href: https://rancher.{{DOMAIN}}
+            ping: http://rancher.cattle-system:443
             description: Kubernetes management platform
         - Kubernetes:
             icon: kubernetes-dashboard.png
             href: https://dashboard.{{DOMAIN}}
+            ping: http://kubernetes-dashboard.kubernetes-dashboard:443
             description: Kubernete's dashboard
         - True Command:
             icon: truenas.png
             href: https://true-command.{{DOMAIN}}
+            ping: http://true-command.true-command:85
             description:  Management tool for TrueNAS systems.
         - Syncthing:
             icon: syncthing.svg
             href: https://syncthing.{{DOMAIN}}
+            ping: http://syncthing.syncthing:8384
             description: File synchronization across devices
         - Paperless:
             icon: paperless-ngx.svg
             href: https://paperless.{{DOMAIN}}
+            ping: http://paperless.paperless:8000
             description: Digital document manager
         - Longhorn:
             icon: longhorn.svg
             href: https://longhorn.{{DOMAIN}}
+            ping: http://longhorn-frontend.longhorn-system
             description: Cloud-native distributed storage for K8S
         - Keel.sh:
             icon: mdi-alpha-k-box-outline
             href: https://keel.{{DOMAIN}}
+            ping: http://keel.kube-system:9300
             description: K8S image updater
   widgets.yaml: |
     - kubernetes:

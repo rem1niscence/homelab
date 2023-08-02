@@ -1,0 +1,14 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  namespace: uptime
+  name: uptime
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`uptime.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: uptime
+          port: 3001

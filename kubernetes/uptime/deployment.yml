@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: uptime
+  name: uptime
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: uptime
+  template:
+    metadata:
+      labels:
+        app: uptime
+    spec:
+      nodeSelector:
+        type: main
+      containers:
+        - name: uptime
+          image: louislam/uptime-kuma:alpine
+          ports:
+            - containerPort: 3001
+          volumeMounts:
+            - name: config
+              mountPath: /app/data
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: config-pvc

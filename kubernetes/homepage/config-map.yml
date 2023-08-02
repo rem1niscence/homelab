@@ -135,6 +135,15 @@ data:
               type: prowlarr
               url: http://prowlarr.servarr:9696
               key: ${PROWLARR_API_KEY}
+        - Uptime Kuma:
+            icon: uptime-kuma.svg
+            href: https://uptime.{{DOMAIN}}
+            ping: http://uptime.uptime:3001
+            description: Website/Service monitoring
+            widget:
+              type: uptimekuma
+              url: http://uptime.uptime:3001
+              slug: services
     - Apps:
         - Rancher:
             icon: rancher.svg

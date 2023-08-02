@@ -16,29 +16,29 @@ spec:
       nodeSelector:
         type: secondary
       containers:
-      - name: radarr
-        image: lscr.io/linuxserver/radarr:latest
-        ports:
-        - containerPort: 7878
-        env:
-        - name: PUID
-          value: "1000"
-        - name: PGID
-          value: "1000"
-        - name: TZ
-          value: "Etc/UTC"
-        volumeMounts:
-          - name: data
-            mountPath: /data
-          - name: config
-            mountPath: /config
+        - name: radarr
+          image: lscr.io/linuxserver/radarr:latest
+          ports:
+            - containerPort: 7878
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TZ
+              value: "Etc/UTC"
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: config
+              mountPath: /config
       volumes:
-      - name: data
-        persistentVolumeClaim:
-          claimName: data-pvc
-      - name: config
-        persistentVolumeClaim:
-          claimName: radarr-config-pvc
+        - name: data
+          persistentVolumeClaim:
+            claimName: data-pvc
+        - name: config
+          persistentVolumeClaim:
+            claimName: radarr-config-pvc
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -58,29 +58,29 @@ spec:
       nodeSelector:
         type: secondary
       containers:
-      - name: sonarr
-        image: lscr.io/linuxserver/sonarr:latest
-        ports:
-        - containerPort: 8989
-        env:
-        - name: PUID
-          value: "1000"
-        - name: PGID
-          value: "1000"
-        - name: TZ
-          value: "Etc/UTC"
-        volumeMounts:
-          - name: data
-            mountPath: /data
-          - name: config
-            mountPath: /config
+        - name: sonarr
+          image: lscr.io/linuxserver/sonarr:latest
+          ports:
+            - containerPort: 8989
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TZ
+              value: "Etc/UTC"
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: config
+              mountPath: /config
       volumes:
-      - name: data
-        persistentVolumeClaim:
-          claimName: data-pvc
-      - name: config
-        persistentVolumeClaim:
-          claimName: sonarr-config-pvc
+        - name: data
+          persistentVolumeClaim:
+            claimName: data-pvc
+        - name: config
+          persistentVolumeClaim:
+            claimName: sonarr-config-pvc
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -100,33 +100,75 @@ spec:
       nodeSelector:
         type: pi
       containers:
-      - name: prowlarr
-        image: lscr.io/linuxserver/prowlarr:latest
-        ports:
-        - containerPort: 9696
-        env:
-        - name: PUID
-          value: "1000"
-        - name: PGID
-          value: "1000"
-        - name: TZ
-          value: "Etc/UTC"
-        volumeMounts:
-          - name: data
-            mountPath: /data
-          - name: config
-            mountPath: /config
-      - name: flaresolverr
-        image: ghcr.io/flaresolverr/flaresolverr:latest
-        ports:
-        - containerPort: 8191
-        env:
-        - name: LOG_LEVEL
-          value: "info"
+        - name: prowlarr
+          image: lscr.io/linuxserver/prowlarr:latest
+          ports:
+            - containerPort: 9696
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TZ
+              value: "Etc/UTC"
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: config
+              mountPath: /config
+        - name: flaresolverr
+          image: ghcr.io/flaresolverr/flaresolverr:latest
+          ports:
+            - containerPort: 8191
+          env:
+            - name: LOG_LEVEL
+              value: "info"
       volumes:
-      - name: data
-        persistentVolumeClaim:
-          claimName: data-pvc
-      - name: config
-        persistentVolumeClaim:
-          claimName: prowlarr-config-pvc
+        - name: data
+          persistentVolumeClaim:
+            claimName: data-pvc
+        - name: config
+          persistentVolumeClaim:
+            claimName: prowlarr-config-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: servarr
+  name: bazarr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bazarr
+  template:
+    metadata:
+      labels:
+        app: bazarr
+    spec:
+      nodeSelector:
+        type: pi
+      containers:
+        - name: bazarr
+          image: lscr.io/linuxserver/bazarr:latest
+          ports:
+            - containerPort: 6767
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TZ
+              value: "Etc/UTC"
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: config
+              mountPath: /config
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data-pvc
+        - name: config
+          persistentVolumeClaim:
+            claimName: bazarr-config-pvc

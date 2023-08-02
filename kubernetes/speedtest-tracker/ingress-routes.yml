@@ -1,0 +1,14 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: speedtest-tracker
+  namespace: speedtest-tracker
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`speedtest.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: speedtest-tracker
+          port: 80

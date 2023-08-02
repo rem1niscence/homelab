@@ -1,5 +1,4 @@
 apiVersion: 1
-
 providers:
   - name: 'Node exporter'
     orgId: 1

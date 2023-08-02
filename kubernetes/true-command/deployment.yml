@@ -14,14 +14,14 @@ spec:
         app: true-command
     spec:
       containers:
-      - name: true-command
-        image: ixsystems/truecommand
-        ports:
-        - containerPort: 80
-        volumeMounts:
-        - name: config
-          mountPath: /data
+        - name: true-command
+          image: ixsystems/truecommand
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: config
+              mountPath: /data
       volumes:
-      - name: config
-        persistentVolumeClaim:
-          claimName: true-command
+        - name: config
+          persistentVolumeClaim:
+            claimName: true-command

@@ -14,7 +14,7 @@ data:
       Widgets:
         style: row
         columns: 4
-      Media:
+      Apps:
         style: row
         columns: 4
     providers:
@@ -26,43 +26,6 @@ data:
             - abbr: GH
               href: https://github.com/rem1niscence
   services.yaml: |
-    - Admin:
-        - Tailscale:
-            icon: tailscale.svg
-            href: https://login.tailscale.com/admin/machines
-            description: Wireguard VPN as a service
-        - Kubernetes:
-            icon: kubernetes-dashboard.png
-            href: https://dashboard.{{DOMAIN}}
-            description: Kubernete's dashboard
-        - TrueNAS SCALE:
-            icon: truenas-scale.png
-            href: https://truenas.{{DOMAIN}}/ui/
-            description: Open-source storage operating system
-        - True Command:
-            icon: truenas.png
-            href: https://true-command.{{DOMAIN}}
-            description:  Management tool for TrueNAS systems.
-    - Documents & Files:
-        - Paperless:
-            icon: paperless-ngx.svg
-            href: https://paperless.{{DOMAIN}}
-            description: Digital document manager
-    - Media & Storage:
-        - Jellyfin:
-            icon: jellyfin.svg
-            href: https://jellyfin.{{DOMAIN}}
-            description: Media server for movies & shows
-            widget:
-              type: jellyfin
-              url: http://jellyfin.jellyfin:8096
-              key: ${JELLYFIN_API_KEY}
-              enableBlocks: true
-              enableNowPlaying: true
-        - Longhorn:
-            icon: longhorn.svg
-            href: https://longhorn.{{DOMAIN}}
-            description: Cloud-native distributed storage for K8S
     - Widgets:
         - Traefik:
             icon: traefik.svg
@@ -71,9 +34,36 @@ data:
             widget:
               type: traefik
               url: http://traefik-api.kube-system:9000
+        - TrueNAS SCALE:
+            icon: truenas-scale.png
+            href: https://truenas.{{DOMAIN}}/ui/
+            ping: http://truenas.truenas
+            description: Open-source storage operating system
+            widget:
+                type: truenas
+                url: http://truenas.truenas
+                key: ${TRUENAS_API_KEY}
+        - Speedtest:
+            icon: si-speedtest
+            href: https://speedtest.{{DOMAIN}}
+            ping: http://speedtest-tracker.speedtest-tracker
+            description: Speed test tracker
+            widget:
+              type: speedtest
+              url: http://speedtest-tracker.speedtest-tracker
+        - Tailscale:
+            icon: tailscale.svg
+            href: https://login.tailscale.com/admin/machines
+            ping: https://login.tailscale.com/admin/machines
+            description: Wireguard VPN as a service
+            widget:
+              type: tailscale
+              deviceid: ${TAILSCALE_DEVICE_ID}
+              key: ${TAILSCALE_AUTH_KEY}
         - Pi-hole:
             icon: pi-hole.svg 
             href: https://pihole.{{DOMAIN}}/admin
+            ping: http://pihole.pihole:3000
             description: Network-wide ad blocker
             widget:
               type: pihole
@@ -82,16 +72,26 @@ data:
         - qBittorrent:
             icon: qbittorrent.svg
             href: https://torrent.{{DOMAIN}}
+            ping: http://qbittorrent.qbittorrent:8080
             description: Open-source torrent software
             widget:
               type: qbittorrent
               url: http://qbittorrent.qbittorrent:8080
               username: ${QBITTORRENT_USERNAME}
               password: ${QBITTORRENT_PASSWORD}
-    - Media:
+        - Bazarr:
+            icon: bazarr.svg  
+            href: https://bazarr.{{DOMAIN}}
+            ping: http://bazarr.servarr:6767
+            description: Subtitle management for media
+            widget:
+              type: bazarr
+              url: http://bazarr.servarr:6767
+              key: ${BAZARR_API_KEY}
         - Radarr:
             icon: radarr.svg
             href: https://radarr.{{DOMAIN}}
+            ping: http://radarr.servarr:7878
             description: Movie indexer engine
             widget:
               type: radarr
@@ -100,15 +100,28 @@ data:
         - Sonarr:
             icon: sonarr.svg  
             href: https://sonarr.{{DOMAIN}}
+            ping: http://sonarr.servarr:8989
             description: Anime/TV indexer engine
             widget:
               type: sonarr
               url: http://sonarr.servarr:8989
               key: ${SONARR_API_KEY}
+        - Jellyfin:
+            icon: jellyfin.svg
+            href: https://jellyfin.{{DOMAIN}}
+            ping: http://jellyfin.jellyfin:8096
+            description: Media server for movies & shows
+            widget:
+              type: jellyfin
+              url: http://jellyfin.jellyfin:8096
+              key: ${JELLYFIN_API_KEY}
+              enableBlocks: true
+              enableNowPlaying: false
         - Jellyseerr:
             icon: jellyseerr.svg
             href: https://jellyseerr.{{DOMAIN}}
-            description: Media management tool
+            ping: http://jellyseerr.jellyfin:5055
+            description: Media request management
             widget:
               type: jellyseerr
               url: http://jellyseerr.jellyfin:5055
@@ -116,11 +129,53 @@ data:
         - Prowlarr:
             icon: prowlarr.svg
             href: https://prowlarr.{{DOMAIN}}
+            ping: http://prowlarr.servarr:9696
             description: Meta-search application for torrents
             widget:
               type: prowlarr
               url: http://prowlarr.servarr:9696
               key: ${PROWLARR_API_KEY}
+    - Apps:
+        - Rancher:
+            icon: rancher.svg
+            href: https://rancher.{{DOMAIN}}
+            ping: http://rancher.cattle-system:443
+            description: Kubernetes management platform
+        - Longhorn:
+            icon: longhorn.svg
+            href: https://longhorn.{{DOMAIN}}
+            ping: http://longhorn-frontend.longhorn-system
+            description: Cloud-native distributed storage for K8S
+        - Kubernetes:
+            icon: kubernetes-dashboard.png
+            href: https://dashboard.{{DOMAIN}}
+            ping: http://kubernetes-dashboard.kubernetes-dashboard:443
+            description: Kubernete's dashboard
+        - True Command:
+            icon: truenas.png
+            href: https://true-command.{{DOMAIN}}
+            ping: http://true-command.true-command:85
+            description:  Management tool for TrueNAS systems.
+        - Syncthing:
+            icon: syncthing.svg
+            href: https://syncthing.{{DOMAIN}}
+            ping: http://syncthing.syncthing:8384
+            description: File synchronization across devices
+        - Paperless:
+            icon: paperless-ngx.svg
+            href: https://paperless.{{DOMAIN}}
+            ping: http://paperless.paperless:8000
+            description: Digital document manager
+        - Keel.sh:
+            icon: mdi-alpha-k-box-outline
+            href: https://keel.{{DOMAIN}}
+            ping: http://keel.kube-system:9300
+            description: K8S image updater
+        - Rclone:
+            icon: rclone.svg
+            href: https://rclone.{{DOMAIN}}
+            ping: http://rclone.rclone:5572
+            description: Tool for syncing files across clouds
   widgets.yaml: |
     - kubernetes:
         cluster:

@@ -20,70 +20,70 @@ spec:
         - name: paperless
           image: paperlessngx/paperless-ngx:latest
           ports:
-          - containerPort: 8000
+            - containerPort: 8000
           livenessProbe:
             exec:
               command:
-              - sh
-              - -c
-              - "curl -fs -S --max-time 2 http://localhost:8000"
+                - sh
+                - -c
+                - "curl -fs -S --max-time 2 http://localhost:8000"
             initialDelaySeconds: 60
             timeoutSeconds: 10
             periodSeconds: 10
             failureThreshold: 5
           env:
-          - name: USERMAP_UID
-            value: "1000"
-          - name: USERMAP_GID
-            value: "1000"
-          - name: PAPERLESS_REDIS
-            value: "redis://redis:6379"
-          - name: PAPERLESS_PORT
-            value: "8000"
-          - name: PAPERLESS_URL
-            valueFrom:
-              secretKeyRef:
-                name: paperless-secrets
-                key: PAPERLESS_URL
-                optional: false
-          - name: PAPERLESS_SECRET_KEY
-            valueFrom:
-              secretKeyRef:
-                name: paperless-secrets
-                key: PAPERLESS_SECRET_KEY
-                optional: false
-          - name: PAPERLESS_ADMIN_USER
-            valueFrom:
-              secretKeyRef:
-                name: paperless-secrets
-                key: PAPERLESS_ADMIN_USER
-                optional: false
-          - name: PAPERLESS_ADMIN_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: paperless-secrets
-                key: PAPERLESS_ADMIN_PASSWORD
-                optional: false
+            - name: USERMAP_UID
+              value: "1000"
+            - name: USERMAP_GID
+              value: "1000"
+            - name: PAPERLESS_REDIS
+              value: "redis://redis:6379"
+            - name: PAPERLESS_PORT
+              value: "8000"
+            - name: PAPERLESS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: paperless-secrets
+                  key: PAPERLESS_URL
+                  optional: false
+            - name: PAPERLESS_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: paperless-secrets
+                  key: PAPERLESS_SECRET_KEY
+                  optional: false
+            - name: PAPERLESS_ADMIN_USER
+              valueFrom:
+                secretKeyRef:
+                  name: paperless-secrets
+                  key: PAPERLESS_ADMIN_USER
+                  optional: false
+            - name: PAPERLESS_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: paperless-secrets
+                  key: PAPERLESS_ADMIN_PASSWORD
+                  optional: false
           volumeMounts:
-          - name: config
-            mountPath: /usr/src/paperless/data
-            subPath: data
-          - name: config
-            mountPath: /usr/src/paperless/media
-            subPath: media
-          - name: storage
-            mountPath: /usr/src/paperless/export
-            subPath: export
-          - name: storage
-            mountPath: /usr/src/paperless/consume
-            subPath: consume
+            - name: config
+              mountPath: /usr/src/paperless/data
+              subPath: data
+            - name: config
+              mountPath: /usr/src/paperless/media
+              subPath: media
+            - name: storage
+              mountPath: /usr/src/paperless/export
+              subPath: export
+            - name: storage
+              mountPath: /usr/src/paperless/consume
+              subPath: consume
       volumes:
-      - name: config
-        persistentVolumeClaim:
-          claimName: config-pvc
-      - name: storage
-        persistentVolumeClaim:
-          claimName: storage-pvc
+        - name: config
+          persistentVolumeClaim:
+            claimName: config-pvc
+        - name: storage
+          persistentVolumeClaim:
+            claimName: storage-pvc
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -106,19 +106,19 @@ spec:
       containers:
         - name: redis
           image: redis:alpine
-          ports:  
-          - containerPort: 6379
+          ports:
+            - containerPort: 6379
           livenessProbe:
             exec:
               command:
-              - redis-cli
-              - ping
+                - redis-cli
+                - ping
             initialDelaySeconds: 15
             timeoutSeconds: 5
           readinessProbe:
             exec:
               command:
-              - redis-cli
-              - ping
+                - redis-cli
+                - ping
             initialDelaySeconds: 15
             timeoutSeconds: 5

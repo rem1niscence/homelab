@@ -7,8 +7,8 @@ spec:
   entryPoints:
     - websecure
   routes:
-  - match: Host(`true-command.{{DOMAIN}}`)
-    kind: Rule
-    services:
-    - name: true-command
-      port: 85
+    - match: Host(`true-command.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: true-command
+          port: 85

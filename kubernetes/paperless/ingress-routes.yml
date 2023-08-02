@@ -7,8 +7,8 @@ spec:
   entryPoints:
     - websecure
   routes:
-  - match: Host("paperless.{{DOMAIN}}")
-    kind: Rule
-    services:
-    - name: paperless
-      port: 8000
+    - match: Host("paperless.{{DOMAIN}}")
+      kind: Rule
+      services:
+        - name: paperless
+          port: 8000

@@ -17,11 +17,11 @@ spec:
   entryPoints:
     - websecure
   routes:
-  - match: Host(`truenas.{{DOMAIN}}`)
-    kind: Rule
-    services:
-    - name: truenas
-      port: 80
-    middlewares:
-      - name: https-redirect
-        namespace: truenas
+    - match: Host(`truenas.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: truenas
+          port: 80
+      middlewares:
+        - name: https-redirect
+          namespace: truenas

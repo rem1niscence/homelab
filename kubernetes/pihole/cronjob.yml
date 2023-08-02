@@ -12,25 +12,25 @@ spec:
       template:
         spec:
           containers:
-          - name: pihole-update
-            image: pihole/pihole:latest
-            args:
-            - /bin/bash
-            - -c
-            - |
-              sleep 10
-              pihole -g
-            volumeMounts:
-            - name: config
-              mountPath: /etc/pihole
-              subPath: pihole-config
-            - name: config
-              mountPath: /etc/dnsmasq.d
-              subPath: dnsmasq-config
+            - name: pihole-update
+              image: pihole/pihole:latest
+              args:
+                - /bin/bash
+                - -c
+                - |
+                  sleep 10
+                  pihole -g
+              volumeMounts:
+                - name: config
+                  mountPath: /etc/pihole
+                  subPath: pihole-config
+                - name: config
+                  mountPath: /etc/dnsmasq.d
+                  subPath: dnsmasq-config
           volumes:
-          - name: config
-            persistentVolumeClaim:
-              claimName: pihole
+            - name: config
+              persistentVolumeClaim:
+                claimName: pihole
           restartPolicy: Never
 
 # Blocklists

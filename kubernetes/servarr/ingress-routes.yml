@@ -7,11 +7,11 @@ spec:
   entryPoints:
     - websecure
   routes:
-  - match: Host(`radarr.{{DOMAIN}}`)
-    kind: Rule
-    services:
-    - name: radarr
-      port: 7878
+    - match: Host(`radarr.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: radarr
+          port: 7878
 ---
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
@@ -22,11 +22,11 @@ spec:
   entryPoints:
     - websecure
   routes:
-  - match: Host(`prowlarr.{{DOMAIN}}`)
-    kind: Rule
-    services:
-    - name: prowlarr
-      port: 9696
+    - match: Host(`prowlarr.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: prowlarr
+          port: 9696
 ---
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
@@ -37,8 +37,23 @@ spec:
   entryPoints:
     - websecure
   routes:
-  - match: Host(`sonarr.{{DOMAIN}}`)
-    kind: Rule
-    services:
-    - name: sonarr
-      port: 8989
+    - match: Host(`sonarr.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: sonarr
+          port: 8989
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  namespace: servarr
+  name: bazarr
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`bazarr.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: bazarr
+          port: 6767

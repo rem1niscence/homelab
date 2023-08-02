@@ -9,7 +9,7 @@ spec:
     - ReadWriteMany
   nfs:
     server: 10.0.0.95
-    path: /mnt/main_drive/storage/paperless
+    path: /mnt/main_drive/data/paperless
   storageClassName: local-path
   mountOptions:
     - vers=4.0

@@ -11,9 +11,9 @@ services:
       - ~/storage/syncthing:/var/syncthing
     # Ports don't need to be mapped due to the use of network mode "host"
     # ports:
-      # - 8384:8384 # Web UI
-      # - 22000:22000/tcp # TCP file transfers
-      # - 22000:22000/udp # QUIC file transfers
-      # - 21027:21027/udp # Receive local discovery broadcasts
+    # - 8384:8384 # Web UI
+    # - 22000:22000/tcp # TCP file transfers
+    # - 22000:22000/udp # QUIC file transfers
+    # - 21027:21027/udp # Receive local discovery broadcasts
     network_mode: host
     restart: unless-stopped

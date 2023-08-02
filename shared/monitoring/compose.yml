@@ -1,5 +1,4 @@
 version: '3.8'
-
 services:
   node-exporter:
     image: prom/node-exporter:v1.6.0
@@ -18,7 +17,6 @@ services:
       - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
     networks:
       - pi-network
-
   prometheus:
     image: prom/prometheus:v2.44.0
     container_name: prometheus
@@ -44,7 +42,7 @@ services:
       - ./datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
       - ./dashboards:/etc/grafana/provisioning/dashboards
     # ports:
-      # - 3000:3000
+    # - 3000:3000
     environment:
       - GF_SECURITY_ADMIN_USER=pi-admin
       - GF_SECURITY_ADMIN_PASSWORD=dj4S23c0l!s
@@ -56,11 +54,9 @@ services:
     restart: unless-stopped
     networks:
       - pi-network
-
 networks:
   pi-network:
     external: true
-
 volumes:
   prometheus_data: {}
   grafana_data: {}

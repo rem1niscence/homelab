@@ -7,11 +7,11 @@ spec:
   entryPoints:
     - websecure
   routes:
-  - match: Host(`jellyfin.{{DOMAIN}}`)
-    kind: Rule
-    services:
-    - name: jellyfin
-      port: 8096
+    - match: Host(`jellyfin.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: jellyfin
+          port: 8096
 ---
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
@@ -22,8 +22,8 @@ spec:
   entryPoints:
     - websecure
   routes:
-  - match: Host(`jellyseerr.{{DOMAIN}}`)
-    kind: Rule
-    services:
-    - name: jellyseerr
-      port: 5055
+    - match: Host(`jellyseerr.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: jellyseerr
+          port: 5055

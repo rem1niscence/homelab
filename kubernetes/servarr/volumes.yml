@@ -10,7 +10,7 @@ spec:
     - ReadWriteMany
   nfs:
     server: 10.0.0.95
-    path: /mnt/main_drive/storage
+    path: /mnt/main_drive/data
   storageClassName: local-path
   mountOptions:
     - vers=4.0
@@ -60,6 +60,19 @@ kind: PersistentVolumeClaim
 metadata:
   namespace: servarr
   name: sonarr-config-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1G
+  storageClassName: longhorn
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: servarr
+  name: bazarr-config-pvc
 spec:
   accessModes:
     - ReadWriteMany

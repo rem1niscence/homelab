@@ -27,10 +27,8 @@ tailscale-unexpose:
 traefik:
 	$(call check_vars, DOMAIN)
 	@echo "setting up traefik"
-	@kubectl apply -f ./traefik/secrets.yml
-	@kubectl apply -f ./traefik/middleware.yml
+	@kubectl apply -f .
 	@sed -e "s;{{DOMAIN}};$${DOMAIN};g" ./traefik/ingress-routes.yml | kubectl apply -f -
-	@kubectl patch ingressroute/traefik-dashboard-secure --type=json --patch-file ./traefik/patch-dashboard-service.yml
 	@echo "done ✅"
 
 .PHONY: change-domain
@@ -54,14 +52,14 @@ dashboard:
 	@echo "setting up the kubernetes dashboard"
 	$(call check_vars, DOMAIN)
 	@kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml
-	./setup_application.sh dashboard $${DOMAIN}
+	./scripts/setup_application.sh dashboard $${DOMAIN}
 	@k3s kubectl -n kubernetes-dashboard create token admin-user --duration=1000h
 	@echo "done ✅. Use the token to log in into the dashboard"
 
 .PHONY: app
 app:
 	$(call check_vars, APP_PATH DOMAIN)
-	./setup_application.sh $${APP_PATH} $${DOMAIN}
+	./scripts/setup_application.sh $${APP_PATH} $${DOMAIN}
 	@make APP_PATH=$${APP_PATH} change-domain
 
 .PHONY: rm-app
@@ -70,6 +68,11 @@ rm-app:
 	for file in $(APP_PATH)/*.yml; do \
 		sudo kubectl delete -f "$$file"; \
 	done
+
+.PHONY: rancher
+rancher:
+	$(call check_vars, HOSTNAME)
+	./rancher/setup.sh $${HOSTNAME}
 
 .PHONY: iptables
 iptables:

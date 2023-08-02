@@ -5,8 +5,8 @@ metadata:
   namespace: truenas
 spec:
   ports:
-  - protocol: TCP
-    port: 80
+    - protocol: TCP
+      port: 80
   clusterIP: None
 ---
 apiVersion: v1
@@ -18,4 +18,4 @@ subsets:
   - addresses:
       - ip: 10.0.0.95
     ports:
-      - port: 80  
+      - port: 80

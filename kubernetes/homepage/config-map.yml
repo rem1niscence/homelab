@@ -170,6 +170,11 @@ data:
             href: https://dashboard.{{DOMAIN}}
             ping: http://kubernetes-dashboard.kubernetes-dashboard:443
             description: Kubernete's dashboard
+        - IT Tools:
+            icon: it-tools.svg
+            href: https://it-tools.{{DOMAIN}}
+            ping: http://it-tools.it-tools:80
+            description: Handy tools for developers
         - True Command:
             icon: truenas.png
             href: https://true-command.{{DOMAIN}}

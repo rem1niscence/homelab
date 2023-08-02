@@ -7,8 +7,8 @@ spec:
   entryPoints:
     - websecure
   routes:
-  - match: Host(`keel.{{DOMAIN}}`)
-    kind: Rule
-    services:
-    - name: keel
-      port: 9300
+    - match: Host(`keel.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: keel
+          port: 9300

@@ -16,27 +16,27 @@ spec:
       nodeSelector:
         type: pi
       containers:
-      - name: pihole
-        image: pihole/pihole:latest
-        ports:
-        - containerPort: 8000
-        - containerPort: 53
-          protocol: TCP
-        - containerPort: 53
-          protocol: UDP
-        env:
-        - name: TZ
-          value: "America/Santo_Domingo"
-        - name: WEBPASSWORD
-          value: O10A_hn4
-        volumeMounts:
-        - name: config
-          mountPath: /etc/pihole
-          subPath: pihole-config
-        - name: config
-          mountPath: /etc/dnsmasq.d
-          subPath: dnsmasq-config
+        - name: pihole
+          image: pihole/pihole:latest
+          ports:
+            - containerPort: 8000
+            - containerPort: 53
+              protocol: TCP
+            - containerPort: 53
+              protocol: UDP
+          env:
+            - name: TZ
+              value: "America/Santo_Domingo"
+            - name: WEBPASSWORD
+              value: O10A_hn4
+          volumeMounts:
+            - name: config
+              mountPath: /etc/pihole
+              subPath: pihole-config
+            - name: config
+              mountPath: /etc/dnsmasq.d
+              subPath: dnsmasq-config
       volumes:
-      - name: config
-        persistentVolumeClaim:
-          claimName: pihole
+        - name: config
+          persistentVolumeClaim:
+            claimName: pihole

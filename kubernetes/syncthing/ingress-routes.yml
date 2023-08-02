@@ -7,8 +7,8 @@ spec:
   entryPoints:
     - websecure
   routes:
-  - match: Host(`syncthing.{{DOMAIN}}`)
-    kind: Rule
-    services:
-    - name: syncthing
-      port: 8384
+    - match: Host(`syncthing.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: syncthing
+          port: 8384

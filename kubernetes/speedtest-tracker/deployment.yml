@@ -1,23 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: syncthing
-  name: syncthing
+  namespace: speedtest-tracker
+  name: speedtest-tracker
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: syncthing
+      app: speedtest-tracker
   template:
     metadata:
       labels:
-        app: syncthing
+        app: speedtest-tracker
     spec:
-      nodeSelector:
-        type: pi
       containers:
-        - name: syncthing
-          image: lscr.io/linuxserver/syncthing:latest
+        - name: speedtest-tracker
+          image: ghcr.io/alexjustesen/speedtest-tracker:latest
           env:
             - name: PUID
               value: "1000"
@@ -26,18 +24,11 @@ spec:
             - name: TZ
               value: "Etc/UTC"
           ports:
-            - containerPort: 8384
-            - containerPort: 22000
-            - containerPort: 21027
+            - containerPort: 80
           volumeMounts:
-            - name: data
-              mountPath: /data
             - name: config
               mountPath: /config
       volumes:
-        - name: data
-          persistentVolumeClaim:
-            claimName: data-pvc
         - name: config
           persistentVolumeClaim:
             claimName: config-pvc

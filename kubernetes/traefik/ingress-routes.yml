@@ -4,20 +4,20 @@ metadata:
   name: traefik-dashboard-secure
 spec:
   entryPoints:
-  - websecure
+    - websecure
   routes:
-  - kind: Rule
-    match: Host(`traefik.{{DOMAIN}}`)
-    services:
-    - name: traefik-dashboard
-      port: 9000
-    middlewares:
-    - name: dashboard-auth
-    - name: dashboard-rewrite
-  - kind: Rule
-    match: Host(`traefik.{{DOMAIN}}`) && PathPrefix("/api")
-    services:
-    - name: traefik-dashboard
-      port: 9000
-    middlewares:
-    - name: dashboard-auth
+    - kind: Rule
+      match: Host(`traefik.{{DOMAIN}}`)
+      services:
+        - name: traefik-dashboard
+          port: 9000
+      middlewares:
+        - name: dashboard-auth
+        - name: dashboard-rewrite
+    - kind: Rule
+      match: Host(`traefik.{{DOMAIN}}`) && PathPrefix("/api")
+      services:
+        - name: traefik-dashboard
+          port: 9000
+      middlewares:
+        - name: dashboard-auth

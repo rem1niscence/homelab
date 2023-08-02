@@ -1,5 +1,4 @@
 version: '3.3'
-
 services:
   firefly:
     image: fireflyiii/core:latest
@@ -11,11 +10,10 @@ services:
     networks:
       - pi-network
     # ports:
-      # - 8199:8080
+    # - 8199:8080
     depends_on:
       - redis
       - mariadb
-
   mariadb:
     image: linuxserver/mariadb
     hostname: db
@@ -26,7 +24,6 @@ services:
       - pi-network
     volumes:
       - ./db:/config
-
   cron:
     #
     # To make this work, set STATIC_CRON_TOKEN in your .env file or as an environment variable and replace REPLACEME below
@@ -38,16 +35,14 @@ services:
     command: sh -c "echo \"0 3 * * * wget -qO- http://firefly:8080/api/v1/cron/5951b141610c25ccda5c63b4ca20aeba" | crontab - && crond -f -L /dev/stdout"
     networks:
       - pi-network
-
   redis:
-    image:  redis:alpine
+    image: redis:alpine
     container_name: firefly_redis
     restart: unless-stopped
     volumes:
       - ./redis:/var/lib/redis
     networks:
       - pi-network
-
 networks:
   pi-network:
     external: true

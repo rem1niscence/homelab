@@ -15,8 +15,8 @@ spec:
   entryPoints:
     - websecure
   routes:
-  - match: Host(`{{DOMAIN}}`)
-    kind: Rule
-    services:
-    - name: homepage
-      port: 3000
+    - match: Host(`{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: homepage
+          port: 3000

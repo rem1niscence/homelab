@@ -28,17 +28,17 @@ spec:
             - name: TZ
               value: "Etc/UTC"
           volumeMounts:
-          - name: data
-            mountPath: /data
-          - name: config
-            mountPath: /config
+            - name: data
+              mountPath: /data
+            - name: config
+              mountPath: /config
       volumes:
-      - name: data
-        persistentVolumeClaim:
-          claimName: data-pvc
-      - name: config
-        persistentVolumeClaim:
-          claimName: config-pvc
+        - name: data
+          persistentVolumeClaim:
+            claimName: data-pvc
+        - name: config
+          persistentVolumeClaim:
+            claimName: config-pvc
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -58,17 +58,17 @@ spec:
       nodeSelector:
         type: pi
       containers:
-      - name: jellyseerr
-        image: fallenbagel/jellyseerr:latest
-        env:
-        - name: TZ
-          value: "Etc/UTC"
-        ports:
-        - containerPort: 5055
-        volumeMounts:
-          - name: config
-            mountPath: /app/config
+        - name: jellyseerr
+          image: fallenbagel/jellyseerr:latest
+          env:
+            - name: TZ
+              value: "Etc/UTC"
+          ports:
+            - containerPort: 5055
+          volumeMounts:
+            - name: config
+              mountPath: /app/config
       volumes:
-      - name: config
-        persistentVolumeClaim:
-          claimName: jellyseerr-config-pvc
+        - name: config
+          persistentVolumeClaim:
+            claimName: jellyseerr-config-pvc

@@ -14,23 +14,23 @@ spec:
         app: rclone
     spec:
       containers:
-      - name: rclone
-        image: rclone/rclone
-        ports:
-        - containerPort: 5572
-        envFrom:
-        - secretRef:
-            name: rclone-secrets
-        command: ["rclone", "rcd", "--rc-web-gui", "--rc-addr", ":5572", "--rc-user", "$(RCLONE_USER)", "--rc-pass", "$(RCLONE_PASSWORD)", "--rc-serve"]
-        volumeMounts:
-          - name: data
-            mountPath: /data
-          - name: config
-            mountPath: /config/rclone
+        - name: rclone
+          image: rclone/rclone
+          ports:
+            - containerPort: 5572
+          envFrom:
+            - secretRef:
+                name: rclone-secrets
+          command: ["rclone", "rcd", "--rc-web-gui", "--rc-addr", ":5572", "--rc-user", "$(RCLONE_USER)", "--rc-pass", "$(RCLONE_PASSWORD)", "--rc-serve"]
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: config
+              mountPath: /config/rclone
       volumes:
-      - name: data
-        persistentVolumeClaim:
-          claimName: data-pvc
-      - name: config
-        persistentVolumeClaim:
-          claimName: config-pvc
+        - name: data
+          persistentVolumeClaim:
+            claimName: data-pvc
+        - name: config
+          persistentVolumeClaim:
+            claimName: config-pvc

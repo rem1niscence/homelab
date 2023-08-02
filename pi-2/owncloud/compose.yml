@@ -1,12 +1,11 @@
 version: '3.3'
-
 services:
   owncloud:
     image: owncloud/server
     container_name: owncloud
     restart: unless-stopped
     # ports:
-      # - 8095:8080
+    # - 8095:8080
     depends_on:
       - owncloud-mariadb
       - owncloud-redis
@@ -16,7 +15,6 @@ services:
       - ${STORAGE_PATH}:/mnt/data
     networks:
       - pi-network
-
   owncloud-mariadb:
     image: linuxserver/mariadb
     container_name: owncloud-mariadb
@@ -27,9 +25,8 @@ services:
       - ./db:/config
     networks:
       - pi-network
-
   owncloud-redis:
-    image:  redis:alpine
+    image: redis:alpine
     container_name: owncloud-redis
     restart: unless-stopped
     environment:
@@ -38,7 +35,6 @@ services:
       - ./redis:/var/lib/redis
     networks:
       - pi-network
-
 networks:
   pi-network:
     external: true

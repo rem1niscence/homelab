@@ -21,41 +21,41 @@ spec:
         app: dashdot
     spec:
       tolerations:
-      - key: node-role.kubernetes.io/control-plane
-        operator: Exists
-        effect: NoSchedule
-      - key: node-role.kubernetes.io/master
-        operator: Exists
-        effect: NoSchedule
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule
+        - key: node-role.kubernetes.io/master
+          operator: Exists
+          effect: NoSchedule
       restartPolicy: Always
       containers:
-      - name: dashdot
-        image: mauricenino/dashdot
-        securityContext:
-          privileged: true
-        ports:
-        - containerPort: 3001
-          # TODO: figure out a way to add an individual service per pod
-          hostPort: 3001
-        env:
-        - name: DASHDOT_SHOW_HOST
-          value: "true"
-        - name: DASHDOT_SHOW_DASH_VERSION
-          value: "bottom_right"
-        - name: DASHDOT_ENABLE_CPU_TEMPS
-          value: "true"
-        - name: DASHDOT_ALWAYS_SHOW_PERCENTAGES
-          value: "true"
-        - name: DASHDOT_ACCEPT_OOKLA_EUL
-          value: "true"
-        - name: DASHDOT_SPEED_TEST_INTERVAL
-          value: "10" # minutes
-        volumeMounts:
-        - name: root-volume
-          mountPath: /mnt/host
-          readOnly: true
+        - name: dashdot
+          image: mauricenino/dashdot
+          securityContext:
+            privileged: true
+          ports:
+            - containerPort: 3001
+              # TODO: figure out a way to add an individual service per pod
+              hostPort: 3001
+          env:
+            - name: DASHDOT_SHOW_HOST
+              value: "true"
+            - name: DASHDOT_SHOW_DASH_VERSION
+              value: "bottom_right"
+            - name: DASHDOT_ENABLE_CPU_TEMPS
+              value: "true"
+            - name: DASHDOT_ALWAYS_SHOW_PERCENTAGES
+              value: "true"
+            - name: DASHDOT_ACCEPT_OOKLA_EUL
+              value: "true"
+            - name: DASHDOT_SPEED_TEST_INTERVAL
+              value: "10" # minutes
+          volumeMounts:
+            - name: root-volume
+              mountPath: /mnt/host
+              readOnly: true
       volumes:
-      - name: root-volume
-        hostPath:
-          path: /
-          type: Directory
+        - name: root-volume
+          hostPath:
+            path: /
+            type: Directory

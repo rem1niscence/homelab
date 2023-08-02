@@ -5,7 +5,7 @@ services:
     container_name: uptime-kuma
     restart: always
     # ports:
-      # - "3011:3001"
+    # - "3011:3001"
     volumes:
       - ./data:/app/data
     networks:
@@ -14,7 +14,6 @@ services:
       resources:
         limits:
           cpus: '0.08'
-
 networks:
   pi-network:
     external: true

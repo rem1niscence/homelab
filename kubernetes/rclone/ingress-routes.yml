@@ -7,8 +7,8 @@ spec:
   entryPoints:
     - websecure
   routes:
-  - match: Host(`rclone.{{DOMAIN}}`)
-    kind: Rule
-    services:
-    - name: rclone
-      port: 5572
+    - match: Host(`rclone.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: rclone
+          port: 5572

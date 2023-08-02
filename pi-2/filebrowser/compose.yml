@@ -9,10 +9,9 @@ services:
       # Auth is managed at load balancer level
       - ./config.json:/.filebrowser.json
     # ports:
-      # - 8120:8080
+    # - 8120:8080
     networks:
       - pi-network
-
 networks:
   pi-network:
     external: true

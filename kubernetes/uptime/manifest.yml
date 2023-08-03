@@ -1,0 +1,75 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: uptime
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: uptime
+  name: uptime
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: uptime
+  template:
+    metadata:
+      labels:
+        app: uptime
+    spec:
+      nodeSelector:
+        type: main
+      containers:
+        - name: uptime
+          image: louislam/uptime-kuma:alpine
+          ports:
+            - containerPort: 3001
+          volumeMounts:
+            - name: config
+              mountPath: /app/data
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: config-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: uptime
+  name: config-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1G
+  storageClassName: longhorn
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: uptime
+  name: uptime
+spec:
+  selector:
+    app: uptime
+  ports:
+    - protocol: TCP
+      port: 3001
+      targetPort: 3001
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  namespace: uptime
+  name: uptime
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`uptime.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: uptime
+          port: 3001

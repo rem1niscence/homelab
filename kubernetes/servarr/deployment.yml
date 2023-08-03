@@ -103,7 +103,7 @@ spec:
         app: prowlarr
     spec:
       nodeSelector:
-        type: pi
+        type: secondary
       containers:
         - name: prowlarr
           image: lscr.io/linuxserver/prowlarr:latest

@@ -46,11 +46,11 @@ data:
         - Speedtest:
             icon: si-speedtest
             href: https://speedtest.{{DOMAIN}}
-            ping: http://speedtest-tracker.speedtest-tracker
+            ping: http://speedtest.speedtest
             description: Speed test tracker
             widget:
               type: speedtest
-              url: http://speedtest-tracker.speedtest-tracker
+              url: http://speedtest.speedtest
         - Tailscale:
             icon: tailscale.svg
             href: https://login.tailscale.com/admin/machines

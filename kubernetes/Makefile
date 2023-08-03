@@ -37,7 +37,7 @@ traefik:
 .PHONY: change-domain
 change-domain:
 	$(call check_vars, APP_PATH DOMAIN)
-	@sed -e "s;{{DOMAIN}};$(DOMAIN);g" "./$(APP_PATH)/ingress-routes.yml" | kubectl apply -f -
+	@./scripts/change-domain.sh $${APP_PATH} $${DOMAIN}
 
 .PHONY: tls
 tls:
@@ -63,7 +63,7 @@ dashboard:
 app:
 	$(call check_vars, APP_PATH DOMAIN)
 	./scripts/setup_application.sh $${APP_PATH} $${DOMAIN}
-	@make APP_PATH=$${APP_PATH} change-domain
+	@make APP_PATH=$${APP_PATH} DOMAIN=$${DOMAIN} change-domain
 
 .PHONY: rm-app
 rm-app:

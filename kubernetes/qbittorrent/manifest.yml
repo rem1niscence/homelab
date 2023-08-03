@@ -1,0 +1,117 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: qbittorrent
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: qbittorrent
+  name: qbittorrent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qbittorrent
+  template:
+    metadata:
+      labels:
+        app: qbittorrent
+    spec:
+      containers:
+        - name: qbittorrent
+          # qbittorrent with vuetorrent preinstalled
+          image: cr.hotio.dev/hotio/qbittorrent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: UMASK
+              value: "002"
+            - name: TZ
+              value: "Etc/UTC"
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: config
+              mountPath: /config
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data-pvc
+        - name: config
+          persistentVolumeClaim:
+            claimName: config-pvc
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: qbittorrent-data-pv
+spec:
+  capacity:
+    storage: 3T
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 10.0.0.95
+    path: /mnt/main_drive/data
+  storageClassName: local-path
+  mountOptions:
+    - vers=4.0
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: qbittorrent
+  name: data-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 3T
+  volumeName: qbittorrent-data-pv
+  storageClassName: local-path
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: qbittorrent
+  name: config-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1G
+  storageClassName: longhorn
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: qbittorrent
+  name: qbittorrent
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: qbittorrent
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: qbittorrent
+  namespace: qbittorrent
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`torrent.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: qbittorrent
+          port: 8080

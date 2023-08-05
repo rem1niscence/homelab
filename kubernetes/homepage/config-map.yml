@@ -66,11 +66,11 @@ data:
         - Pi-hole:
             icon: pi-hole.svg 
             href: https://pihole.{{DOMAIN}}/admin
-            ping: http://pihole.pihole:3000
+            ping: http://pihole.pihole
             description: Network-wide ad blocker
             widget:
               type: pihole
-              url: http://pihole.pihole:3000
+              url: http://pihole.pihole
               key: ${PIHOLE_API_KEY}
         - Paperless:
             icon: paperless-ngx.svg

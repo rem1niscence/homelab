@@ -1,4 +1,3 @@
-# Radarr -------------------------------
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -36,7 +35,7 @@ metadata:
   name: radarr-config-pvc
 spec:
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
       storage: 1G
@@ -49,10 +48,10 @@ metadata:
   name: prowlarr-config-pvc
 spec:
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
-      storage: 1G
+      storage: 2G
   storageClassName: longhorn
 ---
 apiVersion: v1
@@ -62,7 +61,7 @@ metadata:
   name: sonarr-config-pvc
 spec:
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
       storage: 1G
@@ -75,7 +74,7 @@ metadata:
   name: bazarr-config-pvc
 spec:
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
       storage: 1G

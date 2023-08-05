@@ -5,7 +5,7 @@ metadata:
   name: pihole
 spec:
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
       storage: 2G

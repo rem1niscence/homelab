@@ -1,3 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: servarr
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -98,7 +103,7 @@ spec:
         app: prowlarr
     spec:
       nodeSelector:
-        type: pi
+        type: secondary
       containers:
         - name: prowlarr
           image: lscr.io/linuxserver/prowlarr:latest

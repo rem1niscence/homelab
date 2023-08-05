@@ -46,11 +46,11 @@ data:
         - Speedtest:
             icon: si-speedtest
             href: https://speedtest.{{DOMAIN}}
-            ping: http://speedtest-tracker.speedtest-tracker
+            ping: http://speedtest.speedtest
             description: Speed test tracker
             widget:
               type: speedtest
-              url: http://speedtest-tracker.speedtest-tracker
+              url: http://speedtest.speedtest
         - Tailscale:
             icon: tailscale.svg
             href: https://login.tailscale.com/admin/machines
@@ -69,6 +69,16 @@ data:
               type: pihole
               url: http://pihole.pihole:3000
               key: ${PIHOLE_API_KEY}
+        - Paperless:
+            icon: paperless-ngx.svg
+            href: https://paperless.{{DOMAIN}}
+            ping: http://paperless.paperless:8000
+            description: Digital document manager
+            widget:
+                type: paperlessngx
+                url: http://paperless.paperless:8000
+                username: ${PAPERLESS_USERNAME}
+                password: ${PAPERLESS_PASSWORD}
         - qBittorrent:
             icon: qbittorrent.svg
             href: https://torrent.{{DOMAIN}}
@@ -135,6 +145,25 @@ data:
               type: prowlarr
               url: http://prowlarr.servarr:9696
               key: ${PROWLARR_API_KEY}
+        - Uptime Kuma:
+            icon: uptime-kuma.svg
+            href: https://uptime.{{DOMAIN}}
+            ping: http://uptime.uptime:3001
+            description: Website/Service monitoring
+            widget:
+              type: uptimekuma
+              url: http://uptime.uptime:3001
+              slug: services
+        - Komga:
+            icon: komga.svg
+            href: https://komga.{{DOMAIN}}
+            ping: http://komga.komga:25600
+            description: Digital comics/manga server and reader
+            widget:
+              type: komga
+              url: http://komga.komga:25600
+              username: ${KOMGA_URSERNAME}
+              password: ${KOMGA_PASSWORD}
     - Apps:
         - Rancher:
             icon: rancher.svg
@@ -151,6 +180,11 @@ data:
             href: https://dashboard.{{DOMAIN}}
             ping: http://kubernetes-dashboard.kubernetes-dashboard:443
             description: Kubernete's dashboard
+        - IT Tools:
+            icon: it-tools.svg
+            href: https://it-tools.{{DOMAIN}}
+            ping: http://it-tools.it-tools:80
+            description: Handy tools for developers
         - True Command:
             icon: truenas.png
             href: https://true-command.{{DOMAIN}}
@@ -161,11 +195,6 @@ data:
             href: https://syncthing.{{DOMAIN}}
             ping: http://syncthing.syncthing:8384
             description: File synchronization across devices
-        - Paperless:
-            icon: paperless-ngx.svg
-            href: https://paperless.{{DOMAIN}}
-            ping: http://paperless.paperless:8000
-            description: Digital document manager
         - Keel.sh:
             icon: mdi-alpha-k-box-outline
             href: https://keel.{{DOMAIN}}

@@ -27,14 +27,17 @@ tailscale-unexpose:
 traefik:
 	$(call check_vars, DOMAIN)
 	@echo "setting up traefik"
-	@kubectl apply -f .
+	@kubectl apply -f ./traefik/dashboard-service.yml
+	@kubectl apply -f ./traefik/ingress-routes.yml
+	@kubectl apply -f ./traefik/middleware.yml
+	@kubectl patch ingressroute/traefik-dashboard-secure --type=json --patch-file ./traefik/patch-dashboard-service.yml
 	@sed -e "s;{{DOMAIN}};$${DOMAIN};g" ./traefik/ingress-routes.yml | kubectl apply -f -
 	@echo "done ✅"
 
 .PHONY: change-domain
 change-domain:
 	$(call check_vars, APP_PATH DOMAIN)
-	@sed -e "s;{{DOMAIN}};$(DOMAIN);g" "./$(APP_PATH)/ingress-routes.yml" | kubectl apply -f -
+	@./scripts/change-domain.sh $${APP_PATH} $${DOMAIN}
 
 .PHONY: tls
 tls:
@@ -42,7 +45,7 @@ tls:
 	@kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.7.0/cert-manager.yaml
 	@echo "wait 10 seconds for cert-manager to be installed"
 	@ sleep 10
-	@sed -e "s;{{CLOUDFARE_TOKEN}};$(CLOUDFARE_TOKEN);g" ./traefik/tls.yml | \
+	@sed -e "s;{{CLOUDFARE_TOKEN}};$(CLOUDFARE_TOKEN);g" ./tls/tls.yml | \
 		sed -e "s;{{EMAIL}};$(EMAIL);g" | \
 		sed -e "s;{{DOMAIN}};$(DOMAIN);g" | kubectl apply -f -
 	@echo "done ✅. Bear in mind that the certificate validation may take several minutes, after that, restart the pods behind traefik's reverse proxy in order for this to take effect"
@@ -60,7 +63,7 @@ dashboard:
 app:
 	$(call check_vars, APP_PATH DOMAIN)
 	./scripts/setup_application.sh $${APP_PATH} $${DOMAIN}
-	@make APP_PATH=$${APP_PATH} change-domain
+	@make APP_PATH=$${APP_PATH} DOMAIN=$${DOMAIN} change-domain
 
 .PHONY: rm-app
 rm-app:

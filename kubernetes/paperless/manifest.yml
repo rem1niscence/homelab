@@ -1,3 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: paperless
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -122,3 +127,85 @@ spec:
                 - ping
             initialDelaySeconds: 15
             timeoutSeconds: 5
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: paperless-storage-pv
+spec:
+  capacity:
+    storage: 5G
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 10.0.0.95
+    path: /mnt/main_drive/data/paperless
+  storageClassName: local-path
+  mountOptions:
+    - vers=4.0
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: paperless
+  name: storage-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1G
+  volumeName: paperless-storage-pv
+  storageClassName: local-path
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: paperless
+  name: config-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1G
+  storageClassName: longhorn
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: paperless
+  name: redis
+spec:
+  ports:
+    - port: 6379
+      targetPort: 6379
+  selector:
+    app: redis
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: paperless
+  name: paperless
+spec:
+  ports:
+    - port: 8000
+      targetPort: 8000
+  selector:
+    app: paperless
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: paperless
+  namespace: paperless
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host("paperless.{{DOMAIN}}")
+      kind: Rule
+      services:
+        - name: paperless
+          port: 8000

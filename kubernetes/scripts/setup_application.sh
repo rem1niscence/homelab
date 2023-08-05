@@ -3,8 +3,6 @@
 app=$1
 domain=$2
 
-kubectl create namespace $app
-
 # Use the app's custom setup
 if [ -f "./$app/setup.sh" ]; then
     chmod +x "./$app/setup.sh"

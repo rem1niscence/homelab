@@ -69,6 +69,16 @@ data:
               type: pihole
               url: http://pihole.pihole:3000
               key: ${PIHOLE_API_KEY}
+        - Paperless:
+            icon: paperless-ngx.svg
+            href: https://paperless.{{DOMAIN}}
+            ping: http://paperless.paperless:8000
+            description: Digital document manager
+            widget:
+                type: paperlessngx
+                url: http://paperless.paperless:8000
+                username: ${PAPERLESS_USERNAME}
+                password: ${PAPERLESS_PASSWORD}
         - qBittorrent:
             icon: qbittorrent.svg
             href: https://torrent.{{DOMAIN}}
@@ -185,11 +195,6 @@ data:
             href: https://syncthing.{{DOMAIN}}
             ping: http://syncthing.syncthing:8384
             description: File synchronization across devices
-        - Paperless:
-            icon: paperless-ngx.svg
-            href: https://paperless.{{DOMAIN}}
-            ping: http://paperless.paperless:8000
-            description: Digital document manager
         - Keel.sh:
             icon: mdi-alpha-k-box-outline
             href: https://keel.{{DOMAIN}}

@@ -43,7 +43,7 @@ spec:
             claimName: data-pvc
         - name: config
           persistentVolumeClaim:
-            claimName: config-pvc
+            claimName: jellyfin-config-pvc
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -168,10 +168,10 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   namespace: jellyfin
-  name: config-pvc
+  name: jellyfin-config-pvc
 spec:
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
       storage: 30G

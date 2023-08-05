@@ -70,7 +70,7 @@ secret:
 # self-update to the latest release version
 keel:
   # keel policy (all/major/minor/patch/force)
-  policy: patch
+  policy: all
   # trigger type, defaults to events such as pubsub, webhooks
   trigger: poll
   # polling schedule

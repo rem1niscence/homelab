@@ -4,7 +4,7 @@ metadata:
   name: snapshot-job
   namespace: longhorn-system
 spec:
-  cron: "0 */2 * * *"
+  cron: "30 */2 * * *"
   task: "snapshot"
   groups:
     - default
@@ -22,4 +22,5 @@ spec:
   groups:
     - default
   retain: 2
-  concurrency: 3
+  concurrency: 6
+

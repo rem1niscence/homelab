@@ -15,13 +15,13 @@ My homelab K3s cluster configuration
 ## 📁 Repository structure
 
 ```sh
-📁 cluster     # Kubernetes cluster defined as code
-├─📁 scripts   # scripts directly related to cluster management
-└─📁 {apps}... # Apps deployed into the cluster grouped by namespace
-📁 pi-2        # Apps not yet migrated to the cluster
-📁 provision   # Infrastructure setup defined as code (Not yet implemented)
-📁 docker      # Services running outside the cluster
-📁 scripts     # miscelaneus scripts mainly intented for the cluster nodes
+📁 cluster      # Kubernetes cluster defined as code
+├─📁 scripts    # scripts directly related to cluster management
+└─📁 {apps}...  # Apps deployed into the cluster grouped by namespace
+📁 pi-2/shared  # Apps not yet migrated to the cluster
+📁 provision    # Infrastructure setup defined as code (Not yet implemented)
+📁 docker       # Services running outside the cluster
+📁 scripts      # miscelaneus scripts mainly intented for the cluster nodes
 ```
 
 ## Credits to:

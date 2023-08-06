@@ -7,7 +7,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: paperless
-  name: paperless-deployment
+  name: paperless
   labels:
     app: paperless
 spec:
@@ -94,7 +94,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: paperless
-  name: redis-deployment
+  name: redis
   labels:
     app: redis
 spec:

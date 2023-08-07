@@ -72,6 +72,14 @@ data:
               type: pihole
               url: http://pihole.pihole
               key: ${PIHOLE_API_KEY}
+        - Pi.Alert:
+            icon: mdi-router-network
+            href: https://pialert.{{DOMAIN}}
+            ping: http://pialert.pialert
+            description: Network device monitoring tool
+            widget:
+                type: pialert
+                url: http://pialert.pialert
         - Paperless:
             icon: paperless-ngx.svg
             href: https://paperless.{{DOMAIN}}

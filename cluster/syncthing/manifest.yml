@@ -101,7 +101,7 @@ spec:
   ports:
     - name: web
       protocol: TCP
-      port: 8384
+      port: 80
       targetPort: 8384
     - name: tcp1
       protocol: TCP
@@ -129,4 +129,4 @@ spec:
       kind: Rule
       services:
         - name: syncthing
-          port: 8384
+          port: 80

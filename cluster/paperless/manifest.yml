@@ -190,7 +190,7 @@ metadata:
   name: paperless
 spec:
   ports:
-    - port: 8000
+    - port: 80
       targetPort: 8000
   selector:
     app: paperless
@@ -208,4 +208,4 @@ spec:
       kind: Rule
       services:
         - name: paperless
-          port: 8000
+          port: 80

@@ -208,6 +208,11 @@ data:
             href: https://rclone.{{DOMAIN}}
             ping: http://rclone.rclone:5572
             description: Sync files across clouds
+        - Firefly III:
+            icon: si-fireflyiii
+            href: https://firefly.{{DOMAIN}}
+            ping: http://firefly.firefly
+            description: Personal finance manager
     - System:
         - NUC:
             icon: mdi-cpu-64-bit

@@ -11,6 +11,12 @@ My homelab K3s cluster configuration
 | Raspberry Pi 4       | 2     | 8 GB   | SD 32GB                                                 | Raspberry PI OS         | armv7 |
 | Raspberry Pi 4       | 1     | 4 GB   | SD 32GB                                                 | Raspberry PI OS         | armv7 |
 
+## 💾 Virtual Machines
+
+| Name      | Count | RAM  | Disks | OS          | Arch  |
+|-----------|-------|------|-------|-------------|-------|
+| K3s VM    | 1     | 22GB | 128GB | Ubuntu 22.10| amd64 |
+| Pihole    | 1     | 2GB  | 20GB  | DietPI      | amd64 |
 
 ## 📁 Repository structure
 

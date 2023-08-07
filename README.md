@@ -13,10 +13,10 @@ My homelab K3s cluster configuration
 
 ## 💾 Virtual Machines
 
-| Name      | Count | RAM  | Disks | OS          | Arch  |
-|-----------|-------|------|-------|-------------|-------|
-| K3s VM    | 1     | 22GB | 128GB | Ubuntu 22.10| amd64 |
-| Pihole    | 1     | 2GB  | 20GB  | DietPI      | amd64 |
+| Name           | Count | RAM  | Disks | OS          | Arch  |
+|----------------|-------|------|-------|-------------|-------|
+| K3s Worker VM  | 1     | 22GB | 128GB | Ubuntu 22.10| amd64 |
+| Pihole         | 1     | 2GB  | 20GB  | DietPI      | amd64 |
 
 ## 📁 Repository structure
 

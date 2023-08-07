@@ -157,6 +157,34 @@ spec:
         ports:
         - containerPort: 6379
 ---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: firefly-cron
+  namespace: firefly
+spec:
+  schedule: "0 5 * * *"
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+          - name: firefly-cron
+            image: curlimages/curl:latest
+            env:
+            - name: STATIC_CRON_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: firefly
+                  key: STATIC_CRON_TOKEN
+                  optional: false
+            args:
+                - -c
+                - curl https//firefly/api/v1/cron/$(STATIC_CRON_TOKEN)
+---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -233,36 +261,3 @@ spec:
       services:
         - name: firefly
           port: 80
-# apiVersion: v1
-# kind: ConfigMap
-# metadata:
-#   namespace: firefly
-#   name: firefly-cron
-# data:
-#   # To make this work, set STATIC_CRON_TOKEN in your .env file or as an 
-#   # environment variable and replace REPLACEME below The STATIC_CRON_TOKEN 
-#   # must be *exactly* 32 characters long
-#   cron-command: sh -c "echo \"0 3 * * * wget -qO- http://firefly:8080/api/v1/cron/5951b141610c25ccda5c63b4ca20aeba\" | crontab - && crond -f -L /dev/stdout"
-# ---
-# apiVersion: v1
-# kind: PersistentVolumeClaim
-# metadata:
-#   name: firefly-upload
-# spec:
-#   accessModes:
-#     - ReadWriteOnce
-#   resources:
-#     requests:
-#       storage: 2Gi # Adjust as needed
-# ---
-# apiVersion: v1
-# kind: PersistentVolumeClaim
-# metadata:
-#   name: mariadb-config
-# spec:
-#   accessModes:
-#     - ReadWriteOnce
-#   resources:
-#     requests:
-#       storage: 1Gi # Adjust as needed
-# ---

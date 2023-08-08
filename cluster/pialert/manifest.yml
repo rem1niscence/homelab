@@ -23,25 +23,25 @@ spec:
       nodeSelector:
         pi: pi-1
       containers:
-      - name: pialert
-        image: jokobsk/pi.alert:latest
-        ports:
-          - containerPort: 20211
-        env:
-        - name: TZ
-          value: Europe/Berlin
-        volumeMounts:
-        - name: config
-          mountPath: /home/pi/pialert/config
-        - name: db
-          mountPath: /home/pi/pialert/db
+        - name: pialert
+          image: jokobsk/pi.alert:latest
+          ports:
+            - containerPort: 20211
+          env:
+            - name: TZ
+              value: Europe/Berlin
+          volumeMounts:
+            - name: config
+              mountPath: /home/pi/pialert/config
+            - name: db
+              mountPath: /home/pi/pialert/db
       volumes:
-      - name: config
-        persistentVolumeClaim:
-          claimName: config-pvc
-      - name: db
-        persistentVolumeClaim:
-          claimName: db-pvc
+        - name: config
+          persistentVolumeClaim:
+            claimName: config-pvc
+        - name: db
+          persistentVolumeClaim:
+            claimName: db-pvc
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

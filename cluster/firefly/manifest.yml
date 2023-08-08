@@ -53,43 +53,43 @@ spec:
       nodeSelector:
         type: secondary
       containers:
-      - name: firefly
-        image: fireflyiii/core:latest
-        envFrom:
-        - configMapRef:
-            name: firefly
-        env:
-          - name: SITE_OWNER
-            valueFrom:
-              secretKeyRef:
+        - name: firefly
+          image: fireflyiii/core:latest
+          envFrom:
+            - configMapRef:
                 name: firefly
-                key: SITE_OWNER
-                optional: false
-          - name: APP_KEY
-            valueFrom:
-              secretKeyRef:
-                name: firefly
-                key: APP_KEY
-                optional: false
-          - name: DB_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: firefly
-                key: DB_PASSWORD
-                optional: false
-          - name: STATIC_CRON_TOKEN
-            valueFrom:
-              secretKeyRef:
-                name: firefly
-                key: STATIC_CRON_TOKEN
-                optional: false
-        volumeMounts:
-          - name: upload
-            mountPath: /var/www/html/storage/upload
+          env:
+            - name: SITE_OWNER
+              valueFrom:
+                secretKeyRef:
+                  name: firefly
+                  key: SITE_OWNER
+                  optional: false
+            - name: APP_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: firefly
+                  key: APP_KEY
+                  optional: false
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: firefly
+                  key: DB_PASSWORD
+                  optional: false
+            - name: STATIC_CRON_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: firefly
+                  key: STATIC_CRON_TOKEN
+                  optional: false
+          volumeMounts:
+            - name: upload
+              mountPath: /var/www/html/storage/upload
       volumes:
-      - name: upload
-        persistentVolumeClaim:
-          claimName: storage-pvc
+        - name: upload
+          persistentVolumeClaim:
+            claimName: storage-pvc
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -107,34 +107,34 @@ spec:
         app: mariadb
     spec:
       containers:
-      - name: mariadb
-        image: linuxserver/mariadb
-        ports:
-        - containerPort: 3306
-        env:
-          - name: MYSQL_DATABASE
-            value: "firefly"
-          - name: MYSQL_USER
-            value: "firefly"
-          - name: MYSQL_ROOT_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: firefly
-                key: MYSQL_ROOT_PASSWORD
-                optional: false
-          - name: MYSQL_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: firefly
-                key: MYSQL_PASSWORD
-                optional: false
-        volumeMounts:
-          - name: config
-            mountPath: /config
+        - name: mariadb
+          image: linuxserver/mariadb
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_DATABASE
+              value: "firefly"
+            - name: MYSQL_USER
+              value: "firefly"
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: firefly
+                  key: MYSQL_ROOT_PASSWORD
+                  optional: false
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: firefly
+                  key: MYSQL_PASSWORD
+                  optional: false
+          volumeMounts:
+            - name: config
+              mountPath: /config
       volumes:
-      - name: config
-        persistentVolumeClaim:
-          claimName: mariadb-config-pvc
+        - name: config
+          persistentVolumeClaim:
+            claimName: mariadb-config-pvc
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -152,10 +152,10 @@ spec:
         app: redis
     spec:
       containers:
-      - name: redis
-        image: redis:alpine
-        ports:
-        - containerPort: 6379
+        - name: redis
+          image: redis:alpine
+          ports:
+            - containerPort: 6379
 ---
 apiVersion: batch/v1
 kind: CronJob
@@ -172,16 +172,16 @@ spec:
         spec:
           restartPolicy: Never
           containers:
-          - name: firefly-cron
-            image: curlimages/curl:latest
-            env:
-            - name: STATIC_CRON_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: firefly
-                  key: STATIC_CRON_TOKEN
-                  optional: false
-            args:
+            - name: firefly-cron
+              image: curlimages/curl:latest
+              env:
+                - name: STATIC_CRON_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: firefly
+                      key: STATIC_CRON_TOKEN
+                      optional: false
+              args:
                 - -c
                 - curl https//firefly/api/v1/cron/$(STATIC_CRON_TOKEN)
 ---

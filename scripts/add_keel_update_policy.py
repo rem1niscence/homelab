@@ -3,7 +3,12 @@ from kubernetes import client, config
 config.load_kube_config()
 v1 = client.AppsV1Api()
 
-skipped_namespaces = ["kube-system", "default", "longhorn-system", "cattle-system"]
+skipped_namespaces = ["kube-system",
+                      "default",
+                      "longhorn-system",
+                      "cattle-system",
+                      "cattle-fleet-system",
+                      "cattle-fleet-local-system"]
 namespaces = [ns.metadata.name for ns in client.CoreV1Api().list_namespace().items
               if ns.metadata.name not in skipped_namespaces]
 

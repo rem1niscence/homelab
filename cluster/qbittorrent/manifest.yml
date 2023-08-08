@@ -18,7 +18,7 @@ spec:
       labels:
         app: qbittorrent
     spec:
-        containers:
+      containers:
         - name: qbittorrent
           # qbittorrent with vuetorrent preinstalled
           image: cr.hotio.dev/hotio/qbittorrent
@@ -38,7 +38,7 @@ spec:
               mountPath: /data
             - name: config
               mountPath: /config
-        volumes:
+      volumes:
         - name: data
           persistentVolumeClaim:
             claimName: data-pvc

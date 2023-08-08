@@ -23,4 +23,3 @@ spec:
     - default
   retain: 2
   concurrency: 6
-

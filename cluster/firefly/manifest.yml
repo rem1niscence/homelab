@@ -182,8 +182,9 @@ spec:
                       key: STATIC_CRON_TOKEN
                       optional: false
               args:
-                - -c
-                - curl https//firefly/api/v1/cron/$(STATIC_CRON_TOKEN)
+                - "sh"
+                - "-c"
+                - "curl http://firefly/api/v1/cron/$STATIC_CRON_TOKEN"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

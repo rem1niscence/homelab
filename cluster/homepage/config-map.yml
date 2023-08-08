@@ -186,6 +186,11 @@ data:
             href: https://longhorn.{{DOMAIN}}
             ping: http://longhorn-frontend.longhorn-system
             description: Cloud-native distributed storage for K8S
+        - Vaultwarden:
+            icon: vaultwarden.svg
+            href: https://vaultwarden.{{DOMAIN}}
+            ping: http://vaultwarden.vaultwarden
+            description: Self-hosted password management
         - Kubernetes:
             icon: kubernetes-dashboard.png
             href: https://dashboard.{{DOMAIN}}

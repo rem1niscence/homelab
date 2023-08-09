@@ -1,0 +1,105 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: filebrowser
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: filebrowser
+  name: filebrowser
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: filebrowser
+  template:
+    metadata:
+      labels:
+        app: filebrowser
+    spec:
+      containers:
+      - name: filebrowser
+        image: filebrowser/filebrowser
+        volumeMounts:
+        - name: data
+          mountPath: /srv
+        - name: db
+          mountPath: /database
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: data-pvc
+      - name: db
+        persistentVolumeClaim:
+          claimName: db-pvc
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: filebrowser-data-pv
+spec:
+  capacity:
+    storage: 3T
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 10.0.0.95
+    path: /mnt/main_drive/data
+  storageClassName: local-path
+  mountOptions:
+    - vers=4.0
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: filebrowser
+  name: data-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 3T
+  volumeName: filebrowser-data-pv
+  storageClassName: local-path
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: filebrowser
+  name: db-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1G
+  storageClassName: longhorn
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: filebrowser
+  name: filebrowser
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    app: filebrowser
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: filebrowser
+  namespace: filebrowser
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`filebrowser.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: filebrowser
+          port: 80

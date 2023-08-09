@@ -211,6 +211,11 @@ data:
             href: https://true-command.{{DOMAIN}}
             ping: http://true-command.true-command:85
             description:  Management tool for TrueNAS systems.
+        - File Browser:
+            icon: filebrowser
+            href: https://filebrowser.{{DOMAIN}}
+            ping: http://filebrowser.filebrowser
+            description: Online file browser
         - Syncthing:
             icon: syncthing.svg
             href: https://syncthing.{{DOMAIN}}

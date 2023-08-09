@@ -73,7 +73,7 @@ spec:
             - name: config
               mountPath: /usr/src/paperless/data
               subPath: data
-            - name: config
+            - name: storage
               mountPath: /usr/src/paperless/media
               subPath: media
             - name: storage

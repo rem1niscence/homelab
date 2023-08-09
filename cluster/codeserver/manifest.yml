@@ -1,0 +1,95 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: codeserver
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: codeserver
+  namespace: codeserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: codeserver
+  template:
+    metadata:
+      labels:
+        app: codeserver
+    spec:
+      nodeSelector:
+        type: main
+      containers:
+      - name: codeserver
+        image: lscr.io/linuxserver/code-server:latest
+        ports:
+        - containerPort: 8443
+        env:
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1000"
+        - name: TZ
+          value: "Etc/UTC"
+        - name: DEFAULT_WORKSPACE
+          value: "/config/workspace"
+        - name: PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: codeserver
+              key: PASSWORD
+              optional: false
+        - name: SUDO_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: codeserver
+              key: SUDO_PASSWORD
+              optional: false
+        volumeMounts:
+          - name: config
+            mountPath: /config
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: config-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: codeserver
+  name: config-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1G
+  storageClassName: longhorn
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: codeserver
+  name: codeserver
+spec:
+  ports:
+    - port: 80
+      targetPort: 8443
+  selector:
+    app: codeserver
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: codeserver
+  namespace: codeserver
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`codeserver.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: codeserver
+          port: 80

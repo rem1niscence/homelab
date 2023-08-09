@@ -191,6 +191,11 @@ data:
             href: https://vaultwarden.{{DOMAIN}}
             ping: http://vaultwarden.vaultwarden
             description: Self-hosted password management
+        - Code Server:
+            icon: terminal.svg
+            href: https://codeserver.{{DOMAIN}}
+            ping: http://codeserver.codeserver
+            description: Online coding workspace
         - Kubernetes:
             icon: kubernetes-dashboard.png
             href: https://dashboard.{{DOMAIN}}

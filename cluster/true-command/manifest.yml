@@ -29,37 +29,20 @@ spec:
       volumes:
         - name: config
           persistentVolumeClaim:
-            claimName: true-command
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: true-command
-spec:
-  capacity:
-    storage: 1G
-  accessModes:
-    - ReadWriteMany
-  nfs:
-    server: 10.0.0.95
-    path: /mnt/microsds_1tb/true-command
-  storageClassName: local-path
-  mountOptions:
-    - vers=4.0
+            claimName: config-pvc
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   namespace: true-command
-  name: true-command
+  name: config-pvc
 spec:
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
       storage: 1G
-  volumeName: true-command
-  storageClassName: local-path
+  storageClassName: longhorn
 ---
 apiVersion: v1
 kind: Service
@@ -67,9 +50,8 @@ metadata:
   name: true-command
   namespace: true-command
 spec:
-  type: ClusterIP
   ports:
-    - port: 85
+    - port: 80
       targetPort: 80
   selector:
     app: true-command
@@ -87,4 +69,4 @@ spec:
       kind: Rule
       services:
         - name: true-command
-          port: 85
+          port: 80

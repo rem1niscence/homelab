@@ -3,6 +3,7 @@ from kubernetes import client, config
 config.load_kube_config()
 v1 = client.AppsV1Api()
 
+print("starting script")
 skipped_namespaces = ["kube-system",
                       "default",
                       "longhorn-system",

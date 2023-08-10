@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: onedrive-job
+  namespace: rclone
+spec:
+  schedule: "0 5 * * *"
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          nodeSelector:
+            pi: pi-2
+          containers:
+          - name: rclone-onedrive
+            image: rclone/rclone
+            command: ["rclone", "sync", "onedrive:", "/data/onedrive"]
+            volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: config
+              mountPath: /config/rclone
+              readOnly: true
+          volumes:
+            - name: data
+              persistentVolumeClaim:
+                claimName: data-pvc
+            - name: config
+              persistentVolumeClaim:
+                claimName: config-pvc
+          restartPolicy: Never
+
+# TODO:
+# rclone sync gphotos: /data/gphotos
+# rclone sync gdrive: /data/gdrive

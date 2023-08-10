@@ -211,6 +211,11 @@ data:
             href: https://true-command.{{DOMAIN}}
             ping: http://true-command.true-command
             description:  Management tool for TrueNAS systems.
+        - FileRun:
+            icon: filerun.svg
+            href: https://cloud.{{DOMAIN}}
+            ping: http://filerun.filerun
+            description: Personal Cloud
         - File Browser:
             icon: filebrowser
             href: https://filebrowser.{{DOMAIN}}

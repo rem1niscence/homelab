@@ -19,20 +19,20 @@ spec:
         app: filebrowser
     spec:
       containers:
-      - name: filebrowser
-        image: filebrowser/filebrowser
-        volumeMounts:
-        - name: data
-          mountPath: /srv
-        - name: db
-          mountPath: /database
+        - name: filebrowser
+          image: filebrowser/filebrowser
+          volumeMounts:
+            - name: data
+              mountPath: /srv
+            - name: db
+              mountPath: /database
       volumes:
-      - name: data
-        persistentVolumeClaim:
-          claimName: data-pvc
-      - name: db
-        persistentVolumeClaim:
-          claimName: db-pvc
+        - name: data
+          persistentVolumeClaim:
+            claimName: data-pvc
+        - name: db
+          persistentVolumeClaim:
+            claimName: db-pvc
 ---
 apiVersion: v1
 kind: PersistentVolume

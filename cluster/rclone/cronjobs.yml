@@ -14,15 +14,15 @@ spec:
           nodeSelector:
             pi: pi-2
           containers:
-          - name: rclone-onedrive
-            image: rclone/rclone
-            command: ["rclone", "sync", "onedrive:", "/data/onedrive"]
-            volumeMounts:
-            - name: data
-              mountPath: /data
-            - name: config
-              mountPath: /config/rclone
-              readOnly: true
+            - name: rclone-onedrive
+              image: rclone/rclone
+              command: ["rclone", "sync", "onedrive:", "/data/onedrive"]
+              volumeMounts:
+                - name: data
+                  mountPath: /data
+                - name: config
+                  mountPath: /config/rclone
+                  readOnly: true
           volumes:
             - name: data
               persistentVolumeClaim:

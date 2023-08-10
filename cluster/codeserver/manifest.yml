@@ -21,34 +21,34 @@ spec:
       nodeSelector:
         type: main
       containers:
-      - name: codeserver
-        image: lscr.io/linuxserver/code-server:latest
-        ports:
-        - containerPort: 8443
-        env:
-        - name: PUID
-          value: "1000"
-        - name: PGID
-          value: "1000"
-        - name: TZ
-          value: "Etc/UTC"
-        - name: DEFAULT_WORKSPACE
-          value: "/config/workspace"
-        - name: PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: codeserver
-              key: PASSWORD
-              optional: false
-        - name: SUDO_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: codeserver
-              key: SUDO_PASSWORD
-              optional: false
-        volumeMounts:
-          - name: config
-            mountPath: /config
+        - name: codeserver
+          image: lscr.io/linuxserver/code-server:latest
+          ports:
+            - containerPort: 8443
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TZ
+              value: "Etc/UTC"
+            - name: DEFAULT_WORKSPACE
+              value: "/config/workspace"
+            - name: PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: codeserver
+                  key: PASSWORD
+                  optional: false
+            - name: SUDO_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: codeserver
+                  key: SUDO_PASSWORD
+                  optional: false
+          volumeMounts:
+            - name: config
+              mountPath: /config
       volumes:
         - name: config
           persistentVolumeClaim:

@@ -159,11 +159,11 @@ data:
         - Uptime Kuma:
             icon: uptime-kuma.svg
             href: https://uptime.{{DOMAIN}}
-            ping: http://uptime.uptime:3001
+            ping: http://uptime.uptime
             description: Website/Service monitoring
             widget:
               type: uptimekuma
-              url: http://uptime.uptime:3001
+              url: http://uptime.uptime
               slug: services
         - Komga:
             icon: komga.svg
@@ -204,12 +204,12 @@ data:
         - IT Tools:
             icon: it-tools.svg
             href: https://it-tools.{{DOMAIN}}
-            ping: http://it-tools.it-tools:80
+            ping: http://it-tools.it-tools
             description: Handy tools for developers
         - True Command:
             icon: truenas.png
             href: https://true-command.{{DOMAIN}}
-            ping: http://true-command.true-command:85
+            ping: http://true-command.true-command
             description:  Management tool for TrueNAS systems.
         - File Browser:
             icon: filebrowser
@@ -229,7 +229,7 @@ data:
         - Rclone:
             icon: rclone.svg
             href: https://rclone.{{DOMAIN}}
-            ping: http://rclone.rclone:5572
+            ping: http://rclone.rclone
             description: Sync files across clouds
         - Firefly III:
             icon: si-fireflyiii

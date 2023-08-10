@@ -19,7 +19,7 @@ spec:
         app: rclone
     spec:
       nodeSelector:
-        type: pi
+        pi: pi-2
       containers:
         - name: rclone
           image: rclone/rclone
@@ -92,7 +92,7 @@ metadata:
   name: rclone
 spec:
   ports:
-    - port: 5572
+    - port: 80
       targetPort: 5572
   selector:
     app: rclone
@@ -110,4 +110,4 @@ spec:
       kind: Rule
       services:
         - name: rclone
-          port: 5572
+          port: 80

@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mailcatcher
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mailcatcher
+  namespace: mailcatcher
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mailcatcher
+  template:
+    metadata:
+      labels:
+        app: mailcatcher
+    spec:
+      nodeSelector:
+        type: pi
+      containers:
+      - name: mailcatcher
+        image: dockage/mailcatcher:0.8.2
+        ports:
+        - name: web
+          containerPort: 1080
+        - name: smtp
+          containerPort: 1025
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mailcatcher
+  namespace: mailcatcher
+spec:
+  ports:
+  - name: web
+    port: 80
+    targetPort: 1080
+  - name: smtp
+    port: 1025
+    targetPort: 1025
+  selector:
+    app: mailcatcher
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: mailcatcher-auth
+  namespace: mailcatcher
+spec:
+  basicAuth:
+    secret: mailcatcher-auth-secret
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: mailcatcher
+  namespace: mailcatcher
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`mail.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: mailcatcher
+          port: 80
+      middlewares:
+       - name: mailcatcher-auth

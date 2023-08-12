@@ -251,6 +251,11 @@ data:
             href: https://pdf.{{DOMAIN}}
             ping: http://stirling-pdf.stirling-pdf
             description: PDF Multitools
+        - Mail Catcher:
+            icon: mdi-email-multiple
+            href: https://mail.{{DOMAIN}}
+            ping: http://mailcatcher.mailcatcher
+            description: Simple local email server
     - System:
         - NUC:
             icon: mdi-cpu-64-bit

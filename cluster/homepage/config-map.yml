@@ -196,6 +196,11 @@ data:
             href: https://cloud.{{DOMAIN}}
             ping: http://filerun.filerun
             description: Personal Cloud
+        - Hoppscotch:
+            icon: hoppscotch.png
+            href: https://hoppscotch.{{DOMAIN}}
+            ping: http://hoppscotch.hoppscotch
+            description: Web-based API testing tool
         - Code Server:
             icon: terminal.svg
             href: https://codeserver.{{DOMAIN}}

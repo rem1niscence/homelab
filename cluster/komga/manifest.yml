@@ -94,7 +94,7 @@ metadata:
   name: komga
 spec:
   ports:
-    - port: 25600
+    - port: 80
       targetPort: 25600
   selector:
     app: komga
@@ -112,4 +112,4 @@ spec:
       kind: Rule
       services:
         - name: komga
-          port: 25600
+          port: 80

@@ -1,0 +1,97 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pialert
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: pialert
+  name: pialert
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pialert
+  template:
+    metadata:
+      labels:
+        app: pialert
+    spec:
+      # To scan my home network, don't do this on a production environment
+      hostNetwork: true
+      nodeSelector:
+        pi: pi-1
+      containers:
+        - name: pialert
+          image: jokobsk/pi.alert:latest
+          ports:
+            - containerPort: 20211
+          env:
+            - name: TZ
+              value: Europe/Berlin
+          volumeMounts:
+            - name: config
+              mountPath: /home/pi/pialert/config
+            - name: db
+              mountPath: /home/pi/pialert/db
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: config-pvc
+        - name: db
+          persistentVolumeClaim:
+            claimName: db-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: pialert
+  name: config-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2G
+  storageClassName: longhorn
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: pialert
+  name: db-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2G
+  storageClassName: longhorn
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: pialert
+  name: pialert
+spec:
+  ports:
+    - port: 80
+      targetPort: 20211
+  selector:
+    app: pialert
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: pialert
+  namespace: pialert
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`pialert.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: pialert
+          port: 80

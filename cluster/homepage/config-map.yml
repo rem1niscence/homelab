@@ -72,14 +72,22 @@ data:
               type: pihole
               url: http://pihole.pihole
               key: ${PIHOLE_API_KEY}
+        - Pi.Alert:
+            icon: mdi-router-network
+            href: https://pialert.{{DOMAIN}}
+            ping: http://pialert.pialert
+            description: Network device monitoring tool
+            widget:
+                type: pialert
+                url: http://pialert.pialert
         - Paperless:
             icon: paperless-ngx.svg
             href: https://paperless.{{DOMAIN}}
-            ping: http://paperless.paperless:8000
+            ping: http://paperless.paperless
             description: Digital document manager
             widget:
                 type: paperlessngx
-                url: http://paperless.paperless:8000
+                url: http://paperless.paperless
                 username: ${PAPERLESS_USERNAME}
                 password: ${PAPERLESS_PASSWORD}
         - qBittorrent:
@@ -151,20 +159,20 @@ data:
         - Uptime Kuma:
             icon: uptime-kuma.svg
             href: https://uptime.{{DOMAIN}}
-            ping: http://uptime.uptime:3001
+            ping: http://uptime.uptime
             description: Website/Service monitoring
             widget:
               type: uptimekuma
-              url: http://uptime.uptime:3001
+              url: http://uptime.uptime
               slug: services
         - Komga:
             icon: komga.svg
             href: https://komga.{{DOMAIN}}
-            ping: http://komga.komga:25600
+            ping: http://komga.komga
             description: Digital comics/manga server and reader
             widget:
               type: komga
-              url: http://komga.komga:25600
+              url: http://komga.komga
               username: ${KOMGA_URSERNAME}
               password: ${KOMGA_PASSWORD}
     - Apps:
@@ -178,6 +186,16 @@ data:
             href: https://longhorn.{{DOMAIN}}
             ping: http://longhorn-frontend.longhorn-system
             description: Cloud-native distributed storage for K8S
+        - Vaultwarden:
+            icon: vaultwarden.svg
+            href: https://vaultwarden.{{DOMAIN}}
+            ping: http://vaultwarden.vaultwarden
+            description: Self-hosted password management
+        - Code Server:
+            icon: terminal.svg
+            href: https://codeserver.{{DOMAIN}}
+            ping: http://codeserver.codeserver
+            description: Online coding workspace
         - Kubernetes:
             icon: kubernetes-dashboard.png
             href: https://dashboard.{{DOMAIN}}
@@ -186,17 +204,27 @@ data:
         - IT Tools:
             icon: it-tools.svg
             href: https://it-tools.{{DOMAIN}}
-            ping: http://it-tools.it-tools:80
+            ping: http://it-tools.it-tools
             description: Handy tools for developers
         - True Command:
             icon: truenas.png
             href: https://true-command.{{DOMAIN}}
-            ping: http://true-command.true-command:85
+            ping: http://true-command.true-command
             description:  Management tool for TrueNAS systems.
+        - FileRun:
+            icon: filerun.svg
+            href: https://cloud.{{DOMAIN}}
+            ping: http://filerun.filerun
+            description: Personal Cloud
+        - File Browser:
+            icon: filebrowser
+            href: https://filebrowser.{{DOMAIN}}
+            ping: http://filebrowser.filebrowser
+            description: Online file browser
         - Syncthing:
             icon: syncthing.svg
             href: https://syncthing.{{DOMAIN}}
-            ping: http://syncthing.syncthing:8384
+            ping: http://syncthing.syncthing
             description: File synchronization across devices
         - Keel.sh:
             icon: mdi-alpha-k-box-outline
@@ -206,8 +234,13 @@ data:
         - Rclone:
             icon: rclone.svg
             href: https://rclone.{{DOMAIN}}
-            ping: http://rclone.rclone:5572
+            ping: http://rclone.rclone
             description: Sync files across clouds
+        - Firefly III:
+            icon: si-fireflyiii
+            href: https://firefly.{{DOMAIN}}
+            ping: http://firefly.firefly
+            description: Personal finance manager
     - System:
         - NUC:
             icon: mdi-cpu-64-bit

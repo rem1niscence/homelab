@@ -1,0 +1,16 @@
+loki:
+  commonConfig:
+    replication_factor: 1
+  storage:
+    type: 'filesystem'
+  auth_enabled: false
+
+singleBinary:
+  replicas: 1
+persistence:
+  enabled: true
+  storageClassName: 'longhorn'
+  accessModes:
+    - ReadWriteOnce
+  size: 10Gi 
+  

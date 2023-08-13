@@ -2,6 +2,14 @@ define check_vars
 	$(foreach var,$1,$(if $(value $(var)),,$(error ERROR: $(var) is not set)))
 endef
 
+# TODO: Remake
+# .PHONY: monitoring
+# monitoring:
+# 	$(call check_vars, DOMAIN)
+# 	@kubectl create -f ./monitoring/prometheus-operator.yml
+# 	@kubectl apply -f ./monitoring/service-monitors
+# 	@kubectl apply -f ./monitoring/prometheus
+
 .PHONY: tailscale
 tailscale:
 	$(call check_vars, OAUTH_CLIENT_ID OAUTH_CLIENT_SECRET)

@@ -22,7 +22,7 @@ spec:
         fsGroup: 1000
         runAsUser: 1000
       nodeSelector:
-        pi: pi-1
+        type: pi
       containers:
         - name: komga
           image: gotson/komga

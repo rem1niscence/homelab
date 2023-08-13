@@ -26,4 +26,9 @@ fi
 
 kubectl apply -f ./$app
 
+if [ -f "./$app/secrets.yml" ]; then 
+  rm ./$app/secrets.yml; echo "File ./$app/secrets.yml deleted."
+  rm ./$app/.env; echo "File ./$app/.env deleted."
+fi
+
 echo "done ✅"

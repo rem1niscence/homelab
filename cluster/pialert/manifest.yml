@@ -21,7 +21,7 @@ spec:
       # To scan my home network, don't do this on a production environment
       hostNetwork: true
       nodeSelector:
-        pi: pi-1
+        pi: pi-2
       containers:
         - name: pialert
           image: jokobsk/pi.alert:latest

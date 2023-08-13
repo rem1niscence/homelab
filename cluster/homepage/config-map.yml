@@ -19,7 +19,7 @@ data:
         columns: 4
       System:
         style: row
-        columns: 5
+        columns: 4
     providers:
       longhorn:
         url: http://longhorn-frontend.longhorn-system
@@ -191,6 +191,16 @@ data:
             href: https://vaultwarden.{{DOMAIN}}
             ping: http://vaultwarden.vaultwarden
             description: Self-hosted password management
+        - FileRun:
+            icon: filerun.svg
+            href: https://cloud.{{DOMAIN}}
+            ping: http://filerun.filerun
+            description: Personal Cloud
+        - Hoppscotch:
+            icon: hoppscotch.png
+            href: https://hoppscotch.{{DOMAIN}}
+            ping: http://hoppscotch.hoppscotch
+            description: Web-based API testing tool
         - Code Server:
             icon: terminal.svg
             href: https://codeserver.{{DOMAIN}}
@@ -211,11 +221,6 @@ data:
             href: https://true-command.{{DOMAIN}}
             ping: http://true-command.true-command
             description:  Management tool for TrueNAS systems.
-        - FileRun:
-            icon: filerun.svg
-            href: https://cloud.{{DOMAIN}}
-            ping: http://filerun.filerun
-            description: Personal Cloud
         - File Browser:
             icon: filebrowser
             href: https://filebrowser.{{DOMAIN}}
@@ -241,6 +246,16 @@ data:
             href: https://firefly.{{DOMAIN}}
             ping: http://firefly.firefly
             description: Personal finance manager
+        - Stirling PDF:
+            icon: stirling-pdf.png
+            href: https://pdf.{{DOMAIN}}
+            ping: http://stirling-pdf.stirling-pdf
+            description: PDF Multitools
+        - Mail Catcher:
+            icon: mdi-email-multiple
+            href: https://mail.{{DOMAIN}}
+            ping: http://mailcatcher.mailcatcher
+            description: Simple local email server
     - System:
         - NUC:
             icon: mdi-cpu-64-bit
@@ -250,10 +265,6 @@ data:
             icon: mdi-cpu-64-bit
             href: ${DASHDOT_VM_URL}
             ping: ${DASHDOT_VM_PING}
-        - PI-1:
-            icon: mdi-cpu-64-bit
-            href: ${DASHDOT_PI_1_URL}
-            ping: ${DASHDOT_PI_1_PING}
         - PI-2:
             icon: mdi-cpu-64-bit
             href: ${DASHDOT_PI_2_URL}

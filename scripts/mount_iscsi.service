@@ -2,10 +2,16 @@
 Description=Mount ISCSI volume at boot
 
 [Service]
+ExecStartPre=/bin/sleep 30
 ExecStart=/usr/bin/mount_iscsi 10.0.0.95 {VOLUME_NAME} /longhorn false
 
 [Install]
 WantedBy=multi-user.target
+
+Restart=on-failure
+RestartSec=10s
+StartLimitBurst=5
+StartLimitIntervalSec=60
 
 # File location:
 # /etc/systemd/system/mount_iscsi.service

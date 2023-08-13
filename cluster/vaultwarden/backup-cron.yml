@@ -1,0 +1,204 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backup-script
+  namespace: vaultwarden
+data:
+  backup.sh: |
+    #!/bin/bash
+
+    # Base code obtained from: https://github.com/dh024/Bitwarden_Export/blob/main/bw_export.sh
+    # Bitwarden CLI Vault Export Script
+    # Author: David H (@dh024)
+    #  
+    # This script will backup the following:
+    #   - personal vault contents, password encrypted (or unencrypted)
+    #   - organizational vault contents (passwd encrypted or unencrypted)
+    #   - file attachments
+    # It will also report on whether there were items in the Trash that
+    # could not be exported.
+
+    # Install dependencies
+    apt update
+    apt install -y jq
+    npm install -g @bitwarden/cli
+
+    email=$EMAIL
+    password=$PASSWORD
+    encryption_password=$ENCRYPTION_PASSWORD
+    backup_folder=$BACKUP_FOLDER
+    attachments_folder=$ATTACHMENTS_FOLDER
+
+    if [ -z "$ENCRYPTION_PASSWORD" ] || [ -z "$BACKUP_FOLDER" ] || [ -z "$ATTACHMENTS_FOLDER" ]; then
+      echo "Error: One or more of the required environment variables" \ 
+          "(ENCRYPTION_PASSWORD, SAVE_FOLDER, ATTACHMENTS_FOLDER) are not set."
+      exit 1
+    fi
+
+    bw config server http://vaultwarden.vaultwarden
+
+    echo "Starting export script..."
+
+    #Login user if not already authenticated
+    if [[ $(bw status | jq -r .status) == "unauthenticated" ]]
+    then 
+        echo "Performing login..."
+        bw login $email $password --method 0 --quiet
+    fi
+    if [[ $(bw status | jq -r .status) == "unauthenticated" ]]
+    then 
+        echo "ERROR: Failed to authenticate."
+        echo
+        exit 1
+    fi
+
+    #Unlock the vault
+    session_key=$(bw unlock $password --raw)
+
+    #Verify that unlock succeeded
+    if [[ $session_key == "" ]]
+    then 
+        echo "ERROR: Failed to authenticate."
+        echo
+        exit 1
+    else
+        echo "Login successful."
+        echo
+    fi
+
+    #Export the session key as an env variable (needed by BW CLI)
+    export BW_SESSION="$session_key" 
+
+    echo "Performing vault exports..."
+
+    # 1. Export the personal vault 
+    if [[ ! -d "$backup_folder" ]]
+    then
+        echo "ERROR: Could not find the folder in which to save the files."
+        echo
+        exit 1
+    fi
+
+    echo 
+    echo "Exporting personal vault to a password-encrypted file..."
+    bw export --format encrypted_json --password $encryption_password --output $backup_folder/backup.json
+
+    # Perform attachments backup
+    if [[ $(bw list items | jq -r '.[] | select(.attachments != null)') != "" ]]
+    then
+        echo
+        echo "Saving attachments..."
+        bash <(bw list items | jq -r '.[] 
+        | select(.attachments != null) 
+        | "bw get attachment \"\(.attachments[].fileName)\" --itemid \(.id) --output \"'$attachments_folder'\(.name)/\""' )
+    else
+        echo
+        echo "No attachments exist, so nothing to export."
+    fi 
+
+    echo
+    echo "Vault export complete."
+
+    bw lock 
+    echo
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: backup
+  namespace: vaultwarden
+spec:
+  schedule: "30 8 * * *"
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          nodeSelector:
+            type: main
+          containers:
+            - name: backup-vaultwarden
+              image: node:slim
+              command: ["/bin/bash", "/scripts/backup.sh"]
+              envFrom:
+                - secretRef:
+                    name: vaultwarden-backup
+              volumeMounts:
+                - name: backup
+                  mountPath: /backup
+                - name: attachments
+                  mountPath: /attachments
+                - name: script
+                  mountPath: /scripts
+          volumes:
+            - name: backup
+              persistentVolumeClaim:
+                claimName: backup-pvc
+            - name: attachments
+              persistentVolumeClaim:
+                claimName: attachments-pvc
+            - name: script
+              configMap:
+                name: backup-script
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: vaultwarden-backup-data-pv
+spec:
+  capacity:
+    storage: 1G
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 10.0.0.95
+    path: /mnt/main_drive/vaultwarden/backup
+  storageClassName: local-path
+  mountOptions:
+    - vers=4.0
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: vaultwarden
+  name: backup-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1G
+  volumeName: vaultwarden-backup-data-pv
+  storageClassName: local-path
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: vaultwarden-attachments-pv
+spec:
+  capacity:
+    storage: 1G
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 10.0.0.95
+    path: /mnt/main_drive/vaultwarden/attachments
+  storageClassName: local-path
+  mountOptions:
+    - vers=4.0
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: vaultwarden
+  name: attachments-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1G
+  volumeName: vaultwarden-attachments-pv
+  storageClassName: local-path

@@ -1,0 +1,122 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backup-cloud
+  namespace: vaultwarden
+data:
+  backup.sh: |
+    #!/bin/bash
+
+    # TODO: Fix repetition
+
+    # Install dependencies
+    apt update
+    apt install -y jq
+    npm install -g @bitwarden/cli
+
+    email=$EMAIL
+    password=$PASSWORD
+    backup_folder="/backup"
+
+    mkdir -p $backup_folder
+
+    bw config server http://vaultwarden.vaultwarden
+
+    echo "Performing login..."
+    bw login $email $password --method 0 --quiet
+
+    if [[ $(bw status | jq -r .status) == "unauthenticated" ]]
+    then 
+        echo "ERROR: Failed to authenticate on vaultwarden"
+        exit 1
+    fi
+
+    # unlock the vault
+    session_key=$(bw unlock $password --raw)
+
+    # verify that unlock succeeded
+    if [[ $session_key == "" ]]
+    then 
+        echo "ERROR: Failed to authenticate."
+        exit 1
+    else
+        echo "Login successful."
+    fi
+
+    #Export the session key as an env variable (needed by BW CLI)
+    export BW_SESSION="$session_key" 
+
+    echo "exporting vault"
+    bw export --format json --output $backup_folder/backup.json
+
+    echo
+    echo "cloud import complete."
+
+    bw logout
+
+    echo
+    echo "logging into bitwarden cloud"
+
+    bw config server https://bitwarden.com
+
+    bw login $email $password --method 0 --quiet
+
+    if [[ $(bw status | jq -r .status) == "unauthenticated" ]]
+    then 
+        echo "ERROR: Failed to authenticate on bitwarden"
+        exit 1
+    fi
+
+    session_key=$(bw unlock $password --raw)
+
+    # verify that unlock succeeded
+    if [[ $session_key == "" ]]
+    then 
+        echo "ERROR: Failed to authenticate."
+        exit 1
+    else
+        echo "Login successful."
+    fi
+
+    export BW_SESSION="$session_key" 
+
+    echo "importing backup to cloud"
+    bw import bitwardenjson $backup_folder/backup.json
+
+    echo "backup complete"
+
+    rm -rf $backup_folder
+
+    bw lock
+    echo
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: backup-cloud
+  namespace: vaultwarden
+spec:
+  schedule: "45 8 * * *"
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          nodeSelector:
+            type: main
+          containers:
+            - name: backup-cloud
+              image: node:slim
+              command: ["/bin/bash", "/scripts/backup.sh"]
+              envFrom:
+                - secretRef:
+                    name: backup-cloud
+              volumeMounts:
+                - name: script
+                  mountPath: /scripts
+          volumes:
+            - name: script
+              configMap:
+                name: backup-cloud

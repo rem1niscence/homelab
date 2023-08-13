@@ -1,0 +1,13 @@
+persistence:
+ type: pvc
+ enabled: true
+ storageClassName: longhorn
+ accessModes:
+   - ReadWriteOnce
+ size: 10Gi
+grafana.ini:
+ smtp:
+   enabled: true
+   host: smtp://mailcatcher.mailcatcher:1025
+   from_address: grafana@locahost.com
+   skip_verify: true

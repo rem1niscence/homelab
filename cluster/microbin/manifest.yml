@@ -1,0 +1,115 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: microbin
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: microbin
+  namespace: microbin
+data:
+    MICROBIN_EDITABLE: "true"
+    MICROBIN_HIDE_HEADER: "false"
+    MICROBIN_HIDE_FOOTER: "false"
+    MICROBIN_HIDE_LOGO: "false"
+    MICROBIN_NO_LISTING: "false"
+    MICROBIN_HIGHLIGHTSYNTAX: "true"
+    MICROBIN_PORT: "80"
+    MICROBIN_BIND: "0.0.0.0"
+    MICROBIN_PRIVATE: "true"
+    MICROBIN_PURE_HTML: "false"
+    MICROBIN_JSON_DB: "false"
+    MICROBIN_READONLY: "false"
+    MICROBIN_SHOW_READ_STATS: "true"
+    MICROBIN_THREADS: "1"
+    MICROBIN_GC_DAYS: "90"
+    MICROBIN_ENABLE_BURN_AFTER: "true"
+    MICROBIN_DEFAULT_BURN_AFTER: "0"
+    MICROBIN_WIDE: "true"
+    MICROBIN_QR: "true"
+    MICROBIN_ETERNAL_PASTA: "true"
+    MICROBIN_ENABLE_READONLY: "true"
+    MICROBIN_DEFAULT_EXPIRY: "24hour"
+    MICROBIN_NO_FILE_UPLOAD: "false"
+    MICROBIN_HASH_IDS: "true"
+    MICROBIN_ENCRYPTION_CLIENT_SIDE: "true"
+    MICROBIN_ENCRYPTION_SERVER_SIDE: "true"
+    MICROBIN_MAX_FILE_SIZE_ENCRYPTED_MB: "256"
+    MICROBIN_MAX_FILE_SIZE_UNENCRYPTED_MB: "2048"
+    MICROBIN_PUBLIC_PATH: "/"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: microbin
+  namespace: microbin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: microbin
+  template:
+    metadata:
+      labels:
+        app: microbin
+    spec:
+      nodeSelector:
+        type: pi
+      containers:
+        - name: microbin-container
+          image: danielszabo99/microbin:latest
+          ports:
+            - containerPort: 80
+          envFrom:
+            - configMapRef:
+                name: microbin
+            - secretRef:
+                name: microbin
+          volumeMounts:
+            - name: data
+              mountPath: /app/microbin_data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: microbin
+  name: data-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2G
+  storageClassName: longhorn
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: microbin
+  namespace: microbin
+spec:
+  selector:
+    app: microbin
+  ports:
+    - port: 80
+      targetPort: 80
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: microbin
+  namespace: microbin
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`microbin.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: microbin
+          port: 80

@@ -273,6 +273,11 @@ data:
             href: https://mail.{{DOMAIN}}
             ping: http://mailcatcher.mailcatcher
             description: Simple local email server
+        - Microbin:
+            icon: si-pastebin
+            href: https://microbin.{{DOMAIN}}
+            ping: http://microbin.microbin
+            description: Personal pasta bin
     - System:
         - NUC:
             icon: mdi-cpu-64-bit

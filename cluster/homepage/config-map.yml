@@ -278,6 +278,11 @@ data:
             href: https://microbin.{{DOMAIN}}
             ping: http://microbin.microbin
             description: Personal pasta bin
+        - N8N:
+            icon: n8n.svg
+            href: https://n8n.{{DOMAIN}}
+            ping: http://n8n.n8n
+            description: Workflow automation tool
     - System:
         - NUC:
             icon: mdi-cpu-64-bit

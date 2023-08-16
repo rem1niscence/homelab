@@ -5,7 +5,7 @@ metadata:
   namespace: monitoring
 spec:
   replicas: 1
-  retention: 7d
+  retention: 3d
   resources:
     requests:
       memory: 400Mi

@@ -159,15 +159,15 @@ data:
               type: prowlarr
               url: http://prowlarr.servarr:9696
               key: ${PROWLARR_API_KEY}
-        - Uptime Kuma:
-            icon: uptime-kuma.svg
-            href: https://uptime.{{DOMAIN}}
-            ping: http://uptime.uptime
-            description: Website/Service monitoring
-            widget:
-              type: uptimekuma
-              url: http://uptime.uptime
-              slug: services
+        # - Uptime Kuma:
+        #     icon: uptime-kuma.svg
+        #     href: https://uptime.{{DOMAIN}}
+        #     ping: http://uptime.uptime
+        #     description: Website/Service monitoring
+        #     widget:
+        #       type: uptimekuma
+        #       url: http://uptime.uptime
+        #       slug: services
         - Komga:
             icon: komga.svg
             href: https://komga.{{DOMAIN}}

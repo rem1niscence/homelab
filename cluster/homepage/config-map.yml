@@ -24,10 +24,13 @@ data:
       longhorn:
         url: http://longhorn-frontend.longhorn-system
   bookmarks.yaml: |
-    - Developer:
+    - Links:
         - Github:
             - abbr: GH
               href: https://github.com/rem1niscence
+        - Grafana Explore:
+            - abbr: GF
+              href: https://grafana.{{DOMAIN}}/explore
   services.yaml: |
     - Widgets:
         - Traefik:
@@ -156,15 +159,15 @@ data:
               type: prowlarr
               url: http://prowlarr.servarr:9696
               key: ${PROWLARR_API_KEY}
-        - Uptime Kuma:
-            icon: uptime-kuma.svg
-            href: https://uptime.{{DOMAIN}}
-            ping: http://uptime.uptime
-            description: Website/Service monitoring
-            widget:
-              type: uptimekuma
-              url: http://uptime.uptime
-              slug: services
+        # - Uptime Kuma:
+        #     icon: uptime-kuma.svg
+        #     href: https://uptime.{{DOMAIN}}
+        #     ping: http://uptime.uptime
+        #     description: Website/Service monitoring
+        #     widget:
+        #       type: uptimekuma
+        #       url: http://uptime.uptime
+        #       slug: services
         - Komga:
             icon: komga.svg
             href: https://komga.{{DOMAIN}}
@@ -185,13 +188,13 @@ data:
               url: http://grafana.monitoring
               username: ${GRAFANA_URSERNAME}
               password: ${GRAFANA_PASSWORD}
-        - Prometheus:
-            icon: prometheus.svg
-            ping: http://prometheus.monitoring
-            description: Metrics monitoring and alerting toolkit
-            widget:
-              type: prometheus
-              url: http://prometheus.monitoring
+        # - Prometheus:
+        #     icon: prometheus.svg
+        #     ping: http://prometheus.monitoring
+        #     description: Metrics monitoring and alerting toolkit
+        #     widget:
+        #       type: prometheus
+        #       url: http://prometheus.monitoring
     - Apps:
         - Rancher:
             icon: rancher.svg
@@ -273,6 +276,16 @@ data:
             href: https://mail.{{DOMAIN}}
             ping: http://mailcatcher.mailcatcher
             description: Simple local email server
+        - Microbin:
+            icon: si-pastebin
+            href: https://microbin.{{DOMAIN}}
+            ping: http://microbin.microbin
+            description: Personal pasta bin
+        - N8N:
+            icon: n8n.svg
+            href: https://n8n.{{DOMAIN}}
+            ping: http://n8n.n8n
+            description: Workflow automation tool
     - System:
         - NUC:
             icon: mdi-cpu-64-bit

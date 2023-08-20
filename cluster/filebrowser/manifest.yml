@@ -18,6 +18,8 @@ spec:
       labels:
         app: filebrowser
     spec:
+      nodeSelector:
+        type: pi
       containers:
         - name: filebrowser
           image: filebrowser/filebrowser

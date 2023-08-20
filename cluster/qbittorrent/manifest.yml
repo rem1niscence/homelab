@@ -18,6 +18,8 @@ spec:
       labels:
         app: qbittorrent
     spec:
+      nodeSelector:
+        type: pi
       containers:
         - name: qbittorrent
           # qbittorrent with vuetorrent preinstalled

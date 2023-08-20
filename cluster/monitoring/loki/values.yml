@@ -4,6 +4,9 @@ loki:
   storage:
     type: 'filesystem'
   auth_enabled: false
+  tableManager:
+    retention_deletes_enabled: true
+    retention_period: 72h
 
 singleBinary:
   replicas: 1

@@ -286,6 +286,11 @@ data:
             href: https://n8n.{{DOMAIN}}
             ping: http://n8n.n8n
             description: Workflow automation tool
+        - Whoogle:
+            icon: google
+            href: https://whoogle.{{DOMAIN}}
+            ping: http://whoogle.whoogle
+            description: Privacy-focused Google front-end
     - System:
         - NUC:
             icon: mdi-cpu-64-bit

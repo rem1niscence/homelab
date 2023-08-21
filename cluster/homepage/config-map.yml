@@ -291,6 +291,11 @@ data:
             href: https://whoogle.{{DOMAIN}}
             ping: http://whoogle.whoogle
             description: Privacy-focused Google front-end
+        - Tandoor Recipes:
+            icon: tandoor
+            href: https://tandoor.{{DOMAIN}}
+            ping: http://tandoor.tandoor
+            description: Recipe management software
     - System:
         - NUC:
             icon: mdi-cpu-64-bit

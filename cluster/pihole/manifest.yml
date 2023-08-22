@@ -3,6 +3,62 @@ kind: Namespace
 metadata:
   name: pihole
 ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pihole
+  namespace: pihole
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pihole
+  template:
+    metadata:
+      labels:
+        app: pihole
+    spec:
+      nodeSelector:
+        type: pi
+      containers:
+      - name: pihole
+        image: pihole/pihole:latest
+        ports:
+        - containerPort: 8000
+        - containerPort: 53
+          protocol: TCP
+        - containerPort: 53
+          protocol: UDP
+        env:
+        - name: TZ
+          value: "America/Santo_Domingo"
+        - name: WEBPASSWORD
+          value: O10A_hn4
+        volumeMounts:
+        - name: config
+          mountPath: /etc/pihole
+          subPath: pihole-config
+        - name: config
+          mountPath: /etc/dnsmasq.d
+          subPath: dnsmasq-config
+      volumes:
+      - name: config
+        persistentVolumeClaim:
+          claimName: config-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: pihole
+  name: config-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1G
+  storageClassName: longhorn
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -10,32 +66,20 @@ metadata:
   namespace: pihole
 spec:
   ports:
-    - protocol: TCP
+    - name: admin-tcp
+      protocol: TCP
       port: 80
-  clusterIP: None
----
-apiVersion: v1
-kind: Endpoints
-metadata:
-  name: pihole
-  namespace: pihole
-subsets:
-  - addresses:
-      - ip: 10.0.0.96
-    ports:
-      - port: 80
----
-
-
-# apiVersion: traefik.containo.us/v1alpha1
-# kind: Middleware
-# metadata:
-#   name: https-redirect
-#   namespace: pihole
-# spec:
-#   redirectScheme:
-#     scheme: https
-#     permanent: true
+      targetPort: 80
+    - name: dns-tcp
+      protocol: TCP
+      port: 53
+      targetPort: 53
+    - name: dns-udp
+      protocol: UDP
+      port: 53
+      targetPort: 53
+  selector:
+    app: pihole
 ---
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
@@ -46,11 +90,8 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`pihole.{{DOMAIN}}`)
-      kind: Rule
-      services:
-        - name: pihole
-          port: 80
-      # middlewares:
-      #   - name: https-redirect
-      #     namespace: pihole
+  - match: Host(`pihole.{{DOMAIN}}`)
+    kind: Rule
+    services:
+    - name: pihole
+      port: 80

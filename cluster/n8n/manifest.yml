@@ -21,40 +21,40 @@ spec:
       nodeSelector:
         type: main
       containers:
-      - name: n8n
-        securityContext:
-          runAsUser: 0
-        image: docker.n8n.io/n8nio/n8n
-        ports:
-        - containerPort: 80
-        env:
-          - name: N8N_PORT
-            value: "80"
-          - name: N8N_PROTOCOL
-            value: "https"
-          - name: NODE_ENV
-            value: "production"
-          - name: GENERIC_TIMEZONE
-            value: "Etc/UTC"
-          - name: N8N_HOST
-            valueFrom:
-              secretKeyRef:
-                name: n8n
-                key: N8N_HOST
-                optional: false
-          - name: WEBHOOK_URL
-            valueFrom:
-              secretKeyRef:
-                name: n8n
-                key: WEBHOOK_URL
-                optional: false
-        volumeMounts:
-        - name: config
-          mountPath: /home/node/.n8n
+        - name: n8n
+          securityContext:
+            runAsUser: 0
+          image: docker.n8n.io/n8nio/n8n
+          ports:
+            - containerPort: 80
+          env:
+            - name: N8N_PORT
+              value: "80"
+            - name: N8N_PROTOCOL
+              value: "https"
+            - name: NODE_ENV
+              value: "production"
+            - name: GENERIC_TIMEZONE
+              value: "Etc/UTC"
+            - name: N8N_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: n8n
+                  key: N8N_HOST
+                  optional: false
+            - name: WEBHOOK_URL
+              valueFrom:
+                secretKeyRef:
+                  name: n8n
+                  key: WEBHOOK_URL
+                  optional: false
+          volumeMounts:
+            - name: config
+              mountPath: /home/node/.n8n
       volumes:
-      - name: config
-        persistentVolumeClaim:
-          claimName: config-pvc
+        - name: config
+          persistentVolumeClaim:
+            claimName: config-pvc
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

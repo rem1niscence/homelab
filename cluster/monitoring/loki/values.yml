@@ -7,7 +7,6 @@ loki:
   tableManager:
     retention_deletes_enabled: true
     retention_period: 72h
-
 singleBinary:
   replicas: 1
 persistence:
@@ -15,5 +14,4 @@ persistence:
   storageClassName: 'longhorn'
   accessModes:
     - ReadWriteOnce
-  size: 10Gi 
-  
+  size: 10Gi

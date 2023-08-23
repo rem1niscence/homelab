@@ -296,6 +296,11 @@ data:
             href: https://tandoor.{{DOMAIN}}
             ping: http://tandoor.tandoor
             description: Recipe management software
+        - Linkding:
+            icon: linkding
+            href: https://linkding.{{DOMAIN}}
+            ping: http://linkding.linkding
+            description: Bookmarks manager
     - System:
         - NUC:
             icon: mdi-cpu-64-bit

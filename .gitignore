@@ -6,3 +6,5 @@
 acme/
 
 *.config*
+
+.DS_STORE

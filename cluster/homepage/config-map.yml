@@ -291,10 +291,10 @@ data:
             href: https://whoogle.{{DOMAIN}}
             ping: http://whoogle.whoogle
             description: Privacy-focused Google front-end
-        - Tandoor Recipes:
-            icon: tandoor
-            href: https://tandoor.{{DOMAIN}}
-            ping: http://tandoor.tandoor
+        - Kitchen Owl:
+            icon: kitchenowl
+            href: https://kitchenowl.{{DOMAIN}}
+            ping: http://front.kitchenowl
             description: Recipe management software
         - Linkding:
             icon: linkding

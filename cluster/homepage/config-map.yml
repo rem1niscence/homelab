@@ -301,6 +301,11 @@ data:
             href: https://linkding.{{DOMAIN}}
             ping: http://linkding.linkding
             description: Bookmarks manager
+        - Excalidraw:
+            icon: si-diagramsdotnet
+            href: https://excalidraw.{{DOMAIN}}
+            ping: http://excalidraw.excalidraw
+            description: Diagramming tool
     - System:
         - NUC:
             icon: mdi-cpu-64-bit

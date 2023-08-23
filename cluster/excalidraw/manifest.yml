@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: excalidraw
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: excalidraw
+  name: excalidraw
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: excalidraw
+  template:
+    metadata:
+      labels:
+        app: excalidraw
+    spec:
+      containers:
+      - name: excalidraw
+        image: excalidraw/excalidraw:latest
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: excalidraw
+  name: excalidraw
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    app: excalidraw
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: excalidraw
+  namespace: excalidraw
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`excalidraw.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: excalidraw
+          port: 80

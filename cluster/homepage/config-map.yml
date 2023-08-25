@@ -226,6 +226,11 @@ data:
             href: https://codeserver.{{DOMAIN}}
             ping: http://codeserver.codeserver
             description: Online coding workspace
+        - Cloudbeaver:
+            icon: mdi-database-cog
+            href: https://cloudbeaver.{{DOMAIN}}
+            ping: http://cloudbeaver.cloudbeaver
+            description: Database management system
         - Kubernetes:
             icon: kubernetes-dashboard.png
             href: https://dashboard.{{DOMAIN}}
@@ -286,6 +291,26 @@ data:
             href: https://n8n.{{DOMAIN}}
             ping: http://n8n.n8n
             description: Workflow automation tool
+        - Whoogle:
+            icon: google
+            href: https://whoogle.{{DOMAIN}}
+            ping: http://whoogle.whoogle
+            description: Privacy-focused Google front-end
+        - Kitchen Owl:
+            icon: kitchenowl
+            href: https://kitchenowl.{{DOMAIN}}
+            ping: http://front.kitchenowl
+            description: Recipe management software
+        - Linkding:
+            icon: linkding
+            href: https://linkding.{{DOMAIN}}
+            ping: http://linkding.linkding
+            description: Bookmarks manager
+        - Excalidraw:
+            icon: si-diagramsdotnet
+            href: https://excalidraw.{{DOMAIN}}
+            ping: http://excalidraw.excalidraw
+            description: Diagramming tool
     - System:
         - NUC:
             icon: mdi-cpu-64-bit

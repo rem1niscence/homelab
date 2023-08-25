@@ -1,0 +1,114 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kitchenowl
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: front
+  namespace: kitchenowl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: front
+  template:
+    metadata:
+      labels:
+        app: front
+    spec:
+      nodeSelector:
+        pi: pi-3
+      containers:
+        - name: front
+          image: tombursch/kitchenowl-web:latest
+          ports:
+            - containerPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: back
+  namespace: kitchenowl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: back
+  template:
+    metadata:
+      labels:
+        app: back
+    spec:
+      nodeSelector:
+        type: main
+      containers:
+        - name: back
+          image: tombursch/kitchenowl:latest
+          ports:
+            - containerPort: 5000
+          env:
+            - name: JWT_SECRET_KEY
+              value: c729ca5bf305e7faea4129f7ebd382d3ec14e887b0c1f813ba8109123a339cfe
+            # - name: FRONT_URL
+              # value: https://kitchenowl.{{DOMAIN}}
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: kitchenowl
+  name: data-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1G
+  storageClassName: longhorn
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: front
+  namespace: kitchenowl
+spec:
+  selector:
+    app: front
+  ports:
+    - port: 80
+      targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: back
+  namespace: kitchenowl
+spec:
+  selector:
+    app: back
+  ports:
+    - port: 5000
+      targetPort: 5000
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: kitchenowl
+  namespace: kitchenowl
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host("kitchenowl.{{DOMAIN}}")
+      kind: Rule
+      services:
+        - name: front
+          port: 80

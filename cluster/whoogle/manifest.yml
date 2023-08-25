@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: whoogle
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: whoogle
+  namespace: whoogle
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: whoogle
+  template:
+    metadata:
+      labels:
+        app: whoogle
+    spec:
+      nodeSelector:
+        type: pi
+      containers:
+        - name: whoogle
+          image: benbusby/whoogle-search
+          ports:
+            - containerPort: 5000
+          env:
+            - name: WHOOGLE_CONFIG_THEME
+              value: dark
+            - name: WHOOGLE_CONFIG_COUNTRY
+              value: USA
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: whoogle
+  namespace: whoogle
+spec:
+  selector:
+    app: whoogle
+  ports:
+    - port: 80
+      targetPort: 5000
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: whoogle
+  namespace: whoogle
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`whoogle.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: whoogle
+          port: 80

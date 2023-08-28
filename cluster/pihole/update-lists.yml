@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: pihole-update-cronjob
+  name: update
   namespace: pihole
 spec:
   schedule: "11 22 * * *"

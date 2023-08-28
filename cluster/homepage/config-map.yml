@@ -17,6 +17,9 @@ data:
       Apps:
         style: row
         columns: 4
+      Blog:
+        style: row
+        columns: 2
       System:
         style: row
         columns: 4
@@ -311,6 +314,12 @@ data:
             href: https://excalidraw.{{DOMAIN}}
             ping: http://excalidraw.excalidraw
             description: Diagramming tool
+    - Blog:
+        - Umami:
+            icon: umami-analytics
+            href: https://umami.{{DOMAIN}}
+            ping: http://umami.umami
+            description: Open-source website analytics
     - System:
         - NUC:
             icon: mdi-cpu-64-bit

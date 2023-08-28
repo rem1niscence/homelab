@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: umami
-          image: ghcr.io/umami-software/umami:postgresql-latest
+          image: ghcr.io/umami-software/umami:mysql-latest
           ports:
             - containerPort: 3000
           envFrom:
@@ -42,38 +42,27 @@ spec:
       labels:
         app: db
     spec:
-      nodeSelector:
-        type: main
       containers:
         - name: db
-          image: postgres:15-alpine
+          image: linuxserver/mariadb
           ports:
-            - containerPort: 5432
+            - containerPort: 3306
           envFrom:
             - secretRef:
                 name: umami
-          livenessProbe:
-            exec:
-              command:
-                - sh
-                - -c
-                - pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
-            initialDelaySeconds: 30
-            periodSeconds: 10
           volumeMounts:
-            - name: data
-              mountPath: /var/lib/postgresql/data
-              subPath: postgres
+            - name: config
+              mountPath: /config
       volumes:
-        - name: data
+        - name: config
           persistentVolumeClaim:
-            claimName: data-pvc
+            claimName: config-pvc
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   namespace: umami
-  name: data-pvc
+  name: config-pvc
 spec:
   accessModes:
     - ReadWriteOnce
@@ -89,8 +78,8 @@ metadata:
   name: db
 spec:
   ports:
-    - port: 5432
-      targetPort: 5432
+    - port: 3306
+      targetPort: 3306
   selector:
     app: db
 ---

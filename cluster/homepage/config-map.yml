@@ -315,6 +315,11 @@ data:
             ping: http://excalidraw.excalidraw
             description: Diagramming tool
     - Blog:
+        - remini.dev:
+            icon: mdi-post-outline
+            href: https://remini.dev
+            ping: http://blog.blog
+            description: Personal blog
         - Umami:
             icon: umami-analytics
             href: https://umami.{{DOMAIN}}

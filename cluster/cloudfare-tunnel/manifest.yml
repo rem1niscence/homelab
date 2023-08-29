@@ -1,3 +1,4 @@
+# TODO: Still in progress, not working file
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -20,7 +21,7 @@ spec:
     spec:
       containers:
       - name: cloudflared
-        image: cloudflare/cloudflared:2023.8.0
+        image: cloudflare/cloudflared:2023.8.1
         args:
         - tunnel
         - --config

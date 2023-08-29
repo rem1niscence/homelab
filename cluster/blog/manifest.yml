@@ -1,0 +1,152 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: blog
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: blog
+  name: files
+data:
+  server.go: |
+    package main
+      import (
+      "net/http"
+      "time"
+      "log"
+    )
+
+    const cacheDuration = 3600 * time.Second // 1 hour
+
+    func main() {
+      http.Handle("/", addCacheHeaders(http.FileServer(http.Dir("/shared/public"))))
+      log.Println("server running on port 80, serving files on /shared/public")
+      log.Fatal(http.ListenAndServe(":80", nil))
+    }
+
+    func addCacheHeaders(h http.Handler) http.Handler {
+      return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        w.Header().Set("Cache-Control", "public, max-age="+string(rune(int(cacheDuration.Seconds()))))
+        h.ServeHTTP(w, r) // call original
+      })
+    }
+  poll-updates.sh: |
+    #!/bin/sh
+
+    CHECKSUM_FILE="/shared/checksum.txt"
+
+    # TODO: Use webhooks instead of continous polling
+    while true; do
+        echo "downloading blog zip"
+        wget -O /shared/latest.zip https://github.com/rem1niscence/remini-blog/releases/download/latest/public.zip
+        NEW_CHECKSUM=$(sha256sum /shared/latest.zip | cut -d ' ' -f1)
+
+        if [ ! -f "$CHECKSUM_FILE" ] || [ "$NEW_CHECKSUM" != "$(cat $CHECKSUM_FILE)" ]; then
+            echo "blog contents have changed, updating" && \
+            unzip -o /shared/latest.zip -d /shared && \ # /shared/public 
+            echo "blog contents have been zipped into /shared/public" 
+            echo $NEW_CHECKSUM > $CHECKSUM_FILE
+        fi
+
+        sleep 3600 # 1 hour
+    done
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: blog
+  name: blog
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blog
+  template:
+    metadata:
+      labels:
+        app: blog
+    spec:
+      nodeSelector:
+        type: pi
+      initContainers:
+      - name: install-server
+        image: golang:1.21.0-alpine
+        command:
+          - sh
+          - -c
+          - |
+            cd /server
+            echo "Building file server 🏗️" && \
+            CGO_ENABLED=0 GO111MODULE=off go build -o /shared/server . && \
+            echo "Finished Building file server ✅" 
+        volumeMounts:
+        - name: shared
+          mountPath: /shared
+        - name: files
+          mountPath: /server
+
+      containers:
+      - name: blog
+        image: alpine
+        command: ["/shared/server"]
+        ports:
+          - containerPort: 80
+        volumeMounts:
+        - name: shared
+          mountPath: /shared
+
+      - name: poll-updates
+        image: alpine
+        command: 
+          - sh
+          - -c
+          - |
+            apk add --no-cache unzip
+            cp /poll/poll-updates.sh /shared
+            chmod +x /shared/poll-updates.sh            
+            /shared/poll-updates.sh
+        volumeMounts:
+        - name: shared
+          mountPath: /shared
+        - name: files
+          mountPath: /poll
+
+      volumes:
+      - name: shared
+        emptyDir: {}
+      - name: files
+        configMap:
+          name: files
+          items:
+          - key: server.go
+            path: main.go
+          - key: poll-updates.sh
+            path: poll-updates.sh
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: blog
+  name: blog
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    app: blog
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: blog
+  namespace: blog
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`blog.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: blog
+          port: 80

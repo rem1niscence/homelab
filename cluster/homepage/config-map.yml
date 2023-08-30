@@ -198,6 +198,16 @@ data:
         #     widget:
         #       type: prometheus
         #       url: http://prometheus.monitoring
+        - Cloudflare:
+            icon: cloudflare
+            href: https://dash.cloudflare.com/${CLOUDFLARE_ACCOUNT_ID}
+            ping: https://dash.cloudflare.com/${CLOUDFLARE_ACCOUNT_ID}
+            description: Internet infrastructure and DNS provider
+            widget:
+              type: cloudflared
+              accountid: ${CLOUDFLARE_ACCOUNT_ID}
+              tunnelid: ${CLOUDFLARE_TUNNEL_ID}
+              key: ${CLOUDFLARE_API_TOKEN} 
     - Apps:
         - Rancher:
             icon: rancher.svg
@@ -322,7 +332,7 @@ data:
             description: Personal blog
         - Umami:
             icon: umami-analytics
-            href: https://umami.{{DOMAIN}}
+            href: https://analytics.remini.dev
             ping: http://umami.umami
             description: Open-source website analytics
     - System:

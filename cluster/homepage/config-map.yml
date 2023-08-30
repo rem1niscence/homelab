@@ -78,14 +78,6 @@ data:
               type: pihole
               url: http://pihole.pihole
               key: ${PIHOLE_API_KEY}
-        - Pi.Alert:
-            icon: mdi-router-network
-            href: https://pialert.{{DOMAIN}}
-            ping: http://pialert.pialert
-            description: Network device monitoring tool
-            widget:
-                type: pialert
-                url: http://pialert.pialert
         - Paperless:
             icon: paperless-ngx.svg
             href: https://paperless.{{DOMAIN}}
@@ -153,24 +145,15 @@ data:
               type: jellyseerr
               url: http://jellyseerr.jellyfin:5055
               key: ${JELLYSEERR_API_KEY}
-        - Prowlarr:
-            icon: prowlarr.svg
-            href: https://prowlarr.{{DOMAIN}}
-            ping: http://prowlarr.servarr:9696
-            description: Meta-search application for torrents
+        - Uptime Kuma:
+            icon: uptime-kuma.svg
+            href: https://uptime.{{DOMAIN}}
+            ping: http://uptime.uptime
+            description: Website/Service monitoring
             widget:
-              type: prowlarr
-              url: http://prowlarr.servarr:9696
-              key: ${PROWLARR_API_KEY}
-        # - Uptime Kuma:
-        #     icon: uptime-kuma.svg
-        #     href: https://uptime.{{DOMAIN}}
-        #     ping: http://uptime.uptime
-        #     description: Website/Service monitoring
-        #     widget:
-        #       type: uptimekuma
-        #       url: http://uptime.uptime
-        #       slug: services
+              type: uptimekuma
+              url: http://uptime.uptime
+              slug: services
         - Komga:
             icon: komga.svg
             href: https://komga.{{DOMAIN}}
@@ -181,16 +164,6 @@ data:
               url: http://komga.komga
               username: ${KOMGA_URSERNAME}
               password: ${KOMGA_PASSWORD}
-        - Grafana:
-            icon: grafana.svg
-            href: https://grafana.{{DOMAIN}}
-            ping: http://grafana.monitoring
-            description: Visualization platform for metrics
-            widget:
-              type: grafana
-              url: http://grafana.monitoring
-              username: ${GRAFANA_URSERNAME}
-              password: ${GRAFANA_PASSWORD}
         # - Prometheus:
         #     icon: prometheus.svg
         #     ping: http://prometheus.monitoring
@@ -208,6 +181,33 @@ data:
               accountid: ${CLOUDFLARE_ACCOUNT_ID}
               tunnelid: ${CLOUDFLARE_TUNNEL_ID}
               key: ${CLOUDFLARE_API_TOKEN} 
+        - Prowlarr:
+            icon: prowlarr.svg
+            href: https://prowlarr.{{DOMAIN}}
+            ping: http://prowlarr.servarr:9696
+            description: Meta-search application for torrents
+            widget:
+              type: prowlarr
+              url: http://prowlarr.servarr:9696
+              key: ${PROWLARR_API_KEY}
+        - Pi.Alert:
+            icon: mdi-router-network
+            href: https://pialert.{{DOMAIN}}
+            ping: http://pialert.pialert
+            description: Network device monitoring tool
+            widget:
+                type: pialert
+                url: http://pialert.pialert
+        - Grafana:
+            icon: grafana.svg
+            href: https://grafana.{{DOMAIN}}
+            ping: http://grafana.monitoring
+            description: Visualization platform for metrics
+            widget:
+              type: grafana
+              url: http://grafana.monitoring
+              username: ${GRAFANA_URSERNAME}
+              password: ${GRAFANA_PASSWORD}
     - Apps:
         - Rancher:
             icon: rancher.svg

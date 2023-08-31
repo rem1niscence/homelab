@@ -15,43 +15,43 @@ spec:
         app: cloudflared
     spec:
       containers:
-      - name: cloudflared
-        image: cloudflare/cloudflared:2023.8.1
-        args:
-        - tunnel
-        - --config
-        - /etc/cloudflared/config/config.yaml
-        - run
-        livenessProbe:
-          httpGet:
-            path: /ready
-            port: 2000
-          failureThreshold: 1
-          initialDelaySeconds: 10
-          periodSeconds: 10
-        volumeMounts:
-        - name: config
-          mountPath: /etc/cloudflared/config
-          readOnly: true
-        - name: creds
-          mountPath: /etc/cloudflared/creds
-          readOnly: true
+        - name: cloudflared
+          image: cloudflare/cloudflared:2023.8.1
+          args:
+            - tunnel
+            - --config
+            - /etc/cloudflared/config/config.yaml
+            - run
+          livenessProbe:
+            httpGet:
+              path: /ready
+              port: 2000
+            failureThreshold: 1
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          volumeMounts:
+            - name: config
+              mountPath: /etc/cloudflared/config
+              readOnly: true
+            - name: creds
+              mountPath: /etc/cloudflared/creds
+              readOnly: true
       volumes:
-      - name: creds
-        secret:
-          # By default, the credentials file will be created under ~/.cloudflared/<tunnel ID>.json
-          # when you run `cloudflared tunnel create`. You can move it into a secret by using:
-          # ```sh
-          # kubectl create secret generic tunnel-credentials \
-          # --from-file=credentials.json=/Users/yourusername/.cloudflared/<tunnel ID>.json
-          # ```
-          secretName: tunnel-credentials
-      - name: config
-        configMap:
-          name: cloudflared
-          items:
-          - key: config.yaml
-            path: config.yaml
+        - name: creds
+          secret:
+            # By default, the credentials file will be created under ~/.cloudflared/<tunnel ID>.json
+            # when you run `cloudflared tunnel create`. You can move it into a secret by using:
+            # ```sh
+            # kubectl create secret generic tunnel-credentials \
+            # --from-file=credentials.json=/Users/yourusername/.cloudflared/<tunnel ID>.json
+            # ```
+            secretName: tunnel-credentials
+        - name: config
+          configMap:
+            name: cloudflared
+            items:
+              - key: config.yaml
+                path: config.yaml
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -76,7 +76,6 @@ data:
       service: http://umami.umami:80
     # This rule matches any traffic which didn't match a previous rule, and responds with HTTP 404.
     - service: http_status:404
-
 
 # Create DNS entry for the tunnel
 # cloudflared tunnel route dns blog remini.dev

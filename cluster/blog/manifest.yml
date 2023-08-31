@@ -70,59 +70,56 @@ spec:
       nodeSelector:
         type: pi
       initContainers:
-      - name: install-server
-        image: golang:1.21.0-alpine
-        command:
-          - sh
-          - -c
-          - |
-            cd /server
-            echo "Building file server 🏗️" && \
-            CGO_ENABLED=0 GO111MODULE=off go build -o /shared/server . && \
-            echo "Finished Building file server ✅" 
-        volumeMounts:
-        - name: shared
-          mountPath: /shared
-        - name: files
-          mountPath: /server
-
+        - name: install-server
+          image: golang:1.21.0-alpine
+          command:
+            - sh
+            - -c
+            - |
+              cd /server
+              echo "Building file server 🏗️" && \
+              CGO_ENABLED=0 GO111MODULE=off go build -o /shared/server . && \
+              echo "Finished Building file server ✅" 
+          volumeMounts:
+            - name: shared
+              mountPath: /shared
+            - name: files
+              mountPath: /server
       containers:
-      - name: blog
-        image: alpine
-        command: ["/shared/server"]
-        ports:
-          - containerPort: 80
-        volumeMounts:
-        - name: shared
-          mountPath: /shared
-
-      - name: poll-updates
-        image: alpine
-        command: 
-          - sh
-          - -c
-          - |
-            apk add --no-cache unzip
-            cp /poll/poll-updates.sh /shared
-            chmod +x /shared/poll-updates.sh            
-            /shared/poll-updates.sh
-        volumeMounts:
-        - name: shared
-          mountPath: /shared
-        - name: files
-          mountPath: /poll
-
+        - name: blog
+          image: alpine
+          command: ["/shared/server"]
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: shared
+              mountPath: /shared
+        - name: poll-updates
+          image: alpine
+          command: 
+            - sh
+            - -c
+            - |
+              apk add --no-cache unzip
+              cp /poll/poll-updates.sh /shared
+              chmod +x /shared/poll-updates.sh            
+              /shared/poll-updates.sh
+          volumeMounts:
+            - name: shared
+              mountPath: /shared
+            - name: files
+              mountPath: /poll
       volumes:
-      - name: shared
-        emptyDir: {}
-      - name: files
-        configMap:
-          name: files
-          items:
-          - key: server.go
-            path: main.go
-          - key: poll-updates.sh
-            path: poll-updates.sh
+        - name: shared
+          emptyDir: {}
+        - name: files
+          configMap:
+            name: files
+            items:
+              - key: server.go
+                path: main.go
+              - key: poll-updates.sh
+                path: poll-updates.sh
 ---
 apiVersion: v1
 kind: Service

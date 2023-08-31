@@ -51,8 +51,6 @@ spec:
           env:
             - name: JWT_SECRET_KEY
               value: c729ca5bf305e7faea4129f7ebd382d3ec14e887b0c1f813ba8109123a339cfe
-            # - name: FRONT_URL
-              # value: https://kitchenowl.{{DOMAIN}}
           volumeMounts:
             - name: data
               mountPath: /data

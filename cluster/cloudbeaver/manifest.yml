@@ -19,17 +19,17 @@ spec:
         app: cloudbeaver
     spec:
       containers:
-      - name: cloudbeaver
-        image: dbeaver/cloudbeaver
-        ports:
-        - containerPort: 8978
-        volumeMounts:
-        - name: config
-          mountPath: /opt/cloudbeaver/workspace
+        - name: cloudbeaver
+          image: dbeaver/cloudbeaver
+          ports:
+            - containerPort: 8978
+          volumeMounts:
+            - name: config
+              mountPath: /opt/cloudbeaver/workspace
       volumes:
-      - name: config
-        persistentVolumeClaim:
-          claimName: config-pvc
+        - name: config
+          persistentVolumeClaim:
+            claimName: config-pvc
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

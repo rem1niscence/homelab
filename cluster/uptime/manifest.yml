@@ -30,9 +30,9 @@ spec:
               mountPath: /app/data
           resources:
             requests:
-              cpu: "100m"  # 250 milliCPUs (0.1 CPU core)
+              cpu: "100m" # 250 milliCPUs (0.1 CPU core)
             limits:
-              cpu: "250m"  # 250 milliCPUs (0.25 CPU core)
+              cpu: "250m" # 250 milliCPUs (0.25 CPU core)
       volumes:
         - name: config
           persistentVolumeClaim:

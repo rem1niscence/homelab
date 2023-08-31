@@ -22,7 +22,8 @@ spec:
         type: main
       containers:
         - name: speedtest
-          image: ghcr.io/alexjustesen/speedtest-tracker:latest
+          # TODO: Upgrade when newer versions are more stable
+          image: ghcr.io/alexjustesen/speedtest-tracker:v0.11.17
           env:
             - name: PUID
               value: "1000"

@@ -94,18 +94,3 @@ spec:
       targetPort: 3000
   selector:
     app: umami
----
-apiVersion: traefik.containo.us/v1alpha1
-kind: IngressRoute
-metadata:
-  name: umami
-  namespace: umami
-spec:
-  entryPoints:
-    - websecure
-  routes:
-    - match: Host(`umami.{{DOMAIN}}`)
-      kind: Rule
-      services:
-        - name: umami
-          port: 80

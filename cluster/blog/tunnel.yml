@@ -8,7 +8,7 @@ spec:
   selector:
     matchLabels:
       app: cloudflared
-  replicas: 1
+  replicas: 2
   template:
     metadata:
       labels:
@@ -72,6 +72,8 @@ data:
     # Define service domains and routes here:
     - hostname: remini.dev
       service: http://blog:80
+    - hostname: analytics.remini.dev
+      service: http://umami.umami:80
     # This rule matches any traffic which didn't match a previous rule, and responds with HTTP 404.
     - service: http_status:404
 

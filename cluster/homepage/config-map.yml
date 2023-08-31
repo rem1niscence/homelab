@@ -164,13 +164,14 @@ data:
               url: http://komga.komga
               username: ${KOMGA_URSERNAME}
               password: ${KOMGA_PASSWORD}
-        # - Prometheus:
-        #     icon: prometheus.svg
-        #     ping: http://prometheus.monitoring
-        #     description: Metrics monitoring and alerting toolkit
-        #     widget:
-        #       type: prometheus
-        #       url: http://prometheus.monitoring
+        - Prometheus:
+            icon: prometheus.svg
+            href: https://prometheus.{{DOMAIN}}
+            ping: http://prometheus-operated.monitoring:9090
+            description: Metrics monitoring and alerting toolkit
+            widget:
+              type: prometheus
+              url: http://prometheus-operated.monitoring:9090
         - Cloudflare:
             icon: cloudflare
             href: https://dash.cloudflare.com/${CLOUDFLARE_ACCOUNT_ID}
@@ -201,11 +202,11 @@ data:
         - Grafana:
             icon: grafana.svg
             href: https://grafana.{{DOMAIN}}
-            ping: http://grafana.monitoring
+            ping: http://prometheus-grafana.monitoring
             description: Visualization platform for metrics
             widget:
               type: grafana
-              url: http://grafana.monitoring
+              url: http://prometheus-grafana.monitoring
               username: ${GRAFANA_URSERNAME}
               password: ${GRAFANA_PASSWORD}
     - Apps:

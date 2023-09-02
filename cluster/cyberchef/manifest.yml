@@ -1,0 +1,55 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cyberchef
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: cyberchef
+  name: cyberchef
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cyberchef
+  template:
+    metadata:
+      labels:
+        app: cyberchef
+    spec:
+      nodeSelector:
+        type: pi
+      containers:
+        - name: cyberchef
+          image: mpepping/cyberchef
+          ports:
+            - containerPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: cyberchef
+  name: cyberchef
+spec:
+  selector:
+    app: cyberchef
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: cyberchef
+  namespace: cyberchef
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`cyberchef.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: cyberchef
+          port: 80

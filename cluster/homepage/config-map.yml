@@ -60,15 +60,6 @@ data:
             widget:
               type: speedtest
               url: http://speedtest.speedtest
-        - Tailscale:
-            icon: tailscale.svg
-            href: https://login.tailscale.com/admin/machines
-            ping: https://login.tailscale.com/admin/machines
-            description: Wireguard VPN as a service
-            widget:
-              type: tailscale
-              deviceid: ${TAILSCALE_DEVICE_ID}
-              key: ${TAILSCALE_AUTH_KEY}
         - Pi-hole:
             icon: pi-hole.svg
             href: https://pihole.{{DOMAIN}}/admin
@@ -210,6 +201,11 @@ data:
               username: ${GRAFANA_URSERNAME}
               password: ${GRAFANA_PASSWORD}
     - Apps:
+        - Tailscale:
+            icon: tailscale.svg
+            href: https://login.tailscale.com/admin/machines
+            ping: https://login.tailscale.com/admin/machines
+            description: Wireguard VPN as a service
         - Rancher:
             icon: rancher.svg
             href: https://rancher.{{DOMAIN}}

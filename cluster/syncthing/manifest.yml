@@ -22,7 +22,7 @@ spec:
         type: pi
       containers:
         - name: syncthing
-          image: lscr.io/linuxserver/syncthing:latest
+          image: linuxserver/syncthing:latest
           env:
             - name: PUID
               value: "1000"

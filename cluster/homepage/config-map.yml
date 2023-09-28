@@ -70,7 +70,7 @@ data:
               deviceid: ${TAILSCALE_DEVICE_ID}
               key: ${TAILSCALE_AUTH_KEY}
         - Pi-hole:
-            icon: pi-hole.svg 
+            icon: pi-hole.svg
             href: https://pihole.{{DOMAIN}}/admin
             ping: http://pihole.pihole
             description: Network-wide ad blocker
@@ -99,7 +99,7 @@ data:
               username: ${QBITTORRENT_USERNAME}
               password: ${QBITTORRENT_PASSWORD}
         - Bazarr:
-            icon: bazarr.svg  
+            icon: bazarr.svg
             href: https://bazarr.{{DOMAIN}}
             ping: http://bazarr.servarr:6767
             description: Subtitle management for media
@@ -117,7 +117,7 @@ data:
               url: http://radarr.servarr:7878
               key: ${RADARR_API_KEY}
         - Sonarr:
-            icon: sonarr.svg  
+            icon: sonarr.svg
             href: https://sonarr.{{DOMAIN}}
             ping: http://sonarr.servarr:8989
             description: Anime/TV indexer engine
@@ -181,7 +181,7 @@ data:
               type: cloudflared
               accountid: ${CLOUDFLARE_ACCOUNT_ID}
               tunnelid: ${CLOUDFLARE_TUNNEL_ID}
-              key: ${CLOUDFLARE_API_TOKEN} 
+              key: ${CLOUDFLARE_API_TOKEN}
         - Prowlarr:
             icon: prowlarr.svg
             href: https://prowlarr.{{DOMAIN}}
@@ -250,11 +250,6 @@ data:
             href: https://dashboard.{{DOMAIN}}
             ping: http://kubernetes-dashboard.kubernetes-dashboard:443
             description: Kubernete's dashboard
-        - IT Tools:
-            icon: it-tools.svg
-            href: https://it-tools.{{DOMAIN}}
-            ping: http://it-tools.it-tools
-            description: Handy tools for developers
         - True Command:
             icon: truenas.png
             href: https://true-command.{{DOMAIN}}
@@ -275,21 +270,11 @@ data:
             href: https://keel.{{DOMAIN}}
             ping: http://keel.kube-system:9300
             description: K8S image updater
-        - Rclone:
-            icon: rclone.svg
-            href: https://rclone.{{DOMAIN}}
-            ping: http://rclone.rclone
-            description: Sync files across clouds
         - Firefly III:
             icon: si-fireflyiii
             href: https://firefly.{{DOMAIN}}
             ping: http://firefly.firefly
             description: Personal finance manager
-        - Stirling PDF:
-            icon: stirling-pdf.png
-            href: https://pdf.{{DOMAIN}}
-            ping: http://stirling-pdf.stirling-pdf
-            description: PDF Multitools
         - Mail Catcher:
             icon: mdi-email-multiple
             href: https://mail.{{DOMAIN}}
@@ -320,6 +305,21 @@ data:
             href: https://linkding.{{DOMAIN}}
             ping: http://linkding.linkding
             description: Bookmarks manager
+        - IT Tools:
+            icon: it-tools.svg
+            href: https://it-tools.{{DOMAIN}}
+            ping: http://it-tools.it-tools
+            description: Handy tools for developers
+        - Cyberchef:
+            icon: cyberchef
+            href: https://cyberchef.{{DOMAIN}}
+            ping: http://cyberchef.cyberchef
+            description: Swiss army knife for data
+        - Stirling PDF:
+            icon: stirling-pdf.png
+            href: https://pdf.{{DOMAIN}}
+            ping: http://stirling-pdf.stirling-pdf
+            description: PDF Multitools
         - Draw.io:
             icon: si-diagramsdotnet
             href: https://drawio.{{DOMAIN}}
@@ -341,10 +341,10 @@ data:
             icon: mdi-cpu-64-bit
             href: ${DASHDOT_NUC_URL}
             ping: ${DASHDOT_NUC_PING}
-        - VM:
+        - AMD:
             icon: mdi-cpu-64-bit
-            href: ${DASHDOT_VM_URL}
-            ping: ${DASHDOT_VM_PING}
+            href: ${DASHDOT_AMD_URL}
+            ping: ${DASHDOT_AMD_PING}
         - PI-2:
             icon: mdi-cpu-64-bit
             href: ${DASHDOT_PI_2_URL}
@@ -353,7 +353,7 @@ data:
             icon: mdi-cpu-64-bit
             href: ${DASHDOT_PI_3_URL}
             ping: ${DASHDOT_PI_3_PING}
-    
+
   widgets.yaml: |
     - kubernetes:
         cluster:

@@ -354,7 +354,6 @@ data:
             icon: mdi-cpu-64-bit
             href: ${DASHDOT_PI_3_URL}
             ping: ${DASHDOT_PI_3_PING}
-
   widgets.yaml: |
     - kubernetes:
         cluster:

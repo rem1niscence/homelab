@@ -74,4 +74,5 @@ echo "iSCSI target is mounted at $MOUNT_PATH"
 
 # Place this on
 # /usr/bin
-# Remember to set this as root owner
+# Remember to set this as root owner:
+# sudo chown root:root mount_iscsi

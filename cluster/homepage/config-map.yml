@@ -145,16 +145,16 @@ data:
               type: uptimekuma
               url: http://uptime.uptime
               slug: services
-        - Komga:
-            icon: komga.svg
-            href: https://komga.{{DOMAIN}}
-            ping: http://komga.komga
-            description: Digital comics/manga server and reader
+        - Kavita:
+            icon: kavita
+            href: https://kavita.{{DOMAIN}}
+            ping: http://kavita.kavita
+            description: Online book reader
             widget:
-              type: komga
-              url: http://komga.komga
-              username: ${KOMGA_URSERNAME}
-              password: ${KOMGA_PASSWORD}
+                type: kavita
+                url: http://kavita.kavita
+                username: ${KAVITA_USERNAME}
+                password: ${KAVITA_PASSWORD}
         - Prometheus:
             icon: prometheus.svg
             href: https://prometheus.{{DOMAIN}}

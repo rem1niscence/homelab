@@ -1,0 +1,103 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hemmelig
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hemmelig
+  namespace: hemmelig
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hemmelig
+  template:
+    metadata:
+      labels:
+        app: hemmelig
+    spec:
+      securityContext:
+        fsGroup: 1000
+        runAsUser: 1000
+      containers:
+        - name: hemmelig
+          image: hemmeligapp/hemmelig:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+          envFrom:
+            - secretRef:
+                name: hemmelig
+          volumeMounts:
+            - name: files
+              mountPath: /var/tmp/hemmelig/upload/files
+            - name: db
+              mountPath: /home/node/hemmelig/database/
+      volumes:
+        - name: db
+          persistentVolumeClaim:
+            claimName: db
+        - name: files
+          persistentVolumeClaim:
+            claimName: files
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: hemmelig-files
+spec:
+  capacity:
+    storage: 3T
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 10.0.0.95
+    path: /mnt/microsds-1tb/tmp/hemmelig
+  storageClassName: local-path
+  mountOptions:
+    - vers=4.0
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: hemmelig
+  name: files
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 3T
+  volumeName: hemmelig-files
+  storageClassName: local-path
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: hemmelig
+  name: db
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1G
+  storageClassName: longhorn
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: hemmelig
+  name: hemmelig
+spec:
+  ports:
+    - port: 80
+      targetPort: 3000
+  selector:
+    app: hemmelig

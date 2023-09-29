@@ -321,6 +321,11 @@ data:
             href: https://drawio.{{DOMAIN}}
             ping: http://drawio.drawio
             description: Diagramming tool
+        - Hemmelig:
+            icon: mdi-lock-outline
+            href: https://hemmelig.${PUBLIC_DOMAIN}
+            ping: http://hemmelig.hemmelig
+            description: Secure text & file sharing
     - Blog:
         - remini.dev:
             icon: mdi-post-outline

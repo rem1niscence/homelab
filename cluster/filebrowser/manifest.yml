@@ -22,12 +22,14 @@ spec:
         type: pi
       containers:
         - name: filebrowser
-          image: filebrowser/filebrowser
+          image: filebrowser/filebrowser:s6
           volumeMounts:
             - name: data
               mountPath: /srv
             - name: db
               mountPath: /database
+            - name: db
+              mountPath: /config
       volumes:
         - name: data
           persistentVolumeClaim:

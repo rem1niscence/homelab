@@ -23,6 +23,12 @@ data:
       System:
         style: row
         columns: 4
+      Media:
+        style: column
+        # columns: 2
+      Calendar:
+        style: column
+        # columns: 2
     providers:
       longhorn:
         url: http://longhorn-frontend.longhorn-system
@@ -89,33 +95,6 @@ data:
               url: http://qbittorrent.qbittorrent:8080
               username: ${QBITTORRENT_USERNAME}
               password: ${QBITTORRENT_PASSWORD}
-        - Bazarr:
-            icon: bazarr.svg
-            href: https://bazarr.{{DOMAIN}}
-            ping: http://bazarr.servarr:6767
-            description: Subtitle management for media
-            widget:
-              type: bazarr
-              url: http://bazarr.servarr:6767
-              key: ${BAZARR_API_KEY}
-        - Radarr:
-            icon: radarr.svg
-            href: https://radarr.{{DOMAIN}}
-            ping: http://radarr.servarr:7878
-            description: Movie indexer engine
-            widget:
-              type: radarr
-              url: http://radarr.servarr:7878
-              key: ${RADARR_API_KEY}
-        - Sonarr:
-            icon: sonarr.svg
-            href: https://sonarr.{{DOMAIN}}
-            ping: http://sonarr.servarr:8989
-            description: Anime/TV indexer engine
-            widget:
-              type: sonarr
-              url: http://sonarr.servarr:8989
-              key: ${SONARR_API_KEY}
         - Jellyfin:
             icon: jellyfin.svg
             href: https://jellyfin.{{DOMAIN}}
@@ -267,12 +246,12 @@ data:
             ping: http://keel.kube-system:9300
             description: K8S image updater
         - Firefly III:
-            icon: si-fireflyiii
+            icon: firefly
             href: https://firefly.{{DOMAIN}}
             ping: http://firefly.firefly
             description: Personal finance manager
         - Mail Catcher:
-            icon: mdi-email-multiple
+            icon: zohomail
             href: https://mail.{{DOMAIN}}
             ping: http://mailcatcher.mailcatcher
             description: Simple local email server
@@ -354,6 +333,53 @@ data:
             icon: mdi-cpu-64-bit
             href: ${DASHDOT_PI_3_URL}
             ping: ${DASHDOT_PI_3_PING}
+    - Calendar:
+        - Calendar:
+            icon: nextcloud-calendar
+            description: Calendar widget for Arr media
+            widget:
+              type: calendar
+              integrations:
+                - type: sonarr
+                  service_group: Media
+                  service_name: Sonarr
+                  color: teal
+                  params: 
+                    unmonitored: true
+                - type: radarr
+                  service_group: Media
+                  service_name: Radarr
+                  color: emerald
+                  params: 
+                    unmonitored: true
+    - Media:
+        - Radarr:
+            icon: radarr.svg
+            href: https://radarr.{{DOMAIN}}
+            ping: http://radarr.servarr:7878
+            description: Movie indexer engine
+            widget:
+              type: radarr
+              url: http://radarr.servarr:7878
+              key: ${RADARR_API_KEY}
+        - Sonarr:
+            icon: sonarr.svg
+            href: https://sonarr.{{DOMAIN}}
+            ping: http://sonarr.servarr:8989
+            description: Anime/TV indexer engine
+            widget:
+              type: sonarr
+              url: http://sonarr.servarr:8989
+              key: ${SONARR_API_KEY}
+        - Bazarr:
+            icon: bazarr.svg
+            href: https://bazarr.{{DOMAIN}}
+            ping: http://bazarr.servarr:6767
+            description: Subtitle management for media
+            widget:
+              type: bazarr
+              url: http://bazarr.servarr:6767
+              key: ${BAZARR_API_KEY}
   widgets.yaml: |
     - kubernetes:
         cluster:

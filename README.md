@@ -8,7 +8,7 @@ My homelab K3s cluster configuration
 |----------------------|-------|--------|---------------------------------------------------------|----------------|-------|
 | Intel NUC I7 10th Gen| 1     | 40GB   | SSD 4TB (X2) <br> SSD 2TB (X2) <br> Micro SD 1TB (X2) <br> USB 512GB | TrueNAS SCALE  | amd64 |
 | Intel NUC I7 10th Gen| 1     | 32GB | SSD 256GB                                                 | Ubuntu 22.10        | amd64 |
-| Beelink SER5         | 1     | 40 GB  | SD 512GB                                                | Ubuntu 22.10        | amd64 |
+| Beelink SER5         | 1     | 40 GB  | SSD 512GB                                               | Ubuntu 22.10        | amd64 |
 | Raspberry Pi 4       | 2     | 8 GB   | SD 32GB                                                 | Raspberry PI OS     | armv7 |
 
 ## 💾 Virtual Machines

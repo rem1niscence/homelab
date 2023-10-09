@@ -1,0 +1,195 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: romm
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: romm
+  name: romm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: romm
+  template:
+    metadata:
+      labels:
+        app: romm
+    spec:
+      containers:
+        - name: romm
+          image: zurdi15/romm:latest
+          ports:
+            - containerPort: 80
+          envFrom:
+            - secretRef:
+                name: romm
+          env:
+            - name: ROMM_DB_DRIVER
+              value: "sqlite"
+            - name: ROMM_AUTH_ENABLED
+              value: "true"
+            - name: ENABLE_EXPERIMENTAL_REDIS
+              value: "true"
+            - name: "REDIS_HOST"
+              value: "redis"
+            - name: "REDIS_PORT"
+              value: "6379"
+          volumeMounts:
+            - name: library
+              mountPath: /romm/library
+            - name: resources
+              mountPath: /romm/resources
+            - name: config
+              mountPath: /romm/
+              subPath: config.yml
+            - name: config
+              mountPath: /romm/database
+      volumes:
+        - name: library
+          persistentVolumeClaim:
+            claimName: library
+        - name: resources
+          persistentVolumeClaim:
+            claimName: resources
+        - name: config
+          persistentVolumeClaim:
+            claimName: config
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: romm
+  name: redis
+  labels:
+    app: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: redis
+          image: redis:alpine
+          ports:
+            - containerPort: 6379
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: romm-library
+spec:
+  capacity:
+    storage: 3T
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 10.0.0.95
+    path: /mnt/main_drive/data/romm/library
+  storageClassName: local-path
+  mountOptions:
+    - vers=4.0
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: romm
+  name: library
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 3T
+  volumeName: romm-library
+  storageClassName: local-path
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: romm-resources
+spec:
+  capacity:
+    storage: 3T
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 10.0.0.95
+    path: /mnt/main_drive/data/romm/resources
+  storageClassName: local-path
+  mountOptions:
+    - vers=4.0
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: romm
+  name: resources
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 3T
+  volumeName: romm-resources
+  storageClassName: local-path
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: romm
+  name: config
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2G
+  storageClassName: longhorn
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: romm
+  name: romm
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    app: romm
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: romm
+  name: redis
+spec:
+  ports:
+    - port: 6379
+      targetPort: 6379
+  selector:
+    app: redis
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: romm
+  namespace: romm
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`romm.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: romm
+          port: 80

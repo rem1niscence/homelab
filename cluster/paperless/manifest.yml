@@ -36,6 +36,9 @@ spec:
             timeoutSeconds: 10
             periodSeconds: 10
             failureThreshold: 5
+          envFrom:
+            - secretRef:
+                name: paperless
           env:
             - name: USERMAP_UID
               value: "1000"
@@ -45,30 +48,8 @@ spec:
               value: "redis://redis:6379"
             - name: PAPERLESS_PORT
               value: "8000"
-            - name: PAPERLESS_URL
-              valueFrom:
-                secretKeyRef:
-                  name: paperless-secrets
-                  key: PAPERLESS_URL
-                  optional: false
-            - name: PAPERLESS_SECRET_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: paperless-secrets
-                  key: PAPERLESS_SECRET_KEY
-                  optional: false
-            - name: PAPERLESS_ADMIN_USER
-              valueFrom:
-                secretKeyRef:
-                  name: paperless-secrets
-                  key: PAPERLESS_ADMIN_USER
-                  optional: false
-            - name: PAPERLESS_ADMIN_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: paperless-secrets
-                  key: PAPERLESS_ADMIN_PASSWORD
-                  optional: false
+            - name: PAPERLESS_OCR_DESKEW
+              value: "false"
           volumeMounts:
             - name: config
               mountPath: /usr/src/paperless/data

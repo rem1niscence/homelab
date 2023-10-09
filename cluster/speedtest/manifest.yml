@@ -22,15 +22,26 @@ spec:
         type: main
       containers:
         - name: speedtest
-          # TODO: Upgrade when newer versions are more stable
-          image: ghcr.io/alexjustesen/speedtest-tracker:v0.11.17
+          image: ghcr.io/alexjustesen/speedtest-tracker:latest
           env:
             - name: PUID
               value: "1000"
             - name: PGID
               value: "1000"
+            - name: DB_CONNECTION
+              value: "pgsql"
+            - name: DB_HOST
+              value: "postgres"
             - name: TZ
               value: "Etc/UTC"
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_DATABASE
+              value: "speedtest"
+            - name: DB_USERNAME
+              value: "speedtest"
+            - name: DB_PASSWORD
+              value: "speedtest1234"
           ports:
             - containerPort: 80
           volumeMounts:
@@ -39,13 +50,70 @@ spec:
       volumes:
         - name: config
           persistentVolumeClaim:
-            claimName: config-pvc
+            claimName: config
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: speedtest
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: "speedtest"
+            - name: POSTGRES_USER
+              value: "speedtest"
+            - name: POSTGRES_PASSWORD
+              value: "speedtest1234"
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          volumeMounts:
+            - name: db
+              mountPath: /var/lib/postgresql/data
+              subPath: postgres
+      volumes:
+        - name: db
+          persistentVolumeClaim:
+            claimName: db
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   namespace: speedtest
-  name: config-pvc
+  name: config
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1G
+  storageClassName: longhorn
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: speedtest
+  name: db
 spec:
   accessModes:
     - ReadWriteOnce
@@ -65,6 +133,18 @@ spec:
       targetPort: 80
   selector:
     app: speedtest
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: speedtest
+  name: postgres
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: postgres
 ---
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute

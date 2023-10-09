@@ -23,6 +23,12 @@ data:
       System:
         style: row
         columns: 4
+      Media:
+        style: row
+        columns: 2
+      Calendar:
+        style: column
+        # columns: 2
     providers:
       longhorn:
         url: http://longhorn-frontend.longhorn-system
@@ -60,15 +66,6 @@ data:
             widget:
               type: speedtest
               url: http://speedtest.speedtest
-        - Tailscale:
-            icon: tailscale.svg
-            href: https://login.tailscale.com/admin/machines
-            ping: https://login.tailscale.com/admin/machines
-            description: Wireguard VPN as a service
-            widget:
-              type: tailscale
-              deviceid: ${TAILSCALE_DEVICE_ID}
-              key: ${TAILSCALE_AUTH_KEY}
         - Pi-hole:
             icon: pi-hole.svg
             href: https://pihole.{{DOMAIN}}/admin
@@ -98,15 +95,6 @@ data:
               url: http://qbittorrent.qbittorrent:8080
               username: ${QBITTORRENT_USERNAME}
               password: ${QBITTORRENT_PASSWORD}
-        - Bazarr:
-            icon: bazarr.svg
-            href: https://bazarr.{{DOMAIN}}
-            ping: http://bazarr.servarr:6767
-            description: Subtitle management for media
-            widget:
-              type: bazarr
-              url: http://bazarr.servarr:6767
-              key: ${BAZARR_API_KEY}
         - Radarr:
             icon: radarr.svg
             href: https://radarr.{{DOMAIN}}
@@ -125,6 +113,24 @@ data:
               type: sonarr
               url: http://sonarr.servarr:8989
               key: ${SONARR_API_KEY}
+        - Bazarr:
+            icon: bazarr.svg
+            href: https://bazarr.{{DOMAIN}}
+            ping: http://bazarr.servarr:6767
+            description: Subtitle management for media
+            widget:
+              type: bazarr
+              url: http://bazarr.servarr:6767
+              key: ${BAZARR_API_KEY}
+        - Prowlarr:
+            icon: prowlarr.svg
+            href: https://prowlarr.{{DOMAIN}}
+            ping: http://prowlarr.servarr:9696
+            description: Meta-search application for torrents
+            widget:
+              type: prowlarr
+              url: http://prowlarr.servarr:9696
+              key: ${PROWLARR_API_KEY}
         - Jellyfin:
             icon: jellyfin.svg
             href: https://jellyfin.{{DOMAIN}}
@@ -154,16 +160,16 @@ data:
               type: uptimekuma
               url: http://uptime.uptime
               slug: services
-        - Komga:
-            icon: komga.svg
-            href: https://komga.{{DOMAIN}}
-            ping: http://komga.komga
-            description: Digital comics/manga server and reader
+        - Kavita:
+            icon: kavita
+            href: https://kavita.{{DOMAIN}}
+            ping: http://kavita.kavita
+            description: Online book reader
             widget:
-              type: komga
-              url: http://komga.komga
-              username: ${KOMGA_URSERNAME}
-              password: ${KOMGA_PASSWORD}
+                type: kavita
+                url: http://kavita.kavita
+                username: ${KAVITA_USERNAME}
+                password: ${KAVITA_PASSWORD}
         - Prometheus:
             icon: prometheus.svg
             href: https://prometheus.{{DOMAIN}}
@@ -182,15 +188,6 @@ data:
               accountid: ${CLOUDFLARE_ACCOUNT_ID}
               tunnelid: ${CLOUDFLARE_TUNNEL_ID}
               key: ${CLOUDFLARE_API_TOKEN}
-        - Prowlarr:
-            icon: prowlarr.svg
-            href: https://prowlarr.{{DOMAIN}}
-            ping: http://prowlarr.servarr:9696
-            description: Meta-search application for torrents
-            widget:
-              type: prowlarr
-              url: http://prowlarr.servarr:9696
-              key: ${PROWLARR_API_KEY}
         - Pi.Alert:
             icon: mdi-router-network
             href: https://pialert.{{DOMAIN}}
@@ -210,6 +207,11 @@ data:
               username: ${GRAFANA_URSERNAME}
               password: ${GRAFANA_PASSWORD}
     - Apps:
+        - Tailscale:
+            icon: tailscale.svg
+            href: https://login.tailscale.com/admin/machines
+            ping: https://login.tailscale.com/admin/machines
+            description: Wireguard VPN as a service
         - Rancher:
             icon: rancher.svg
             href: https://rancher.{{DOMAIN}}
@@ -271,12 +273,12 @@ data:
             ping: http://keel.kube-system:9300
             description: K8S image updater
         - Firefly III:
-            icon: si-fireflyiii
+            icon: firefly
             href: https://firefly.{{DOMAIN}}
             ping: http://firefly.firefly
             description: Personal finance manager
         - Mail Catcher:
-            icon: mdi-email-multiple
+            icon: zohomail
             href: https://mail.{{DOMAIN}}
             ping: http://mailcatcher.mailcatcher
             description: Simple local email server
@@ -325,6 +327,11 @@ data:
             href: https://drawio.{{DOMAIN}}
             ping: http://drawio.drawio
             description: Diagramming tool
+        - Hemmelig:
+            icon: mdi-lock-outline
+            href: https://hemmelig.${PUBLIC_DOMAIN}
+            ping: http://hemmelig.hemmelig
+            description: Secure text & file sharing
     - Blog:
         - remini.dev:
             icon: mdi-post-outline
@@ -353,7 +360,25 @@ data:
             icon: mdi-cpu-64-bit
             href: ${DASHDOT_PI_3_URL}
             ping: ${DASHDOT_PI_3_PING}
-
+    - Calendar:
+        - Calendar:
+            icon: nextcloud-calendar
+            description: Calendar widget for Arr media
+            widget:
+              type: calendar
+              integrations:
+                - type: sonarr
+                  service_group: Widgets
+                  service_name: Sonarr
+                  color: teal
+                  params: 
+                    unmonitored: true
+                - type: radarr
+                  service_group: Widgets
+                  service_name: Radarr
+                  color: emerald
+                  params: 
+                    unmonitored: true
   widgets.yaml: |
     - kubernetes:
         cluster:

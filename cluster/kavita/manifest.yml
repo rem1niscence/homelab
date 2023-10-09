@@ -1,47 +1,51 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: filebrowser
+  name: kavita
+---
+apiVersion: v1
+kind: Namespace
+metadata: kavita
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: filebrowser
-  name: filebrowser
+  namespace: kavita
+  name: kavita
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: filebrowser
+      app: kavita
   template:
     metadata:
       labels:
-        app: filebrowser
+        app: kavita
     spec:
       nodeSelector:
         type: pi
       containers:
-        - name: filebrowser
-          image: filebrowser/filebrowser:s6
+        - name: kavita
+          image: kizaing/kavita:latest
+          ports:
+            - containerPort: 5000
           volumeMounts:
             - name: data
-              mountPath: /srv
-            - name: db
-              mountPath: /database
-            - name: db
-              mountPath: /config
+              mountPath: /data
+            - name: config
+              mountPath: /kavita/config
       volumes:
         - name: data
           persistentVolumeClaim:
-            claimName: data-pvc
-        - name: db
+            claimName: data
+        - name: config
           persistentVolumeClaim:
-            claimName: db-pvc
+            claimName: config
 ---
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: filebrowser-data-pv
+  name: kavita-data-pv
 spec:
   capacity:
     storage: 3T
@@ -57,25 +61,25 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  namespace: filebrowser
-  name: data-pvc
+  namespace: kavita
+  name: data
 spec:
   accessModes:
     - ReadWriteMany
   resources:
     requests:
       storage: 3T
-  volumeName: filebrowser-data-pv
+  volumeName: kavita-data-pv
   storageClassName: local-path
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  namespace: filebrowser
-  name: db-pvc
+  namespace: kavita
+  name: config
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
       storage: 1G
@@ -84,26 +88,26 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  namespace: filebrowser
-  name: filebrowser
+  namespace: kavita
+  name: kavita
 spec:
   ports:
     - port: 80
-      targetPort: 80
+      targetPort: 5000
   selector:
-    app: filebrowser
+    app: kavita
 ---
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
-  name: filebrowser
-  namespace: filebrowser
+  name: kavita
+  namespace: kavita
 spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`filebrowser.{{DOMAIN}}`)
+    - match: Host(`kavita.{{DOMAIN}}`)
       kind: Rule
       services:
-        - name: filebrowser
+        - name: kavita
           port: 80

@@ -12,7 +12,7 @@ metadata:
   name: backup-cloud
   namespace: vaultwarden
 spec:
-  schedule: "45 8 * * *"
+  # schedule: "45 8 * * *"
   successfulJobsHistoryLimit: 2
   failedJobsHistoryLimit: 2
   jobTemplate:

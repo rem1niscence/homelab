@@ -23,6 +23,9 @@ spec:
           image: webysther/hoppscotch:latest
           ports:
             - containerPort: 80
+          envFrom:
+            - secretRef:
+                name: hoppscotch
           env:
             - name: "MODE"
               value: "team"
@@ -42,30 +45,6 @@ spec:
               value: "hoppscotch@localhost.com"
             - name: DOMAIN
               value: "hoppscotch.{{DOMAIN}}"
-            - name: JWT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: hoppscotch
-                  key: JWT_SECRET
-                  optional: false
-            - name: SESSION_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: hoppscotch
-                  key: SESSION_SECRET
-                  optional: false
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: hoppscotch
-                  key: POSTGRES_PASSWORD
-                  optional: false
-            - name: MAILER_SMTP_URL
-              valueFrom:
-                secretKeyRef:
-                  name: hoppscotch
-                  key: MAILER_SMTP_URL
-                  optional: false
           volumeMounts:
             - name: config
               mountPath: /config

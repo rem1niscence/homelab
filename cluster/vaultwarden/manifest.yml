@@ -39,67 +39,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: vaultwarden
-          env:
-            - name: ADMIN_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: vaultwarden
-                  key: ADMIN_TOKEN
-                  optional: false
-            - name: DOMAIN
-              valueFrom:
-                secretKeyRef:
-                  name: vaultwarden
-                  key: DOMAIN
-                  optional: false
-            - name: SMTP_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: vaultwarden
-                  key: SMTP_HOST
-                  optional: false
-            - name: SMTP_FROM
-              valueFrom:
-                secretKeyRef:
-                  name: vaultwarden
-                  key: SMTP_FROM
-                  optional: false
-            - name: SMTP_FROM_NAME
-              valueFrom:
-                secretKeyRef:
-                  name: vaultwarden
-                  key: SMTP_FROM_NAME
-                  optional: false
-            - name: SMTP_SECURITY
-              valueFrom:
-                secretKeyRef:
-                  name: vaultwarden
-                  key: SMTP_SECURITY
-                  optional: false
-            - name: SMTP_PORT
-              valueFrom:
-                secretKeyRef:
-                  name: vaultwarden
-                  key: SMTP_PORT
-                  optional: false
-            - name: SMTP_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: vaultwarden
-                  key: SMTP_USERNAME
-                  optional: false
-            - name: SMTP_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: vaultwarden
-                  key: SMTP_PASSWORD
-                  optional: false
-            - name: SMTP_AUTH_MECHANISM
-              valueFrom:
-                secretKeyRef:
-                  name: vaultwarden
-                  key: SMTP_AUTH_MECHANISM
-                  optional: false
+            - secretRef:
+                name: vaultwarden
           volumeMounts:
             - name: data
               mountPath: /data

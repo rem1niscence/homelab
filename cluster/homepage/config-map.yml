@@ -284,7 +284,7 @@ data:
             description: Simple local email server
         - Microbin:
             icon: si-pastebin
-            href: https://microbin.{{DOMAIN}}
+            href: https://microbin.${PUBLIC_DOMAIN}
             ping: http://microbin.microbin
             description: Personal pasta bin
         - N8N:

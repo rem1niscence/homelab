@@ -19,7 +19,7 @@ spec:
         app: jellyfin
     spec:
       nodeSelector:
-        type: main
+        type: secondary
       containers:
         - name: jellyfin
           image: lscr.io/linuxserver/jellyfin:latest

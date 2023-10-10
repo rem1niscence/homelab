@@ -80,13 +80,9 @@ data:
     # from the internet to cloudflared, run `cloudflared tunnel route dns <tunnel> <hostname>`.
     # E.g. `cloudflared tunnel route dns example-tunnel tunnel.example.com`.
     ingress:
-    # The first rule proxies traffic to the httpbin sample Service defined in app.yaml
     - hostname: hemmelig.{{DOMAIN}}
       service: http://hemmelig.hemmelig:80
-    # This rule sends traffic to the built-in hello-world HTTP server. This can help debug connectivity
-    # issues. If hello.example.com resolves and tunnel.example.com does not, then the problem is
-    # in the connection from cloudflared to your local service, not from the internet to cloudflared.
-    - hostname: hello.example.com
-      service: hello_world
+    - hostname: microbin.{{DOMAIN}}
+      service: http://microbin.microbin:80
     # This rule matches any traffic which didn't match a previous rule, and responds with HTTP 404.
     - service: http_status:404

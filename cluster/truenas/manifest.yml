@@ -52,3 +52,40 @@ spec:
       middlewares:
         - name: https-redirect
           namespace: truenas
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: truenas-dashdot
+  namespace: truenas
+spec:
+  ports:
+    - protocol: TCP
+      port: 10044
+  clusterIP: None
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: truenas-dashdot
+  namespace: truenas
+subsets:
+  - addresses:
+      - ip: 10.0.0.95
+    ports:
+      - port: 10044
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: truenas-dashdot
+  namespace: truenas
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`truenas-dashdot.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: truenas-dashdot
+          port: 10044

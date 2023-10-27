@@ -212,16 +212,21 @@ data:
             href: https://login.tailscale.com/admin/machines
             ping: https://login.tailscale.com/admin/machines
             description: Wireguard VPN as a service
-        - Rancher:
-            icon: rancher.svg
-            href: https://rancher.{{DOMAIN}}
-            ping: http://rancher.cattle-system:443
-            description: Kubernetes management platform
         - Longhorn:
             icon: longhorn.svg
             href: https://longhorn.{{DOMAIN}}
             ping: http://longhorn-frontend.longhorn-system
             description: Cloud-native distributed storage for K8S
+        - Router:
+            icon: router.svg
+            href: https://router.{{DOMAIN}}
+            ping: http://router.truenas
+            description: Home router
+        - Rancher:
+            icon: rancher.svg
+            href: https://rancher.{{DOMAIN}}
+            ping: http://rancher.cattle-system:443
+            description: Kubernetes management platform
         - Vaultwarden:
             icon: vaultwarden.svg
             href: https://vaultwarden.{{DOMAIN}}

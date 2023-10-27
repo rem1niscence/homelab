@@ -337,6 +337,11 @@ data:
             href: https://hemmelig.${PUBLIC_DOMAIN}
             ping: http://hemmelig.hemmelig
             description: Secure text & file sharing
+        - Memos:
+            icon: google-keep
+            href: https://memos.${DOMAIN}
+            ping: http://memos-service.memos
+            description: lightweight note taking
     - Blog:
         - remini.dev:
             icon: mdi-post-outline

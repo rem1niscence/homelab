@@ -342,6 +342,11 @@ data:
             href: https://memos.${DOMAIN}
             ping: http://memos-service.memos
             description: lightweight note taking
+        - Commafeed:
+            icon: commafeed
+            href: https://commafeed.${DOMAIN}
+            ping: http://commafeed.commafeed
+            description: RSS reader
     - Blog:
         - remini.dev:
             icon: mdi-post-outline

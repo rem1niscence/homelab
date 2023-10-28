@@ -347,6 +347,11 @@ data:
             href: https://commafeed.${DOMAIN}
             ping: http://commafeed.commafeed
             description: RSS reader
+        - Homebox:
+            icon: homebox
+            href: https://homebox.${DOMAIN}
+            ping: http://homebox.homebox
+            description: Home inventory & organization
     - Blog:
         - remini.dev:
             icon: mdi-post-outline

@@ -98,18 +98,3 @@ spec:
   ports:
     - port: 80
       targetPort: 80
----
-apiVersion: traefik.containo.us/v1alpha1
-kind: IngressRoute
-metadata:
-  name: microbin
-  namespace: microbin
-spec:
-  entryPoints:
-    - websecure
-  routes:
-    - match: Host(`microbin.{{DOMAIN}}`)
-      kind: Rule
-      services:
-        - name: microbin
-          port: 80

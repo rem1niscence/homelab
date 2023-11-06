@@ -58,31 +58,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: firefly
-          env:
-            - name: SITE_OWNER
-              valueFrom:
-                secretKeyRef:
-                  name: firefly
-                  key: SITE_OWNER
-                  optional: false
-            - name: APP_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: firefly
-                  key: APP_KEY
-                  optional: false
-            - name: DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: firefly
-                  key: DB_PASSWORD
-                  optional: false
-            - name: STATIC_CRON_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: firefly
-                  key: STATIC_CRON_TOKEN
-                  optional: false
+            - secretRef:
+                name: firefly
           volumeMounts:
             - name: upload
               mountPath: /var/www/html/storage/upload
@@ -111,23 +88,14 @@ spec:
           image: linuxserver/mariadb
           ports:
             - containerPort: 3306
+          envFrom:
+            - secretRef:
+                name: firefly
           env:
             - name: MYSQL_DATABASE
               value: "firefly"
             - name: MYSQL_USER
               value: "firefly"
-            - name: MYSQL_ROOT_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: firefly
-                  key: MYSQL_ROOT_PASSWORD
-                  optional: false
-            - name: MYSQL_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: firefly
-                  key: MYSQL_PASSWORD
-                  optional: false
           volumeMounts:
             - name: config
               mountPath: /config

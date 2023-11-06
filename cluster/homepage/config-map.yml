@@ -22,7 +22,7 @@ data:
         columns: 2
       System:
         style: row
-        columns: 4
+        columns: 5
       Media:
         style: row
         columns: 2
@@ -212,16 +212,21 @@ data:
             href: https://login.tailscale.com/admin/machines
             ping: https://login.tailscale.com/admin/machines
             description: Wireguard VPN as a service
-        - Rancher:
-            icon: rancher.svg
-            href: https://rancher.{{DOMAIN}}
-            ping: http://rancher.cattle-system:443
-            description: Kubernetes management platform
         - Longhorn:
             icon: longhorn.svg
             href: https://longhorn.{{DOMAIN}}
             ping: http://longhorn-frontend.longhorn-system
             description: Cloud-native distributed storage for K8S
+        - Router:
+            icon: router.svg
+            href: https://router.{{DOMAIN}}
+            ping: http://router.truenas
+            description: Home router
+        - Rancher:
+            icon: rancher.svg
+            href: https://rancher.{{DOMAIN}}
+            ping: http://rancher.cattle-system:443
+            description: Kubernetes management platform
         - Vaultwarden:
             icon: vaultwarden.svg
             href: https://vaultwarden.{{DOMAIN}}
@@ -284,7 +289,7 @@ data:
             description: Simple local email server
         - Microbin:
             icon: si-pastebin
-            href: https://microbin.{{DOMAIN}}
+            href: https://microbin.${PUBLIC_DOMAIN}
             ping: http://microbin.microbin
             description: Personal pasta bin
         - N8N:
@@ -332,6 +337,21 @@ data:
             href: https://hemmelig.${PUBLIC_DOMAIN}
             ping: http://hemmelig.hemmelig
             description: Secure text & file sharing
+        - Memos:
+            icon: google-keep
+            href: https://memos.${DOMAIN}
+            ping: http://memos-service.memos
+            description: lightweight note taking
+        - Commafeed:
+            icon: commafeed
+            href: https://commafeed.${DOMAIN}
+            ping: http://commafeed.commafeed
+            description: RSS reader
+        - Homebox:
+            icon: homebox
+            href: https://homebox.${DOMAIN}
+            ping: http://homebox.homebox
+            description: Home inventory & organization
     - Blog:
         - remini.dev:
             icon: mdi-post-outline
@@ -360,6 +380,10 @@ data:
             icon: mdi-cpu-64-bit
             href: ${DASHDOT_PI_3_URL}
             ping: ${DASHDOT_PI_3_PING}
+        - NAS:
+            icon: mdi-cpu-64-bit
+            href: https://truenas-dashdot.{{DOMAIN}}
+            ping: http://truenas-dashdot.truenas:10044
     - Calendar:
         - Calendar:
             icon: nextcloud-calendar

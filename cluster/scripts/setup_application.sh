@@ -15,6 +15,7 @@ echo "setting up $app"
 set -o allexport
 if [ -f "./$app/.env" ]; then
     source "./$app/.env"
+    rm .env
 fi
 set +o allexport
 

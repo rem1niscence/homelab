@@ -25,6 +25,9 @@ spec:
           image: lscr.io/linuxserver/code-server:latest
           ports:
             - containerPort: 8443
+          envFrom:
+            - secretRef:
+                name: codeserver
           env:
             - name: PUID
               value: "1000"
@@ -34,18 +37,6 @@ spec:
               value: "Etc/UTC"
             - name: DEFAULT_WORKSPACE
               value: "/config/workspace"
-            - name: PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: codeserver
-                  key: PASSWORD
-                  optional: false
-            - name: SUDO_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: codeserver
-                  key: SUDO_PASSWORD
-                  optional: false
           volumeMounts:
             - name: config
               mountPath: /config

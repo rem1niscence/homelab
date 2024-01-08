@@ -52,7 +52,7 @@ data:
         - TrueNAS SCALE:
             icon: truenas-scale.png
             href: https://truenas.{{DOMAIN}}/ui/
-            ping: http://truenas.truenas
+            siteMonitor: http://truenas.truenas
             description: Open-source storage operating system
             widget:
                 type: truenas
@@ -61,7 +61,7 @@ data:
         - Speedtest:
             icon: si-speedtest
             href: https://speedtest.{{DOMAIN}}
-            ping: http://speedtest.speedtest
+            siteMonitor: http://speedtest.speedtest
             description: Speed test tracker
             widget:
               type: speedtest
@@ -69,7 +69,7 @@ data:
         - Pi-hole:
             icon: pi-hole.svg
             href: https://pihole.{{DOMAIN}}/admin
-            ping: http://pihole.pihole
+            siteMonitor: http://pihole.pihole
             description: Network-wide ad blocker
             widget:
               type: pihole
@@ -78,7 +78,7 @@ data:
         - Paperless:
             icon: paperless-ngx.svg
             href: https://paperless.{{DOMAIN}}
-            ping: http://paperless.paperless
+            siteMonitor: http://paperless.paperless
             description: Digital document manager
             widget:
                 type: paperlessngx
@@ -88,7 +88,7 @@ data:
         - qBittorrent:
             icon: qbittorrent.svg
             href: https://torrent.{{DOMAIN}}
-            ping: http://qbittorrent.qbittorrent:8080
+            siteMonitor: http://qbittorrent.qbittorrent:8080
             description: Open-source torrent software
             widget:
               type: qbittorrent
@@ -98,7 +98,7 @@ data:
         - Radarr:
             icon: radarr.svg
             href: https://radarr.{{DOMAIN}}
-            ping: http://radarr.servarr:7878
+            siteMonitor: http://radarr.servarr:7878
             description: Movie indexer engine
             widget:
               type: radarr
@@ -107,7 +107,7 @@ data:
         - Sonarr:
             icon: sonarr.svg
             href: https://sonarr.{{DOMAIN}}
-            ping: http://sonarr.servarr:8989
+            siteMonitor: http://sonarr.servarr:8989
             description: Anime/TV indexer engine
             widget:
               type: sonarr
@@ -116,7 +116,7 @@ data:
         - Bazarr:
             icon: bazarr.svg
             href: https://bazarr.{{DOMAIN}}
-            ping: http://bazarr.servarr:6767
+            siteMonitor: http://bazarr.servarr:6767
             description: Subtitle management for media
             widget:
               type: bazarr
@@ -125,7 +125,7 @@ data:
         - Prowlarr:
             icon: prowlarr.svg
             href: https://prowlarr.{{DOMAIN}}
-            ping: http://prowlarr.servarr:9696
+            siteMonitor: http://prowlarr.servarr:9696
             description: Meta-search application for torrents
             widget:
               type: prowlarr
@@ -134,7 +134,7 @@ data:
         - Jellyfin:
             icon: jellyfin.svg
             href: https://jellyfin.{{DOMAIN}}
-            ping: http://jellyfin.jellyfin:8096
+            siteMonitor: http://jellyfin.jellyfin:8096
             description: Media server for movies & shows
             widget:
               type: jellyfin
@@ -145,7 +145,7 @@ data:
         - Jellyseerr:
             icon: jellyseerr.svg
             href: https://jellyseerr.{{DOMAIN}}
-            ping: http://jellyseerr.jellyfin:5055
+            siteMonitor: http://jellyseerr.jellyfin:5055
             description: Media request management
             widget:
               type: jellyseerr
@@ -154,7 +154,7 @@ data:
         - Uptime Kuma:
             icon: uptime-kuma.svg
             href: https://uptime.{{DOMAIN}}
-            ping: http://uptime.uptime
+            siteMonitor: http://uptime.uptime
             description: Website/Service monitoring
             widget:
               type: uptimekuma
@@ -163,7 +163,7 @@ data:
         - Kavita:
             icon: kavita
             href: https://kavita.{{DOMAIN}}
-            ping: http://kavita.kavita
+            siteMonitor: http://kavita.kavita
             description: Online book reader
             widget:
                 type: kavita
@@ -173,7 +173,7 @@ data:
         - Prometheus:
             icon: prometheus.svg
             href: https://prometheus.{{DOMAIN}}
-            ping: http://prometheus-operated.monitoring:9090
+            siteMonitor: http://prometheus-operated.monitoring:9090
             description: Metrics monitoring and alerting toolkit
             widget:
               type: prometheus
@@ -181,7 +181,7 @@ data:
         - Cloudflare:
             icon: cloudflare
             href: https://dash.cloudflare.com/${CLOUDFLARE_ACCOUNT_ID}
-            ping: https://dash.cloudflare.com/${CLOUDFLARE_ACCOUNT_ID}
+            siteMonitor: https://dash.cloudflare.com/${CLOUDFLARE_ACCOUNT_ID}
             description: Internet infrastructure and DNS provider
             widget:
               type: cloudflared
@@ -191,7 +191,7 @@ data:
         - Pi.Alert:
             icon: mdi-router-network
             href: https://pialert.{{DOMAIN}}
-            ping: http://pialert.pialert
+            siteMonitor: http://pialert.pialert
             description: Network device monitoring tool
             widget:
                 type: pialert
@@ -199,7 +199,7 @@ data:
         - Grafana:
             icon: grafana.svg
             href: https://grafana.{{DOMAIN}}
-            ping: http://prometheus-grafana.monitoring
+            siteMonitor: http://prometheus-grafana.monitoring
             description: Visualization platform for metrics
             widget:
               type: grafana
@@ -210,180 +210,180 @@ data:
         - Tailscale:
             icon: tailscale.svg
             href: https://login.tailscale.com/admin/machines
-            ping: https://login.tailscale.com/admin/machines
+            siteMonitor: https://login.tailscale.com/admin/machines
             description: Wireguard VPN as a service
         - Longhorn:
             icon: longhorn.svg
             href: https://longhorn.{{DOMAIN}}
-            ping: http://longhorn-frontend.longhorn-system
+            siteMonitor: http://longhorn-frontend.longhorn-system
             description: Cloud-native distributed storage for K8S
         - Router:
             icon: router.svg
             href: https://router.{{DOMAIN}}
-            ping: http://router.truenas
+            siteMonitor: http://router.truenas
             description: Home router
         - Rancher:
             icon: rancher.svg
             href: https://rancher.{{DOMAIN}}
-            ping: http://rancher.cattle-system:443
+            siteMonitor: http://rancher.cattle-system:443
             description: Kubernetes management platform
         - Vaultwarden:
             icon: vaultwarden.svg
             href: https://vaultwarden.{{DOMAIN}}
-            ping: http://vaultwarden.vaultwarden
+            siteMonitor: http://vaultwarden.vaultwarden
             description: Self-hosted password management
         - FileRun:
             icon: filerun.svg
             href: https://cloud.{{DOMAIN}}
-            ping: http://filerun.filerun
+            siteMonitor: http://filerun.filerun
             description: Personal Cloud
         - Hoppscotch:
             icon: hoppscotch.png
             href: https://hoppscotch.{{DOMAIN}}
-            ping: http://hoppscotch.hoppscotch
+            siteMonitor: http://hoppscotch.hoppscotch
             description: Web-based API testing tool
         - Code Server:
             icon: terminal.svg
             href: https://codeserver.{{DOMAIN}}
-            ping: http://codeserver.codeserver
+            siteMonitor: http://codeserver.codeserver
             description: Online coding workspace
         - Cloudbeaver:
             icon: mdi-database-cog
             href: https://cloudbeaver.{{DOMAIN}}
-            ping: http://cloudbeaver.cloudbeaver
+            siteMonitor: http://cloudbeaver.cloudbeaver
             description: Database management system
         - Kubernetes:
             icon: kubernetes-dashboard.png
             href: https://dashboard.{{DOMAIN}}
-            ping: http://kubernetes-dashboard.kubernetes-dashboard:443
+            siteMonitor: http://kubernetes-dashboard.kubernetes-dashboard:443
             description: Kubernete's dashboard
         - True Command:
             icon: truenas.png
             href: https://true-command.{{DOMAIN}}
-            ping: http://true-command.true-command
+            siteMonitor: http://true-command.true-command
             description:  Management tool for TrueNAS systems.
         - File Browser:
             icon: filebrowser
             href: https://filebrowser.{{DOMAIN}}
-            ping: http://filebrowser.filebrowser
+            siteMonitor: http://filebrowser.filebrowser
             description: Online file browser
         - Syncthing:
             icon: syncthing.svg
             href: https://syncthing.{{DOMAIN}}
-            ping: http://syncthing.syncthing
+            siteMonitor: http://syncthing.syncthing
             description: File synchronization across devices
         - Keel.sh:
             icon: mdi-alpha-k-box-outline
             href: https://keel.{{DOMAIN}}
-            ping: http://keel.kube-system:9300
+            siteMonitor: http://keel.kube-system:9300
             description: K8S image updater
         - Firefly III:
             icon: firefly
             href: https://firefly.{{DOMAIN}}
-            ping: http://firefly.firefly
+            siteMonitor: http://firefly.firefly
             description: Personal finance manager
         - Mail Catcher:
             icon: zohomail
             href: https://mail.{{DOMAIN}}
-            ping: http://mailcatcher.mailcatcher
+            siteMonitor: http://mailcatcher.mailcatcher
             description: Simple local email server
         - Microbin:
             icon: si-pastebin
             href: https://microbin.${PUBLIC_DOMAIN}
-            ping: http://microbin.microbin
+            siteMonitor: http://microbin.microbin
             description: Personal pasta bin
-        - N8N:
-            icon: n8n.svg
-            href: https://n8n.{{DOMAIN}}
-            ping: http://n8n.n8n
-            description: Workflow automation tool
+        # - N8N:
+        #     icon: n8n.svg
+        #     href: https://n8n.{{DOMAIN}}
+        #     siteMonitor: http://n8n.n8n
+        #     description: Workflow automation tool
         - Whoogle:
             icon: google
             href: https://whoogle.{{DOMAIN}}
-            ping: http://whoogle.whoogle
+            siteMonitor: http://whoogle.whoogle
             description: Privacy-focused Google front-end
         - Kitchen Owl:
             icon: kitchenowl
             href: https://kitchenowl.{{DOMAIN}}
-            ping: http://front.kitchenowl
+            siteMonitor: http://front.kitchenowl
             description: Recipe management software
         - Linkding:
             icon: linkding
             href: https://linkding.{{DOMAIN}}
-            ping: http://linkding.linkding
+            siteMonitor: http://linkding.linkding
             description: Bookmarks manager
         - IT Tools:
             icon: it-tools.svg
             href: https://it-tools.{{DOMAIN}}
-            ping: http://it-tools.it-tools
+            siteMonitor: http://it-tools.it-tools
             description: Handy tools for developers
         - Cyberchef:
             icon: cyberchef
             href: https://cyberchef.{{DOMAIN}}
-            ping: http://cyberchef.cyberchef
+            siteMonitor: http://cyberchef.cyberchef
             description: Swiss army knife for data
         - Stirling PDF:
             icon: stirling-pdf.png
             href: https://pdf.{{DOMAIN}}
-            ping: http://stirling-pdf.stirling-pdf
+            siteMonitor: http://stirling-pdf.stirling-pdf
             description: PDF Multitools
         - Draw.io:
             icon: si-diagramsdotnet
             href: https://drawio.{{DOMAIN}}
-            ping: http://drawio.drawio
+            siteMonitor: http://drawio.drawio
             description: Diagramming tool
         - Hemmelig:
             icon: mdi-lock-outline
             href: https://hemmelig.${PUBLIC_DOMAIN}
-            ping: http://hemmelig.hemmelig
+            siteMonitor: http://hemmelig.hemmelig
             description: Secure text & file sharing
         - Memos:
             icon: google-keep
             href: https://memos.${DOMAIN}
-            ping: http://memos-service.memos
+            siteMonitor: http://memos-service.memos
             description: lightweight note taking
         - Commafeed:
             icon: commafeed
             href: https://commafeed.${DOMAIN}
-            ping: http://commafeed.commafeed
+            siteMonitor: http://commafeed.commafeed
             description: RSS reader
         - Homebox:
             icon: homebox
             href: https://homebox.${DOMAIN}
-            ping: http://homebox.homebox
+            siteMonitor: http://homebox.homebox
             description: Home inventory & organization
     - Blog:
         - remini.dev:
             icon: mdi-post-outline
             href: https://remini.dev
-            ping: http://blog.blog
+            siteMonitor: http://blog.blog
             description: Personal blog
         - Umami:
             icon: umami-analytics
             href: https://analytics.remini.dev
-            ping: http://umami.umami
+            siteMonitor: http://umami.umami
             description: Open-source website analytics
     - System:
         - NUC:
             icon: mdi-cpu-64-bit
             href: ${DASHDOT_NUC_URL}
-            ping: ${DASHDOT_NUC_PING}
+            siteMonitor: ${DASHDOT_NUC_PING}
         - AMD:
             icon: mdi-cpu-64-bit
             href: ${DASHDOT_AMD_URL}
-            ping: ${DASHDOT_AMD_PING}
+            siteMonitor: ${DASHDOT_AMD_PING}
         - PI-2:
             icon: mdi-cpu-64-bit
             href: ${DASHDOT_PI_2_URL}
-            ping: ${DASHDOT_PI_2_PING}
+            siteMonitor: ${DASHDOT_PI_2_PING}
         - PI-3:
             icon: mdi-cpu-64-bit
             href: ${DASHDOT_PI_3_URL}
-            ping: ${DASHDOT_PI_3_PING}
+            siteMonitor: ${DASHDOT_PI_3_PING}
         - NAS:
             icon: mdi-cpu-64-bit
             href: https://truenas-dashdot.{{DOMAIN}}
-            ping: http://truenas-dashdot.truenas:10044
+            siteMonitor: http://truenas-dashdot.truenas:10044
     - Calendar:
         - Calendar:
             icon: nextcloud-calendar

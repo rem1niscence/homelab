@@ -23,7 +23,7 @@ spec:
       containers:
         - name: qbittorrent
           # qbittorrent with vuetorrent preinstalled
-          image: cr.hotio.dev/hotio/qbittorrent
+          image: ghcr.io/hotio/qbittorrent
           ports:
             - containerPort: 8080
           env:

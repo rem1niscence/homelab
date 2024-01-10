@@ -1,0 +1,196 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: resume
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resume-server
+  namespace: resume
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: resume-server
+  template:
+    metadata:
+      labels:
+        app: resume-server
+    spec:
+      containers:
+        - name: resume
+          image: amruthpillai/reactive-resume:server-latest
+          ports:
+            - containerPort: 3100
+          env:
+            - name: PUBLIC_URL
+              value: "https://resume.{{DOMAIN}}"
+            - name: PUBLIC_SERVER_URL
+              value: "https://resume-server.{{DOMAIN}}"
+            - name: SECRET_KEY
+              value: "46cGLAaRzxTb1RFr15q6JK1vUgBDqI"
+            - name: JWT_SECRET
+              value: "HlWI3tswoEkaLSy2EMCk0fO53XgXlj"
+            - name: JWT_EXPIRY_TIME
+              value: "604800"
+            - name: "POSTGRES_DB"
+              value: "resume"
+            - name: POSTGRES_USER
+              value: "resume"
+            - name: POSTGRES_PASSWORD
+              value: "resume_password123"
+            - name: POSTGRES_HOST
+              value: "postgres"
+            - name: POSTGRES_PORT
+              value: "5432"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resume-client
+  namespace: resume
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: resume-client
+  template:
+    metadata:
+      labels:
+        app: resume-client
+    spec:
+      containers:
+        - name: resume
+          image: amruthpillai/reactive-resume:client-latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: PUBLIC_URL
+              value: "https://resume.{{DOMAIN}}"
+            - name: PUBLIC_SERVER_URL
+              value: "https://resume-server.{{DOMAIN}}"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: resume
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: "resume"
+            - name: POSTGRES_USER
+              value: "resume"
+            - name: POSTGRES_PASSWORD
+              value: "resume_password123"
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+              subPath: postgres
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: pg-data-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: resume
+  name: pg-data-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1G
+  storageClassName: longhorn
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: resume
+  name: resume-server
+spec:
+  ports:
+    - port: 80
+      targetPort: 3100
+  selector:
+    app: resume-server
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: resume
+  name: resume-client
+spec:
+  ports:
+    - port: 80
+      targetPort: 3000
+  selector:
+    app: resume-client
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: resume
+  name: postgres
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: postgres
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: resume
+  namespace: resume
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`resume.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: resume-client
+          port: 80
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: resume-server
+  namespace: resume
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`resume-server.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: resume-server
+          port: 80

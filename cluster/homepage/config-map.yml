@@ -352,6 +352,11 @@ data:
             href: https://homebox.${DOMAIN}
             siteMonitor: http://homebox.homebox
             description: Home inventory & organization
+        - Reactive Resume:
+            icon: mdi-note-text
+            href: https://resume.{{DOMAIN}}
+            siteMonitor: http://resume-client.resume
+            description: Online resume builder
     - Blog:
         - remini.dev:
             icon: mdi-post-outline

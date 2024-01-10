@@ -4,7 +4,7 @@ metadata:
   name: update
   namespace: pihole
 spec:
-  schedule: "11 22 * * *"
+  schedule: "11 22 * * 1"
   successfulJobsHistoryLimit: 5
   failedJobsHistoryLimit: 5
   jobTemplate:

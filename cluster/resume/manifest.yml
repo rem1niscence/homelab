@@ -152,7 +152,6 @@ spec:
   selector:
     app: resume-client
 ---
-
 apiVersion: v1
 kind: Service
 metadata:

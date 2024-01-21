@@ -307,10 +307,10 @@ data:
             href: https://kitchenowl.{{DOMAIN}}
             siteMonitor: http://front.kitchenowl
             description: Recipe management software
-        - Linkding:
-            icon: linkding
-            href: https://linkding.{{DOMAIN}}
-            siteMonitor: http://linkding.linkding
+        - Shiori:
+            icon: shiori
+            href: https://shiori.{{DOMAIN}}
+            siteMonitor: http://shiori.shiori
             description: Bookmarks manager
         - IT Tools:
             icon: it-tools.svg

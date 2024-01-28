@@ -40,6 +40,24 @@ spec:
               mountPath: /data
             - name: config
               mountPath: /config
+        - name: gluetun
+          image: ghcr.io/qdm12/gluetun
+          securityContext:
+            capabilities:
+              add: ["NET_ADMIN"]
+          envFrom:
+          - secretRef:
+              name: gluetun
+          env:
+          - name: TZ
+            value: Etc/UTC
+
+          - name: VPN_TYPE
+            value: wireguard
+
+          volumeMounts:
+            - name: gluetun-config
+              mountPath: /gluetun
       volumes:
         - name: data
           persistentVolumeClaim:
@@ -47,6 +65,9 @@ spec:
         - name: config
           persistentVolumeClaim:
             claimName: config-pvc
+        - name: gluetun-config
+          persistentVolumeClaim:
+            claimName: gluetun-config-pvc
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -83,6 +104,19 @@ kind: PersistentVolumeClaim
 metadata:
   namespace: qbittorrent
   name: config-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1G
+  storageClassName: longhorn
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: qbittorrent
+  name: gluetun-config-pvc
 spec:
   accessModes:
     - ReadWriteOnce

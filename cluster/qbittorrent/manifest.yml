@@ -19,8 +19,26 @@ spec:
         app: qbittorrent
     spec:
       nodeSelector:
-        type: pi
+        type: main
       containers:
+        - name: gluetun
+          image: ghcr.io/qdm12/gluetun
+          securityContext:
+            capabilities:
+              add: ["NET_ADMIN"]
+          envFrom:
+          - secretRef:
+              name: gluetun
+          env:
+          - name: TZ
+            value: Etc/UTC
+
+          - name: VPN_TYPE
+            value: wireguard
+
+          volumeMounts:
+            - name: gluetun-config
+              mountPath: /gluetun
         - name: qbittorrent
           # qbittorrent with vuetorrent preinstalled
           image: ghcr.io/hotio/qbittorrent
@@ -40,24 +58,6 @@ spec:
               mountPath: /data
             - name: config
               mountPath: /config
-        - name: gluetun
-          image: ghcr.io/qdm12/gluetun
-          securityContext:
-            capabilities:
-              add: ["NET_ADMIN"]
-          envFrom:
-          - secretRef:
-              name: gluetun
-          env:
-          - name: TZ
-            value: Etc/UTC
-
-          - name: VPN_TYPE
-            value: wireguard
-
-          volumeMounts:
-            - name: gluetun-config
-              mountPath: /gluetun
       volumes:
         - name: data
           persistentVolumeClaim:

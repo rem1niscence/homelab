@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  gluetun:
+    container_name: gluetun
+    image: ghcr.io/qdm12/gluetun
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    volumes:
+      - gluetun-config:/gluetun
+    environment:
+      - TZ=Etc/UTC
+      - VPN_TYPE=wireguard
+    env_file:
+      - .env
+
+  tailscale:
+    container_name: tailscale-exit-node
+    image: tailscale/tailscale
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    volumes:
+      - var-lib:/var/lib
+      - state:/state
+      - /dev/net/tun:/dev/net/tun
+    restart: unless-stopped
+    environment:
+      - TS_HOSTNAME=amd-exit-node
+      - TS_EXTRA_ARGS=--advertise-routes=10.0.0.0/24 --advertise-exit-node
+      - TS_STATE_DIR=/state
+      - TS_NO_LOGS_NO_SUPPORT=true
+    network_mode: "service:gluetun"
+    env_file:
+      - .env
+
+volumes:
+  gluetun-config:
+  var-lib:
+  state:

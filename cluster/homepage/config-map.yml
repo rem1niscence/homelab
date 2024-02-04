@@ -217,11 +217,11 @@ data:
             href: https://longhorn.{{DOMAIN}}
             siteMonitor: http://longhorn-frontend.longhorn-system
             description: Cloud-native distributed storage for K8S
-        - Router:
-            icon: router.svg
-            href: https://router.{{DOMAIN}}
-            siteMonitor: http://router.truenas
-            description: Home router
+        # - Router:
+        #     icon: router.svg
+        #     href: https://router.{{DOMAIN}}
+        #     siteMonitor: http://router.truenas
+        #     description: Home router
         - Rancher:
             icon: rancher.svg
             href: https://rancher.{{DOMAIN}}

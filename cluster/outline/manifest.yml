@@ -1,0 +1,235 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: outline
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: outline
+  namespace: outline
+data:
+  PORT: "80"
+  NODE_ENV: "production"
+  DEFAULT_LANGUAGE: "en_US"
+  RATE_LIMITER_ENABLED: "false"
+  FORCE_HTTPS: "true"
+  WEB_CONCURRENCY: "1"
+  MAXIMUM_IMPORT_SIZE: "5120000"
+  LOG_LEVEL: "info"
+  # Keel does that
+  ENABLE_UPDATES: "false"
+  REDIS_URL: "redis://redis:6379"
+  FILE_STORAGE_UPLOAD_MAX_SIZE: "26214400"
+  FILE_STORAGE: "local"
+  FILE_STORAGE_LOCAL_ROOT_DIR: "/var/lib/outline/data"
+  PGSSLMODE: "disable"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: outline
+  name: outline
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: outline
+  template:
+    metadata:
+      labels:
+        app: outline
+    spec:
+      nodeSelector:
+        type: pi
+      containers:
+        - name: outline
+          image: docker.getoutline.com/outlinewiki/outline:latest
+          ports:
+            - containerPort: 80
+          envFrom:
+            - configMapRef:
+                name: outline
+            - secretRef:
+                name: outline
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/outline/data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: outline
+  name: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:alpine
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - secretRef:
+                name: outline
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          volumeMounts:
+            - name: db
+              mountPath: /var/lib/postgresql/data
+              subPath: postgres
+      volumes:
+        - name: db
+          persistentVolumeClaim:
+            claimName: db
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: outline
+  name: redis
+  labels:
+    app: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      restartPolicy: Always
+      nodeSelector:
+        type: main
+      containers:
+        - name: redis
+          image: redis:alpine
+          ports:
+            - containerPort: 6379
+          livenessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: outline-data-pv
+spec:
+  capacity:
+    storage: 3T
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 10.0.0.95
+    path: /mnt/main_drive/data/containers/outline
+  storageClassName: local-path
+  mountOptions:
+    - vers=4.0
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: outline
+  name: data
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 3T
+  volumeName: outline-data-pv
+  storageClassName: local-path
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: outline
+  name: db
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1G
+  storageClassName: longhorn
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: outline
+  name: outline
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    app: outline
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: outline
+  name: postgres
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: postgres
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: outline
+  name: redis
+spec:
+  ports:
+    - port: 6379
+      targetPort: 6379
+  selector:
+    app: redis
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: outline
+  namespace: outline
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`outline.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: outline
+          port: 80

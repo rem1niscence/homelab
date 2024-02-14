@@ -357,6 +357,11 @@ data:
             href: https://resume.{{DOMAIN}}
             siteMonitor: http://resume-client.resume
             description: Online resume builder
+        - Koillection:
+            icon: koillection
+            href: https://koillection.{{DOMAIN}}
+            siteMonitor: http://koillection.koillection
+            description: Collection manager
     - Blog:
         - remini.dev:
             icon: mdi-post-outline

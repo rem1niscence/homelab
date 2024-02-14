@@ -18,16 +18,18 @@ spec:
       labels:
         app: true-command
     spec:
+      nodeSelector:
+        type: secondary
       containers:
         - name: true-command
-          image: ixsystems/truecommand
+          image: ghcr.io/ixsystems/truecommand:latest
           ports:
             - containerPort: 80
           volumeMounts:
-            - name: config
+            - name: data
               mountPath: /data
       volumes:
-        - name: config
+        - name: data
           persistentVolumeClaim:
             claimName: config-pvc
 ---

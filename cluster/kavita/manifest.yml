@@ -26,7 +26,7 @@ spec:
         type: pi
       containers:
         - name: kavita
-          image: kizaing/kavita:latest
+          image: jvmilazz0/kavita:latest
           ports:
             - containerPort: 5000
           volumeMounts:

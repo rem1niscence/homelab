@@ -32,7 +32,7 @@ spec:
             requests:
               cpu: "100m" # 250 milliCPUs (0.1 CPU core)
             limits:
-              cpu: "250m" # 250 milliCPUs (0.25 CPU core)
+              cpu: "150m" # 150 milliCPUs (0.15 CPU core)
       volumes:
         - name: config
           persistentVolumeClaim:

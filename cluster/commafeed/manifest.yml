@@ -58,7 +58,7 @@ spec:
         app: db
     spec:
       nodeSelector:
-        type: pi
+        type: secondary
       containers:
         - name: db
           image: postgres:alpine

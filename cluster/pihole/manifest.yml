@@ -19,7 +19,7 @@ spec:
         app: pihole
     spec:
       nodeSelector:
-        type: pi
+        type: main
       containers:
         - name: pihole
           image: pihole/pihole:latest

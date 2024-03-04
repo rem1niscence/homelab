@@ -22,7 +22,7 @@ spec:
         type: pi
       containers:
         - name: memos
-          image: ghcr.io/usememos/memos:latest
+          image: ghcr.io/usememos/memos:0.19.1 # Remove once 0.20.1 bug is fixed
           ports:
             - containerPort: 5230
           volumeMounts:

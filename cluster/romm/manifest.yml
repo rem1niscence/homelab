@@ -18,6 +18,8 @@ spec:
       labels:
         app: romm
     spec:
+      nodeSelector:
+        type: secondary
       containers:
         - name: romm
           image: zurdi15/romm:latest
@@ -27,8 +29,20 @@ spec:
             - secretRef:
                 name: romm
           env:
-            - name: ROMM_DB_DRIVER
-              value: "sqlite"
+            - name: DB_HOST
+              value: "mariadb"
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_NAME
+              value: "romm"
+            - name: DB_USER
+              value: "romm"
+            - name: DB_PASSWD
+              valueFrom:
+                secretKeyRef:
+                  name: romm
+                  key: MYSQL_ROOT_PASSWORD
+                  optional: false
             - name: ROMM_AUTH_ENABLED
               value: "true"
             - name: ENABLE_EXPERIMENTAL_REDIS
@@ -38,25 +52,72 @@ spec:
             - name: "REDIS_PORT"
               value: "6379"
           volumeMounts:
-            - name: library
+            - name: data
               mountPath: /romm/library
-            - name: resources
+              subPath: library
+            - name: data
               mountPath: /romm/resources
+              subPath: resources
+            - name: data
+              mountPath: /romm/assets
+              subPath: assets
             - name: config
               mountPath: /romm/
               subPath: config.yml
-            - name: config
-              mountPath: /romm/database
       volumes:
-        - name: library
+        - name: data
           persistentVolumeClaim:
-            claimName: library
-        - name: resources
-          persistentVolumeClaim:
-            claimName: resources
+            claimName: data
         - name: config
           persistentVolumeClaim:
             claimName: config
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mariadb
+  namespace: romm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mariadb
+  template:
+    metadata:
+      labels:
+        app: mariadb
+    spec:
+      nodeSelector:
+        type: main
+      containers:
+        - name: mariadb
+          image: linuxserver/mariadb
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: romm
+                  key: MYSQL_ROOT_PASSWORD
+                  optional: false
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: romm
+                  key: MYSQL_ROOT_PASSWORD
+                  optional: false
+            - name: MYSQL_DATABASE
+              value: "romm"
+            - name: MYSQL_USER
+              value: "romm"
+          volumeMounts:
+            - name: config
+              mountPath: /config
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: db
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -76,6 +137,8 @@ spec:
         app: redis
     spec:
       restartPolicy: Always
+      nodeSelector:
+        type: pi
       containers:
         - name: redis
           image: redis:alpine
@@ -85,7 +148,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: romm-library
+  name: romm-data
 spec:
   capacity:
     storage: 3T
@@ -93,7 +156,7 @@ spec:
     - ReadWriteMany
   nfs:
     server: 10.0.0.95
-    path: /mnt/main_drive/data/romm/library
+    path: /mnt/main_drive/data/containers/romm
   storageClassName: local-path
   mountOptions:
     - vers=4.0
@@ -102,44 +165,14 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   namespace: romm
-  name: library
+  name: data
 spec:
   accessModes:
     - ReadWriteMany
   resources:
     requests:
       storage: 3T
-  volumeName: romm-library
-  storageClassName: local-path
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: romm-resources
-spec:
-  capacity:
-    storage: 3T
-  accessModes:
-    - ReadWriteMany
-  nfs:
-    server: 10.0.0.95
-    path: /mnt/main_drive/data/romm/resources
-  storageClassName: local-path
-  mountOptions:
-    - vers=4.0
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  namespace: romm
-  name: resources
-spec:
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 3T
-  volumeName: romm-resources
+  volumeName: romm-data
   storageClassName: local-path
 ---
 apiVersion: v1
@@ -156,6 +189,19 @@ spec:
   storageClassName: longhorn
 ---
 apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: romm
+  name: db
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1G
+  storageClassName: longhorn
+---
+apiVersion: v1
 kind: Service
 metadata:
   namespace: romm
@@ -163,7 +209,7 @@ metadata:
 spec:
   ports:
     - port: 80
-      targetPort: 80
+      targetPort: 8080
   selector:
     app: romm
 ---
@@ -178,6 +224,18 @@ spec:
       targetPort: 6379
   selector:
     app: redis
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: romm
+  name: mariadb
+spec:
+  ports:
+    - port: 3306
+      targetPort: 3306
+  selector:
+    app: mariadb
 ---
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute

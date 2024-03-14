@@ -196,6 +196,16 @@ data:
             widget:
                 type: pialert
                 url: http://pialert.pialert
+        - Romm:
+            icon: romm.svg
+            href: https://romm.{{DOMAIN}}
+            siteMonitor: http://romm.romm
+            description: Online game library and emulator
+            widget:
+              type: romm
+              url: http://romm.romm
+              username: ${ROMM_USERNAME}
+              password: ${ROMM_PASSWORD}
         - Grafana:
             icon: grafana.svg
             href: https://grafana.{{DOMAIN}}
@@ -442,8 +452,8 @@ data:
         provider: google
         target: _blank
     - openmeteo:
-        latitude: 18.4719
-        longitude: -69.8923
+        latitude: 40.4168
+        longitude: --3.703790
         units: metric
         cache: 5
   docker.yaml: ""

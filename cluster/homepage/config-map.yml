@@ -151,15 +151,14 @@ data:
               type: jellyseerr
               url: http://jellyseerr.jellyfin:5055
               key: ${JELLYSEERR_API_KEY}
-        - Uptime Kuma:
-            icon: uptime-kuma.svg
-            href: https://uptime.{{DOMAIN}}
-            siteMonitor: http://uptime.uptime
+        - Gatus:
+            icon: gatus.svg
+            href: https://gatus.{{DOMAIN}}
+            siteMonitor: http://gatus.gatus
             description: Website/Service monitoring
             widget:
-              type: uptimekuma
-              url: http://uptime.uptime
-              slug: services
+              type: gatus
+              url: http://gatus.gatus
         - Kavita:
             icon: kavita
             href: https://kavita.{{DOMAIN}}
@@ -453,7 +452,7 @@ data:
         target: _blank
     - openmeteo:
         latitude: 40.4168
-        longitude: --3.703790
+        longitude: -3.703790
         units: metric
         cache: 5
   docker.yaml: ""

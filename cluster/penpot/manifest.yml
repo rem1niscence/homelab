@@ -82,8 +82,6 @@ spec:
               value: "0.0.0.0"
             - name: PENPOT_FLAGS
               value: "enable-registration enable-login-with-password disable-email-verification enable-smtp enable-prepl-server enable-backend-api-docs disable-secure-session-cookies"
-            - name: PENPOT_PUBLIC_URI
-              value: "https://penpot.{{DOMAIN}}"
             - name: PENPOT_REDIS_URI
               value: "redis://redis/0"
 
@@ -92,19 +90,13 @@ spec:
             - name: PENPOT_STORAGE_ASSETS_FS_DIRECTORY
               value: "/opt/data/assets"
 
-            # TODO: Migrate to minio
-            # - name: AWS_ACCESS_KEY_ID
-            #   value: "penpot-devenv"
-            # - name: AWS_SECRET_ACCESS_KEY
-            #   value: "penpot-devenv"
-            # - name: PENPOT_ASSETS_STORAGE_BACKEND
-            #   value: "assets-s3" 
-            # - name: PENPOT_STORAGE_ASSETS_S3_ENDPOINT
-            #   value: "https://minio:9000"
-            # - name: PENPOT_STORAGE_ASSETS_S3_REGION
-            #   value: "eu-central-1"
-            # - name: PENPOT_STORAGE_ASSETS_S3_BUCKET
-            #   value: "penpot"
+
+            - name: PENPOT_PUBLIC_URI
+              valueFrom:
+                secretKeyRef:
+                  name: penpot
+                  key: PENPOT_PUBLIC_URI
+                  optional: false
             - name: PENPOT_TELEMETRY_ENABLED
               value: "false" 
             - name: PENPOT_DATABASE_URI
@@ -264,51 +256,6 @@ spec:
           ports:
             - containerPort: 6379
 ---
-# apiVersion: apps/v1
-# kind: Deployment
-# metadata:
-#   namespace: penpot
-#   name: minio
-# spec:
-#   replicas: 1
-#   selector:
-#     matchLabels:
-#       app: minio
-#   template:
-#     metadata:
-#       labels:
-#         app: minio
-#     spec:
-#       nodeSelector:
-#         type: pi
-#       containers:
-#         - name: minio
-#           image: minio/minio:latest
-#           ports:
-#             - containerPort: 9000 # API
-#             - containerPort: 9001 # Console
-#           command: ["minio", "server", "/mnt/data", "--console-address", ":9001"]
-#           env:
-#             - name: MINIO_ROOT_USER
-#               valueFrom:
-#                 secretKeyRef:
-#                   name: penpot
-#                   key: MINIO_ROOT_USER
-#                   optional: false
-#             - name: MINIO_ROOT_PASSWORD
-#               valueFrom:
-#                 secretKeyRef:
-#                   name: penpot
-#                   key: MINIO_ROOT_PASSWORD
-#                   optional: false
-#           volumeMounts:
-#             - name: assets
-#               mountPath: /mnt/data
-#       volumes:
-#         - name: assets
-#           persistentVolumeClaim:
-#             claimName: assets
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -435,63 +382,17 @@ spec:
   selector:
     app: mailcatcher
 ---
-# apiVersion: v1
-# kind: Service
-# metadata:
-#   namespace: penpot
-#   name: minio
-# spec:
-#   ports:
-#     - port: 9000
-#       targetPort: 9000
-#       name: api
-#     - port: 9001
-#       targetPort: 9001
-#       name: console
-#   selector:
-#     app: minio
----
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
-  name: frontend
+  name: mailcatcher
   namespace: penpot
 spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host("penpot.{{DOMAIN}}")
+    - match: Host(`penpot-email.{{DOMAIN}}`)
       kind: Rule
       services:
-        - name: frontend
+        - name: mailcatcher
           port: 80
----
-apiVersion: traefik.containo.us/v1alpha1
-kind: IngressRoute
-metadata:
-  name: backend
-  namespace: penpot
-spec:
-  entryPoints:
-    - websecure
-  routes:
-    - match: Host(`penpot-backend.{{DOMAIN}}`)
-      kind: Rule
-      services:
-        - name: penpot-backend
-          port: 80
----
-# apiVersion: traefik.containo.us/v1alpha1
-# kind: IngressRoute
-# metadata:
-#   name: minio
-#   namespace: penpot
-# spec:
-#   entryPoints:
-#     - websecure
-#   routes:
-#     - match: Host(`penpot-minio.{{DOMAIN}}`)
-#       kind: Rule
-#       services:
-#         - name: minio
-#           port: 9001

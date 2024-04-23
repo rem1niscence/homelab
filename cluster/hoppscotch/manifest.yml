@@ -18,6 +18,8 @@ spec:
       labels:
         app: hoppscotch
     spec:
+      nodeSelector:
+        type: main
       containers:
         - name: hoppscotch
           image: webysther/hoppscotch:latest

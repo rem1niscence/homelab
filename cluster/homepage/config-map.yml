@@ -371,6 +371,11 @@ data:
             href: https://koillection.{{DOMAIN}}
             siteMonitor: http://koillection.koillection
             description: Collection manager
+        - Penpot:
+            icon: si-penpot
+            href: https://penpot.${PUBLIC_DOMAIN}
+            siteMonitor: http://frontend.penpot
+            description: Graphic design tool
     - Blog:
         - remini.dev:
             icon: mdi-post-outline

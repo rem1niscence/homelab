@@ -1,0 +1,497 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: penpot
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: penpot
+  name: penpot-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: penpot-frontend
+  template:
+    metadata:
+      labels:
+        app: penpot-frontend
+    spec:
+      nodeSelector:
+        type: main
+      containers:
+        - name: frontend
+          image: penpotapp/frontend:latest
+          ports:
+            - containerPort: 9001
+          env:
+            - name: PENPOT_BACKEND_URI
+              # value: "https://backend"
+              value: "http://penpot-backend.penpot"
+            - name: PENPOT_EXPORTER_URI
+              value: "http://exporter.penpot"
+            - name: PENPOT_FLAGS
+              value: "enable-registration enable-login-with-password"
+          volumeMounts:
+            - name: assets
+              mountPath: /opt/data/assets
+      volumes:
+        - name: assets
+          persistentVolumeClaim:
+            claimName: assets
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: penpot
+  name: penpot-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: penpot-backend
+  template:
+    metadata:
+      labels:
+        app: penpot-backend
+    spec:
+      nodeSelector:
+        type: secondary
+
+      initContainers:
+      - name: volume-permissions
+        image: busybox
+        command: ['sh', '-c', 'chmod -R 777 /opt/data/assets']
+        volumeMounts:
+        - name: assets
+          mountPath: /opt/data/assets
+      containers:
+        - name: backend
+          securityContext:
+            privileged: true
+          image: penpotapp/backend:latest
+          ports:
+            - containerPort: 80
+          env:
+            - name: PENPOT_HTTP_SERVER_PORT
+              value: "80"
+            - name: PENPOT_HTTP_SERVER_HOST
+              value: "0.0.0.0" 
+            - name: PENPOT_PREPL_HOST
+              value: "0.0.0.0"
+            - name: PENPOT_FLAGS
+              value: "enable-registration enable-login-with-password disable-email-verification enable-smtp enable-prepl-server enable-backend-api-docs disable-secure-session-cookies"
+            - name: PENPOT_PUBLIC_URI
+              value: "https://penpot.{{DOMAIN}}"
+            - name: PENPOT_REDIS_URI
+              value: "redis://redis/0"
+
+            - name: PENPOT_ASSETS_STORAGE_BACKEND
+              value: "assets-fs" 
+            - name: PENPOT_STORAGE_ASSETS_FS_DIRECTORY
+              value: "/opt/data/assets"
+
+            # TODO: Migrate to minio
+            # - name: AWS_ACCESS_KEY_ID
+            #   value: "penpot-devenv"
+            # - name: AWS_SECRET_ACCESS_KEY
+            #   value: "penpot-devenv"
+            # - name: PENPOT_ASSETS_STORAGE_BACKEND
+            #   value: "assets-s3" 
+            # - name: PENPOT_STORAGE_ASSETS_S3_ENDPOINT
+            #   value: "https://minio:9000"
+            # - name: PENPOT_STORAGE_ASSETS_S3_REGION
+            #   value: "eu-central-1"
+            # - name: PENPOT_STORAGE_ASSETS_S3_BUCKET
+            #   value: "penpot"
+            - name: PENPOT_TELEMETRY_ENABLED
+              value: "false" 
+            - name: PENPOT_DATABASE_URI
+              valueFrom:
+                secretKeyRef:
+                  name: penpot
+                  key: PENPOT_DATABASE_URI
+                  optional: false
+            - name: PENPOT_DATABASE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: penpot
+                  key: PENPOT_DATABASE_USERNAME
+                  optional: false
+            - name: PENPOT_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: penpot
+                  key: PENPOT_DATABASE_PASSWORD
+                  optional: false
+            # TODO: change for an actual email provider
+            - name: PENPOT_SMTP_DEFAULT_FROM
+              value: "no-reply@example.com"
+            - name: PENPOT_SMTP_DEFAULT_REPLY_TO
+              value: "no-reply@example.com"
+            - name: PENPOT_SMTP_HOST
+              value: "mailcatcher"
+            - name: PENPOT_SMTP_PORT
+              value: "1025"
+            - name: PENPOT_SMTP_USERNAME
+              value: ""
+            - name: PENPOT_SMTP_PASSWORD
+              value: ""
+            - name: PENPOT_SMTP_TLS
+              value: "false"
+            - name: PENPOT_SMTP_SSL
+              value: "false"
+          envFrom:
+            - secretRef:
+                name: penpot
+          volumeMounts:
+            - name: assets
+              mountPath: /opt/data/assets
+      volumes:
+        - name: assets
+          persistentVolumeClaim:
+            claimName: assets
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: penpot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      nodeSelector:
+        type: main
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_INITDB_ARGS
+              value: "--data-checksums"
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: penpot
+                  key: PENPOT_DATABASE
+                  optional: false
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: penpot
+                  key: PENPOT_DATABASE_USERNAME
+                  optional: false
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: penpot
+                  key: PENPOT_DATABASE_PASSWORD
+                  optional: false
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          volumeMounts:
+            - name: db
+              mountPath: /var/lib/postgresql/data
+              subPath: postgres
+      volumes:
+        - name: db
+          persistentVolumeClaim:
+            claimName: db
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: penpot
+  name: exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: exporter
+  template:
+    metadata:
+      labels:
+        app: exporter
+    spec:
+      nodeSelector:
+        type: secondary
+      containers:
+        - name: exporter
+          image: penpotapp/exporter
+          env:
+            - name: PENPOT_PUBLIC_URI
+              value: "http://frontend"
+            - name: PENPOT_REDIS_URI
+              value: "redis://redis/0"
+          ports:
+            - containerPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: penpot
+  name: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      nodeSelector:
+        type: pi
+      containers:
+        - name: redis
+          image: redis:7
+          ports:
+            - containerPort: 6379
+---
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   namespace: penpot
+#   name: minio
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: minio
+#   template:
+#     metadata:
+#       labels:
+#         app: minio
+#     spec:
+#       nodeSelector:
+#         type: pi
+#       containers:
+#         - name: minio
+#           image: minio/minio:latest
+#           ports:
+#             - containerPort: 9000 # API
+#             - containerPort: 9001 # Console
+#           command: ["minio", "server", "/mnt/data", "--console-address", ":9001"]
+#           env:
+#             - name: MINIO_ROOT_USER
+#               valueFrom:
+#                 secretKeyRef:
+#                   name: penpot
+#                   key: MINIO_ROOT_USER
+#                   optional: false
+#             - name: MINIO_ROOT_PASSWORD
+#               valueFrom:
+#                 secretKeyRef:
+#                   name: penpot
+#                   key: MINIO_ROOT_PASSWORD
+#                   optional: false
+#           volumeMounts:
+#             - name: assets
+#               mountPath: /mnt/data
+#       volumes:
+#         - name: assets
+#           persistentVolumeClaim:
+#             claimName: assets
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: penpot
+  name: mailcatcher
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mailcatcher
+  template:
+    metadata:
+      labels:
+        app: mailcatcher
+    spec:
+      nodeSelector:
+        type: pi
+      containers:
+        - name: mailcatcher
+          image: sj26/mailcatcher:latest
+          ports:
+            - containerPort: 1025 # SMTP
+            - containerPort: 1080 # HTTP
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: penpot
+  name: assets
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 2G
+  storageClassName: longhorn
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: penpot
+  name: db
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2G
+  storageClassName: longhorn
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: penpot
+  name: frontend
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    app: penpot-frontend
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: penpot
+  name: penpot-backend
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    app: penpot-backend
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: penpot
+  name: exporter
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    app: exporter
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: penpot
+  name: postgres
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: postgres
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: penpot
+  name: redis
+spec:
+  ports:
+    - port: 6379
+      targetPort: 6379
+  selector:
+    app: redis
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: penpot
+  name: mailcatcher
+spec:
+  ports:
+    - port: 1025
+      targetPort: 1025
+      name: smtp
+    - port: 80
+      targetPort: 1080
+      name: http
+  selector:
+    app: mailcatcher
+---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   namespace: penpot
+#   name: minio
+# spec:
+#   ports:
+#     - port: 9000
+#       targetPort: 9000
+#       name: api
+#     - port: 9001
+#       targetPort: 9001
+#       name: console
+#   selector:
+#     app: minio
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: frontend
+  namespace: penpot
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host("penpot.{{DOMAIN}}")
+      kind: Rule
+      services:
+        - name: frontend
+          port: 80
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: backend
+  namespace: penpot
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`penpot-backend.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: penpot-backend
+          port: 80
+---
+# apiVersion: traefik.containo.us/v1alpha1
+# kind: IngressRoute
+# metadata:
+#   name: minio
+#   namespace: penpot
+# spec:
+#   entryPoints:
+#     - websecure
+#   routes:
+#     - match: Host(`penpot-minio.{{DOMAIN}}`)
+#       kind: Rule
+#       services:
+#         - name: minio
+#           port: 9001

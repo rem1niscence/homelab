@@ -20,9 +20,18 @@ spec:
     spec:
       nodeSelector:
         type: secondary
+      initContainers:
+      - name: volume-permissions
+        image: busybox
+        command: ['sh', '-c', 'chown -R 1000:1000 /romm/config && chmod -R 770 /romm/config']
+        volumeMounts:
+        - name: config
+          mountPath: /romm/config
       containers:
         - name: romm
           image: zurdi15/romm:latest
+          securityContext:
+            privileged: true
           ports:
             - containerPort: 80
           envFrom:
@@ -61,9 +70,11 @@ spec:
             - name: data
               mountPath: /romm/assets
               subPath: assets
+            - name: data
+              mountPath: /romm/logs
+              subPath: logs
             - name: config
-              mountPath: /romm/
-              subPath: config.yml
+              mountPath: /romm/config
       volumes:
         - name: data
           persistentVolumeClaim:

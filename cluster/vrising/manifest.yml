@@ -1,0 +1,90 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: vrising
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vrising
+  namespace: vrising
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vrising
+  template:
+    metadata:
+      labels:
+        app: vrising
+    spec:
+      nodeSelector:
+        type: secondary
+      containers:
+        - name: vrising
+          image: trueosiris/vrising
+          ports:
+            - containerPort: 9876
+              protocol: UDP
+            - containerPort: 9877
+              protocol: UDP
+          volumeMounts:
+            - name: data
+              mountPath: /mnt/vrising/server
+              subPath: server
+            - name: data
+              mountPath: /mnt/vrising/persistentdata
+              subPath: persistentdata
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: vrising-data-pv
+spec:
+  capacity:
+    storage: 3T
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 10.0.0.95
+    path: /mnt/main_drive/data/containers/vrising
+  storageClassName: local-path
+  mountOptions:
+    - vers=4.0
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data
+  namespace: vrising
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 3T
+  volumeName: vrising-data-pv
+  storageClassName: local-path
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vrising
+  namespace: vrising
+spec:
+  type: LoadBalancer
+  ports:
+    - name: server-udp
+      protocol: UDP
+      port: 9876
+      targetPort: 9876
+    - name: steam-udp
+      protocol: UDP
+      port: 9877
+      targetPort: 9877
+  selector:
+    app: vrising

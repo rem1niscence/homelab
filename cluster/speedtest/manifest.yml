@@ -22,7 +22,7 @@ spec:
         type: secondary
       containers:
         - name: speedtest
-          image: ghcr.io/alexjustesen/speedtest-tracker:latest
+          image: lscr.io/linuxserver/speedtest-tracker:latest
           env:
             - name: PUID
               value: "1000"

@@ -1,0 +1,496 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ente
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ente
+  namespace: ente
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ente
+  template:
+    metadata:
+      labels:
+        app: ente
+    spec:
+      nodeSelector:
+        type: main
+      initContainers:
+      - name: substitute-credentials
+        image: bhgedigital/envsubst
+        command: ["/bin/sh", "-c", "envsubst < /credentials/credentials.yaml > /shared/local.yaml"]
+        envFrom:
+        - secretRef:
+            name: ente
+        volumeMounts:
+            - name: credentials
+              mountPath: /credentials
+            - name: shared
+              mountPath: /shared
+      containers:
+        - name: ente
+          image: ghcr.io/ente-io/server
+          ports:
+            - containerPort: 8080 # api
+            - containerPort: 2112 # prometheus metrics
+          envFrom:
+          - secretRef:
+              name: ente
+          volumeMounts:
+            - name: shared
+              mountPath: /configurations
+            - name: data
+              mountPath: /data
+            - name: config
+              mountPath: /config
+      volumes:
+        - name: shared
+          emptyDir: {}
+        - name: data
+          persistentVolumeClaim:
+            claimName: data
+        - name: credentials
+          configMap:
+            name: credentials
+            items:
+              - key: credentials.yaml
+                path: credentials.yaml
+        - name: config
+          configMap:
+            name: config
+            items:
+              - key: museum.yaml
+                path: museum.yaml
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: ente
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      nodeSelector:
+        type: pi
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: ente
+                  key: POSTGRES_DB
+                  optional: false
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: ente
+                  key: POSTGRES_USER
+                  optional: false
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: ente
+                  key: POSTGRES_PASSWORD
+                  optional: false
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          volumeMounts:
+            - name: db
+              mountPath: /var/lib/postgresql/data
+              subPath: postgres
+      volumes:
+        - name: db
+          persistentVolumeClaim:
+            claimName: db
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minio
+  namespace: ente
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: minio
+  template:
+    metadata:
+      labels:
+        app: minio
+    spec:
+      containers:
+        - name: minio
+          image: minio/minio
+          command: ["minio"]
+          args: ["server", "/data", "--address", ":3200", "--console-address", ":3201"]
+          ports:
+            - containerPort: 3200 # minio
+            - containerPort: 3201 # console
+          env:
+            - name: MINIO_ROOT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: ente
+                  key: MINIO_ROOT_USER
+                  optional: false
+            - name: MINIO_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: ente
+                  key: MINIO_ROOT_PASSWORD
+                  optional: false
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: minio-provision
+  namespace: ente
+spec:
+  template:
+    metadata:
+      labels:
+        app: minio-provision
+    spec:
+      nodeSelector:
+        type: pi
+      containers:
+        - name: minio-provision
+          image: minio/mc
+          command: ["sh", "/config/provision.sh"]
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: minio-provision
+              mountPath: /config
+          env:
+            - name: MINIO_ROOT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: ente
+                  key: MINIO_ROOT_USER
+                  optional: false
+            - name: MINIO_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: ente
+                  key: MINIO_ROOT_PASSWORD
+                  optional: false
+      restartPolicy: OnFailure
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data
+        - name: minio-provision
+          configMap:
+            name: minio-provision
+            items:
+              - key: provision.sh
+                path: provision.sh
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ente-data-pv
+spec:
+  capacity:
+    storage: 3T
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 10.0.0.95
+    path: /mnt/main_drive/data/containers/ente
+  storageClassName: local-path
+  mountOptions:
+    - vers=4.0
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: ente
+  name: data
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 3T
+  volumeName: ente-data-pv
+  storageClassName: local-path
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: ente
+  name: db
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2G
+  storageClassName: longhorn
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: ente
+  name: minio-provision
+data:
+  provision.sh: |
+    #!/bin/sh
+
+    MINIO_ROOT_USER=${MINIO_ROOT_USER}
+    MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+
+    # Script used to prepare the minio instance that runs as part of the development
+    # Docker compose cluster.
+
+    while ! mc config host add h0 http://minio:3200 "$MINIO_ROOT_USER" "$MINIO_ROOT_PASSWORD"
+    do
+      echo "waiting for minio..."
+      sleep 0.5
+    done
+
+    cd /data
+
+    mc mb -p b2-eu-cen
+    mc mb -p wasabi-eu-central-2-v3
+    mc mb -p scw-eu-fr-v3
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: ente
+  name: credentials
+data:
+  credentials.yaml: |
+    db:
+        host: postgres
+        port: 5432
+        name: ${POSTGRES_DB}
+        user: ${POSTGRES_USER}
+        password: ${POSTGRES_PASSWORD}
+        sslmode: disable
+
+    s3:
+        are_local_buckets: true
+        b2-eu-cen:
+            key: ${MINIO_ROOT_USER}
+            secret: ${MINIO_ROOT_PASSWORD}
+            endpoint: minio:3200
+            region: eu-central-2
+            bucket: b2-eu-cen
+        wasabi-eu-central-2-v3:
+            key: ${MINIO_ROOT_USER}
+            secret: ${MINIO_ROOT_PASSWORD}
+            endpoint: minio:3200
+            region: eu-central-2
+            bucket: wasabi-eu-central-2-v3
+            compliance: false
+        scw-eu-fr-v3:
+            key: ${MINIO_ROOT_USER}
+            secret: ${MINIO_ROOT_PASSWORD}
+            endpoint: minio:3200
+            region: eu-central-2
+            bucket: scw-eu-fr-v3
+
+        # internal:
+        #   hardcoded-ott:
+        #     emails:
+        #       - "test@test.com,123456"
+        #     local-domain-suffix: "@remini.dev"
+        #     local-domain-value: 123456
+
+        # http:
+        #   use-tls: true
+
+    # smtp:
+    #     host: mailcatcher.mailcatcher
+    #     port: 1025
+    #     # The email address from which to send the email. Set this to an email
+    #     # address whose credentials you're providing.
+    #     email: ente@ente.fake
+
+    webauthn:
+        rpid: "example.com"
+        rporigins:
+            - "https://example.com:3005"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: ente
+  name: config
+data:
+  museum.yaml: |
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  namespace: ente
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: web
+          image: node:22-alpine3.19
+          ports:
+            - containerPort: 3000
+          command: ["sh", "/config/setup-web.sh"]
+          env:
+            - name: SERVER_PUBLIC_URL
+              valueFrom:
+                secretKeyRef:
+                  name: ente
+                  key: SERVER_PUBLIC_URL
+                  optional: false
+          volumeMounts:
+            - name: setup-web
+              mountPath: /config
+      volumes:
+        - name: setup-web
+          configMap:
+            name: setup-web
+            items:
+              - key: setup-web.sh
+                path: setup-web.sh
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: ente
+  name: setup-web
+data:
+  setup-web.sh: |
+   #!/bin/sh
+  
+   apk add --no-cache git
+   git clone https://github.com/ente-io/ente
+   cd ente/web
+   git submodule update --init --recursive
+   yarn install
+   NEXT_PUBLIC_ENTE_ENDPOINT=${SERVER_PUBLIC_URL} yarn build:photos
+   rm -rf node_modules
+
+   npm install -g serve
+   cd ./apps/photos/out
+   serve -s . -l tcp://0.0.0.0:3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: ente
+  name: minio
+spec:
+  ports:
+    - port: 3200
+      targetPort: 3200
+      name: minio
+    - port: 3201
+      targetPort: 3201
+      name: console
+  selector:
+    app: minio
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: ente
+  name: postgres
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: postgres
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: ente
+  name: ente-server
+spec:
+  ports:
+    - port: 80
+      targetPort: 8080
+  selector:
+    app: ente
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: ente
+  namespace: ente
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`ente-server.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: ente-server
+          port: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  namespace: ente
+spec:
+  ports:
+    - port: 80
+      targetPort: 3000
+  selector:
+    app: web
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: web
+  namespace: ente
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`ente.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: web
+          port: 80

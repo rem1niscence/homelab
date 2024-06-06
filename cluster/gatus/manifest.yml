@@ -102,21 +102,21 @@ data:
           send-on-resolved: true
           failure-threshold: 3
           success-threshold: 3
-    
+
     endpoints:
-      - name: Romm                 
+      - name: Romm
         url: "http://romm.romm"
         conditions:
           - "[STATUS] == 200"
         alerts:
               - type: discord
-      - name: Bazarr                 
+      - name: Bazarr
         url: "http://bazarr.servarr:6767"
         conditions:
           - "[STATUS] == 200"
         alerts:
               - type: discord
-      - name: Code server                 
+      - name: Code server
         url: "http://codeserver.codeserver"
         conditions:
           - "[STATUS] == 200"
@@ -288,5 +288,11 @@ data:
         url: "http://shiori.shiori"
         conditions:
           - "[STATUS] == 200"
+        alerts:
+              - type: discord
+      - name: Ente
+        url: "http://ente-server.ente"
+        conditions:
+          - "[STATUS] == 404"
         alerts:
               - type: discord

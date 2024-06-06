@@ -376,6 +376,11 @@ data:
             href: https://penpot.${PUBLIC_DOMAIN}
             siteMonitor: http://frontend.penpot
             description: Graphic design tool
+        - Ente:
+            icon: si-googlephotos
+            href: https://ente.{{DOMAIN}}
+            siteMonitor: http://web.ente
+            description: Online photo backup / viewer
     - Blog:
         - remini.dev:
             icon: mdi-post-outline
@@ -419,13 +424,13 @@ data:
                   service_group: Widgets
                   service_name: Sonarr
                   color: teal
-                  params: 
+                  params:
                     unmonitored: true
                 - type: radarr
                   service_group: Widgets
                   service_name: Radarr
                   color: emerald
-                  params: 
+                  params:
                     unmonitored: true
   widgets.yaml: |
     - kubernetes:

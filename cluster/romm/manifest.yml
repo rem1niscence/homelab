@@ -29,7 +29,7 @@ spec:
           mountPath: /romm/config
       containers:
         - name: romm
-          image: zurdi15/romm:latest
+          image: rommapp/romm
           securityContext:
             privileged: true
           ports:

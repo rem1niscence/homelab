@@ -22,19 +22,21 @@ spec:
         type: main
       containers:
         - name: gluetun
+          # image: qmcgaw/gluetun:v3.36.0
           image: qmcgaw/gluetun:latest
           securityContext:
             capabilities:
               add: ["NET_ADMIN"]
+            privileged: true
           envFrom:
-          - secretRef:
-              name: gluetun
+            - secretRef:
+                name: gluetun
           env:
-          - name: TZ
-            value: Etc/UTC
+            - name: TZ
+              value: Etc/UTC
 
-          - name: VPN_TYPE
-            value: wireguard
+            - name: VPN_TYPE
+              value: wireguard
 
           volumeMounts:
             - name: gluetun-config

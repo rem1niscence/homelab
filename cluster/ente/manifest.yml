@@ -107,7 +107,7 @@ spec:
         app: postgres
     spec:
       nodeSelector:
-        type: pi
+        pi: pi-3
       containers:
         - name: postgres
           image: postgres:16-alpine
@@ -392,6 +392,8 @@ spec:
       labels:
         app: web
     spec:
+      nodeSelector:
+        type: main
       containers:
         - name: web
           image: node:22-alpine3.19

@@ -42,6 +42,8 @@ spec:
               value: "speedtest"
             - name: DB_PASSWORD
               value: "speedtest1234"
+            - name: APP_KEY
+              value: "base64:u3Nnlo7HUtFnGoSsn8jsgxaHZLXuT/eNMhFJdSFYxqw="
           ports:
             - containerPort: 80
           volumeMounts:

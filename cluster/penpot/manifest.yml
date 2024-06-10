@@ -60,12 +60,12 @@ spec:
         type: secondary
 
       initContainers:
-      - name: volume-permissions
-        image: busybox
-        command: ['sh', '-c', 'chmod -R 777 /opt/data/assets']
-        volumeMounts:
-        - name: assets
-          mountPath: /opt/data/assets
+        - name: volume-permissions
+          image: busybox
+          command: ["sh", "-c", "chmod -R 777 /opt/data/assets"]
+          volumeMounts:
+            - name: assets
+              mountPath: /opt/data/assets
       containers:
         - name: backend
           securityContext:
@@ -77,7 +77,7 @@ spec:
             - name: PENPOT_HTTP_SERVER_PORT
               value: "80"
             - name: PENPOT_HTTP_SERVER_HOST
-              value: "0.0.0.0" 
+              value: "0.0.0.0"
             - name: PENPOT_PREPL_HOST
               value: "0.0.0.0"
             - name: PENPOT_FLAGS
@@ -86,10 +86,9 @@ spec:
               value: "redis://redis/0"
 
             - name: PENPOT_ASSETS_STORAGE_BACKEND
-              value: "assets-fs" 
+              value: "assets-fs"
             - name: PENPOT_STORAGE_ASSETS_FS_DIRECTORY
               value: "/opt/data/assets"
-
 
             - name: PENPOT_PUBLIC_URI
               valueFrom:
@@ -98,7 +97,7 @@ spec:
                   key: PENPOT_PUBLIC_URI
                   optional: false
             - name: PENPOT_TELEMETRY_ENABLED
-              value: "false" 
+              value: "false"
             - name: PENPOT_DATABASE_URI
               valueFrom:
                 secretKeyRef:
@@ -167,6 +166,7 @@ spec:
           image: postgres:16-alpine
           ports:
             - containerPort: 5432
+          # command: ["sleep", "3600"]
           env:
             - name: POSTGRES_INITDB_ARGS
               value: "--data-checksums"

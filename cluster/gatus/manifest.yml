@@ -206,8 +206,8 @@ data:
           - "[STATUS] == 200"
         alerts:
               - type: discord
-      - name: Pi.Alert
-        url: "http://pialert.pialert"
+      - name: NetAlertX
+        url: "http://netalertx.netalertx"
         conditions:
           - "[STATUS] == 200"
         alerts:

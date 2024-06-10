@@ -187,14 +187,14 @@ data:
               accountid: ${CLOUDFLARE_ACCOUNT_ID}
               tunnelid: ${CLOUDFLARE_TUNNEL_ID}
               key: ${CLOUDFLARE_API_TOKEN}
-        - Pi.Alert:
+        - NetAlertX:
             icon: mdi-router-network
-            href: https://pialert.{{DOMAIN}}
-            siteMonitor: http://pialert.pialert
+            href: https://netalertx.{{DOMAIN}}
+            siteMonitor: http://netalertx.netalertx
             description: Network device monitoring tool
             widget:
                 type: pialert
-                url: http://pialert.pialert
+                url: http://netalertx.netalertx
         - Romm:
             icon: romm.svg
             href: https://romm.{{DOMAIN}}

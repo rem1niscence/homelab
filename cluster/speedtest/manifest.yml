@@ -44,6 +44,8 @@ spec:
               value: "speedtest1234"
             - name: APP_KEY
               value: "base64:u3Nnlo7HUtFnGoSsn8jsgxaHZLXuT/eNMhFJdSFYxqw="
+            - name: SPEEDTEST_SCHEDULE
+              value: "*/30 * * * *"
           ports:
             - containerPort: 80
           volumeMounts:

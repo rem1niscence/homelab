@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: homebox
-          image: ghcr.io/hay-kot/homebox:latest
+          image: ghcr.io/sysadminsmedia/homebox:latest
           ports:
             - containerPort: 7745
           env:

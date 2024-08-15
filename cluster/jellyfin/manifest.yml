@@ -61,7 +61,7 @@ spec:
         app: jellyseerr
     spec:
       nodeSelector:
-        type: pi
+        type: main
       containers:
         - name: jellyseerr
           image: fallenbagel/jellyseerr:latest

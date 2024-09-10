@@ -34,10 +34,8 @@ spec:
           env:
             - name: TZ
               value: Etc/UTC
-
             - name: VPN_TYPE
               value: wireguard
-
           volumeMounts:
             - name: gluetun-config
               mountPath: /gluetun

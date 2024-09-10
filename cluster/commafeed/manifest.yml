@@ -19,10 +19,10 @@ spec:
         app: commafeed
     spec:
       nodeSelector:
-        type: pi
+        type: main
       containers:
         - name: commafeed
-          image: athou/commafeed:latest
+          image: athou/commafeed:latest-h2
           ports:
             - containerPort: 8082
           env:

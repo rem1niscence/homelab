@@ -14,9 +14,7 @@ endef
 tailscale:
 	$(call check_vars, OAUTH_CLIENT_ID OAUTH_CLIENT_SECRET)
 	@echo "setting up tailscale"
-	@sed -e "s;{{OAUTH_CLIENT_ID}};$(OAUTH_CLIENT_ID);g" ./tailscale/operator.yml \
-	| sed -e "s;{{OAUTH_CLIENT_SECRET}};$(OAUTH_CLIENT_SECRET);g" | kubectl apply -f -
-	sleep 5
+	@./tailscale/setup.sh $(OAUTH_CLIENT_ID) $(OAUTH_CLIENT_SECRET)
 	@echo "done ✅"
 
 .PHONY: tailscale-expose
@@ -50,10 +48,10 @@ change-domain:
 .PHONY: tls
 tls:
 	$(call check_vars, DOMAIN CLOUDFLARE_TOKEN EMAIL)
-	@kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.7.0/cert-manager.yaml
+	@kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.15.3/cert-manager.yaml
 	@echo "wait 10 seconds for cert-manager to be installed"
 	@ sleep 10
-	@sed -e "s;{{CLOUDFARE_TOKEN}};$(CLOUDFLARE_TOKEN);g" ./tls/tls.yml | \
+	@sed -e "s;{{CLOUDFLARE_TOKEN}};$(CLOUDFLARE_TOKEN);g" ./tls/tls.yml | \
 		sed -e "s;{{EMAIL}};$(EMAIL);g" | \
 		sed -e "s;{{DOMAIN}};$(DOMAIN);g" | kubectl apply -f -
 	@echo "done ✅. Bear in mind that the certificate validation may take several minutes, after that, restart the pods behind traefik's reverse proxy in order for this to take effect"

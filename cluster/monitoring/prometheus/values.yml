@@ -760,7 +760,7 @@ grafana:
     storageClassName: longhorn
     accessModes:
       - ReadWriteOnce
-    size: 20Gi
+    size: 2Gi
   ## ForceDeployDatasources Create datasource configmap even if grafana deployment has been disabled
   ##
   forceDeployDatasources: false
@@ -2821,7 +2821,7 @@ prometheus:
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
-              storage: 20Gi
+              storage: 10Gi
     #    selector: {}
 
     ## Using tmpfs volume

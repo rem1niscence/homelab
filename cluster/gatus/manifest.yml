@@ -19,7 +19,7 @@ spec:
         app: gatus
     spec:
       nodeSelector:
-        type: main
+        type: pi
       containers:
         - name: gatus
           image: twinproduction/gatus:latest

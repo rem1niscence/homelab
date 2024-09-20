@@ -42,6 +42,7 @@ spec:
         - name: qbittorrent
           # qbittorrent with vuetorrent preinstalled
           image: ghcr.io/hotio/qbittorrent
+          command: ['sh', '-c', 'sleep 10 && /init']
           ports:
             - containerPort: 8080
           env:

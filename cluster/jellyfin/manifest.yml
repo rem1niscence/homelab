@@ -145,7 +145,7 @@ spec:
     - ReadWriteMany
   nfs:
     server: 10.0.0.95
-    path: /mnt/main_drive/data
+    path: /mnt/main_drive/data/media
   storageClassName: local-path
   mountOptions:
     - vers=4.0

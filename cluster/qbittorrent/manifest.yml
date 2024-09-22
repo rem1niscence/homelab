@@ -19,7 +19,7 @@ spec:
         app: qbittorrent
     spec:
       nodeSelector:
-        type: main
+        pi: pi-3
       containers:
         - name: gluetun
           # image: qmcgaw/gluetun:v3.36.0
@@ -36,9 +36,11 @@ spec:
               value: Etc/UTC
             - name: VPN_TYPE
               value: wireguard
-          volumeMounts:
-            - name: gluetun-config
-              mountPath: /gluetun
+            - name: DNS_KEEP_NAMESERVER
+              value: "on"
+          # volumeMounts:
+          #   - name: gluetun-config
+          #     mountPath: /gluetun
         - name: qbittorrent
           # qbittorrent with vuetorrent preinstalled
           image: ghcr.io/hotio/qbittorrent
@@ -66,9 +68,9 @@ spec:
         - name: config
           persistentVolumeClaim:
             claimName: config-pvc
-        - name: gluetun-config
-          persistentVolumeClaim:
-            claimName: gluetun-config-pvc
+        # - name: gluetun-config
+        #   persistentVolumeClaim:
+        #     claimName: gluetun-config-pvc
 ---
 apiVersion: v1
 kind: PersistentVolume

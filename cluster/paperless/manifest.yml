@@ -50,7 +50,7 @@ spec:
               value: "8000"
             - name: PAPERLESS_OCR_DESKEW
               value: "false"
-            - name: PAPERLESS_OCR_USER_ARGS 
+            - name: PAPERLESS_OCR_USER_ARGS
               value: '{"invalidate_digital_signatures": true}'
           volumeMounts:
             - name: config

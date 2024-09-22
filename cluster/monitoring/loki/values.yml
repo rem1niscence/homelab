@@ -6,13 +6,13 @@ loki:
     type: 'filesystem'
   schemaConfig:
     configs:
-    - from: "2024-01-01"
-      store: tsdb
-      index:
-        prefix: loki_index_
-        period: 24h
-      object_store: filesystem
-      schema: v13
+      - from: "2024-01-01"
+        store: tsdb
+        index:
+          prefix: loki_index_
+          period: 24h
+        object_store: filesystem
+        schema: v13
   auth_enabled: false
   tableManager:
     retention_deletes_enabled: true

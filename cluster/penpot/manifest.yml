@@ -58,7 +58,6 @@ spec:
     spec:
       nodeSelector:
         type: secondary
-
       initContainers:
         - name: volume-permissions
           image: busybox
@@ -84,12 +83,10 @@ spec:
               value: "enable-registration enable-login-with-password disable-email-verification enable-smtp enable-prepl-server enable-backend-api-docs disable-secure-session-cookies"
             - name: PENPOT_REDIS_URI
               value: "redis://redis/0"
-
             - name: PENPOT_ASSETS_STORAGE_BACKEND
               value: "assets-fs"
             - name: PENPOT_STORAGE_ASSETS_FS_DIRECTORY
               value: "/opt/data/assets"
-
             - name: PENPOT_PUBLIC_URI
               valueFrom:
                 secretKeyRef:

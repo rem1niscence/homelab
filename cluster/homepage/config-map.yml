@@ -381,6 +381,11 @@ data:
             href: https://ente.{{DOMAIN}}
             siteMonitor: http://web.ente
             description: Online photo backup / viewer
+        - Morphos:
+            icon: si-convertio
+            href: https://morphos.{{DOMAIN}}
+            siteMonitor: http://morphos.morphos
+            description: Self-hosted file converter 
     - Blog:
         - remini.dev:
             icon: mdi-post-outline

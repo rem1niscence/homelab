@@ -296,3 +296,9 @@ data:
           - "[STATUS] == 404"
         alerts:
               - type: discord
+      - name: Morphos
+        url: "http://morphos.morphos"
+        conditions:
+          - "[STATUS] == 200"
+        alerts:
+              - type: discord

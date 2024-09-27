@@ -19,7 +19,7 @@ spec:
         app: qbittorrent
     spec:
       nodeSelector:
-        pi: pi-3
+        pi: pi-2
       containers:
         - name: gluetun
           # image: qmcgaw/gluetun:v3.36.0

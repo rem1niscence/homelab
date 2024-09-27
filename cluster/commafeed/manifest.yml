@@ -59,7 +59,7 @@ spec:
         type: secondary
       containers:
         - name: db
-          image: postgres:alpine
+          image: postgres:16-alpine
           ports:
             - containerPort: 5432
           env:

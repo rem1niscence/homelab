@@ -2617,7 +2617,7 @@ prometheus:
     ## prometheus resource to be created with selectors based on values in the helm deployment,
     ## which will also match the PrometheusRule resources created
     ##
-    ruleSelectorNilUsesHelmValues: true
+    ruleSelectorNilUsesHelmValues: null
     ## PrometheusRules to be selected for target discovery.
     ## If {}, select all PrometheusRules
     ##
@@ -2663,7 +2663,7 @@ prometheus:
     ## prometheus resource to be created with selectors based on values in the helm deployment,
     ## which will also match the podmonitors created
     ##
-    podMonitorSelectorNilUsesHelmValues: true
+    podMonitorSelectorNilUsesHelmValues: null
     ## PodMonitors to be selected for target discovery.
     ## If {}, select all PodMonitors
     ##
@@ -2684,7 +2684,7 @@ prometheus:
     ## prometheus resource to be created with selectors based on values in the helm deployment,
     ## which will also match the probes created
     ##
-    probeSelectorNilUsesHelmValues: true
+    probeSelectorNilUsesHelmValues: null
     ## Probes to be selected for target discovery.
     ## If {}, select all Probes
     ##
@@ -2705,7 +2705,7 @@ prometheus:
     ## prometheus resource to be created with selectors based on values in the helm deployment,
     ## which will also match the scrapeConfigs created
     ##
-    scrapeConfigSelectorNilUsesHelmValues: true
+    scrapeConfigSelectorNilUsesHelmValues: null
     ## scrapeConfigs to be selected for target discovery.
     ## If {}, select all scrapeConfigs
     ##
@@ -3382,7 +3382,7 @@ thanosRuler:
     ## prometheus resource to be created with selectors based on values in the helm deployment,
     ## which will also match the PrometheusRule resources created
     ##
-    ruleSelectorNilUsesHelmValues: true
+    ruleSelectorNilUsesHelmValues: null
     ## PrometheusRules to be selected for target discovery.
     ## If {}, select all PrometheusRules
     ##

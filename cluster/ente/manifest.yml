@@ -22,13 +22,13 @@ spec:
       nodeSelector:
         type: main
       initContainers:
-      - name: substitute-credentials
-        image: bhgedigital/envsubst
-        command: ["/bin/sh", "-c", "envsubst < /config/server-config.yaml > /shared/local.yaml"]
-        envFrom:
-        - secretRef:
-            name: ente
-        volumeMounts:
+        - name: substitute-credentials
+          image: bhgedigital/envsubst
+          command: ["/bin/sh", "-c", "envsubst < /config/server-config.yaml > /shared/local.yaml"]
+          envFrom:
+            - secretRef:
+                name: ente
+          volumeMounts:
             - name: server-config
               mountPath: /config
             - name: shared
@@ -40,8 +40,8 @@ spec:
             - containerPort: 8080 # api
             - containerPort: 2112 # prometheus metrics
           envFrom:
-          - secretRef:
-              name: ente
+            - secretRef:
+                name: ente
           volumeMounts:
             - name: shared
               mountPath: /configurations
@@ -54,22 +54,22 @@ spec:
           image: "ghcr.io/tailscale/tailscale:latest"
           env:
             # Store the state in a k8s secret
-          - name: TS_KUBE_SECRET
-            value: tailscale-auth
-          - name: TS_USERSPACE
-            value: "false"
-          - name: TS_DEBUG_FIREWALL_MODE
-            value: auto
-          - name: TS_AUTHKEY
-            valueFrom:
-              secretKeyRef:
-                name: tailscale-auth
-                key: TS_AUTHKEY
-                optional: true
+            - name: TS_KUBE_SECRET
+              value: tailscale-auth
+            - name: TS_USERSPACE
+              value: "false"
+            - name: TS_DEBUG_FIREWALL_MODE
+              value: auto
+            - name: TS_AUTHKEY
+              valueFrom:
+                secretKeyRef:
+                  name: tailscale-auth
+                  key: TS_AUTHKEY
+                  optional: true
           securityContext:
             capabilities:
               add:
-              - NET_ADMIN
+                - NET_ADMIN
       volumes:
         - name: shared
           emptyDir: {}
@@ -373,7 +373,7 @@ metadata:
   namespace: ente
   name: config
 data:
-  museum.yaml: |
+  museum.yaml: ""
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -423,19 +423,19 @@ metadata:
   name: setup-web
 data:
   setup-web.sh: |
-   #!/bin/sh
-  
-   apk add --no-cache git
-   git clone https://github.com/ente-io/ente
-   cd ente/web
-   git submodule update --init --recursive
-   yarn install
-   NEXT_PUBLIC_ENTE_ENDPOINT=${SERVER_PUBLIC_URL} yarn build:photos
-   rm -rf node_modules
+    #!/bin/sh
 
-   npm install -g serve
-   cd ./apps/photos/out
-   serve -s . -l tcp://0.0.0.0:3000
+    apk add --no-cache git
+    git clone https://github.com/ente-io/ente
+    cd ente/web
+    git submodule update --init --recursive
+    yarn install
+    NEXT_PUBLIC_ENTE_ENDPOINT=${SERVER_PUBLIC_URL} yarn build:photos
+    rm -rf node_modules
+
+    npm install -g serve
+    cd ./apps/photos/out
+    serve -s . -l tcp://0.0.0.0:3000
 ---
 apiVersion: v1
 kind: Service
@@ -546,13 +546,13 @@ metadata:
   name: tailscale
   namespace: ente
 rules:
-- apiGroups: [""]
-  resources: ["secrets"]
-  verbs: ["create"]
-- apiGroups: [""]
-  resourceNames: ["tailscale-auth"]
-  resources: ["secrets"]
-  verbs: ["get", "update", "patch"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["create"]
+  - apiGroups: [""]
+    resourceNames: ["tailscale-auth"]
+    resources: ["secrets"]
+    verbs: ["get", "update", "patch"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -560,8 +560,8 @@ metadata:
   name: tailscale
   namespace: ente
 subjects:
-- kind: ServiceAccount
-  name: tailscale
+  - kind: ServiceAccount
+    name: tailscale
 roleRef:
   kind: Role
   name: tailscale

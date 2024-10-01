@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   gluetun:
     container_name: gluetun
@@ -14,7 +13,6 @@ services:
       - VPN_TYPE=wireguard
     env_file:
       - .env
-
   tailscale:
     container_name: tailscale-exit-node
     image: tailscale/tailscale
@@ -34,7 +32,6 @@ services:
     network_mode: "service:gluetun"
     env_file:
       - .env
-
 volumes:
   gluetun-config:
   var-lib:

@@ -19,7 +19,7 @@ spec:
         app: true-command
     spec:
       nodeSelector:
-        type: secondary
+        type: main
       containers:
         - name: true-command
           image: ghcr.io/ixsystems/truecommand:latest

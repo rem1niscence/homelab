@@ -1,12 +1,22 @@
+deploymentMode: 'SingleBinary<->SimpleScalable'
 loki:
   commonConfig:
     replication_factor: 1
   storage:
     type: 'filesystem'
+  schemaConfig:
+    configs:
+      - from: "2024-01-01"
+        store: tsdb
+        index:
+          prefix: loki_index_
+          period: 24h
+        object_store: filesystem
+        schema: v13
   auth_enabled: false
   tableManager:
     retention_deletes_enabled: true
-    retention_period: 72h
+    retention_period: 48h
 singleBinary:
   replicas: 1
 persistence:

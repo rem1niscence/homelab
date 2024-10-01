@@ -19,7 +19,7 @@ spec:
         app: gatus
     spec:
       nodeSelector:
-        type: main
+        type: pi
       containers:
         - name: gatus
           image: twinproduction/gatus:latest
@@ -294,5 +294,11 @@ data:
         url: "http://ente-server.ente"
         conditions:
           - "[STATUS] == 404"
+        alerts:
+              - type: discord
+      - name: Morphos
+        url: "http://morphos.morphos"
+        conditions:
+          - "[STATUS] == 200"
         alerts:
               - type: discord

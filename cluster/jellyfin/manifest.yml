@@ -61,7 +61,7 @@ spec:
         app: jellyseerr
     spec:
       nodeSelector:
-        type: main
+        pi: pi-2
       containers:
         - name: jellyseerr
           image: fallenbagel/jellyseerr:latest
@@ -145,7 +145,7 @@ spec:
     - ReadWriteMany
   nfs:
     server: 10.0.0.95
-    path: /mnt/main_drive/data
+    path: /mnt/main_drive/data/media
   storageClassName: local-path
   mountOptions:
     - vers=4.0

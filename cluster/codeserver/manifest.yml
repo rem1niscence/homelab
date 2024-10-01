@@ -19,7 +19,7 @@ spec:
         app: codeserver
     spec:
       nodeSelector:
-        type: main
+        type: secondary
       containers:
         - name: codeserver
           image: lscr.io/linuxserver/code-server:latest

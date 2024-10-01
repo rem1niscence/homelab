@@ -21,54 +21,52 @@ spec:
     spec:
       nodeSelector:
         type: secondary
-      dnsPolicy: ClusterFirst  
+      dnsPolicy: ClusterFirst
       securityContext:
-        runAsUser: 0  # root user
+        runAsUser: 0 # root user
         runAsGroup: 0 # root group
       containers:
-      - name: gluetun
-        image: ghcr.io/qdm12/gluetun
-        securityContext:
-          capabilities:
-            add: ["NET_ADMIN"]
-        envFrom:
-        - secretRef:
-            name: gluetun
-        env:
-        - name: TZ
-          value: Etc/UTC
-
-        - name: VPN_TYPE
-          value: wireguard
-
-        volumeMounts:
-          - name: gluetun-config
-            mountPath: /gluetun
-      - name: tailscale
-        image: tailscale/tailscale
-        securityContext:
-          capabilities:
-            add: ["NET_ADMIN", "NET_RAW"]
-        volumeMounts:
-          - name: var-lib
-            mountPath: /var/lib
-          - name: state
-            mountPath: /state
-          - name: dev-net-tun
-            mountPath: /dev/net/tun
-        env:
-          - name: TS_HOSTNAME
-            value: k3s-exit-node
-          - name: TS_AUTH_KEY
-            valueFrom:
-              secretKeyRef:
-                name: tailscale
-                key: TS_AUTH_KEY
-                optional: false
-          - name: TS_EXTRA_ARGS
-            value: "--advertise-exit-node"
-          - name: TS_STATE_DIR
-            value: "/state"
+        - name: gluetun
+          image: ghcr.io/qdm12/gluetun
+          securityContext:
+            capabilities:
+              add: ["NET_ADMIN"]
+          envFrom:
+            - secretRef:
+                name: gluetun
+          env:
+            - name: TZ
+              value: Etc/UTC
+            - name: VPN_TYPE
+              value: wireguard
+          volumeMounts:
+            - name: gluetun-config
+              mountPath: /gluetun
+        - name: tailscale
+          image: tailscale/tailscale
+          securityContext:
+            capabilities:
+              add: ["NET_ADMIN", "NET_RAW"]
+          volumeMounts:
+            - name: var-lib
+              mountPath: /var/lib
+            - name: state
+              mountPath: /state
+            - name: dev-net-tun
+              mountPath: /dev/net/tun
+          env:
+            - name: TS_HOSTNAME
+              value: k3s-exit-node
+            - name: TS_AUTH_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: tailscale
+                  key: TS_AUTH_KEY
+                  optional: false
+            - name: TS_EXTRA_ARGS
+              value: "--advertise-exit-node"
+            - name: TS_STATE_DIR
+              value: "/state"
       serviceAccountName: tailscale-exit-node
       volumes:
         - name: gluetun-config
@@ -136,9 +134,9 @@ metadata:
   name: tailscale-exit-node
   namespace: tailscale-exit-node
 rules:
-- apiGroups: [""]
-  resources: ["secrets"]
-  verbs: ["*"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["*"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding

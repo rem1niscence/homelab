@@ -30,26 +30,26 @@ spec:
               value: "en_GB"
             - name: APP_ROOT_PATH
               value: "/"
-          volumeMounts:
-            - name: config
-              mountPath: /configs
-      volumes:
-        - name: config
-          persistentVolumeClaim:
-            claimName: config-pvc
+          # volumeMounts:
+          #   - name: config
+          #     mountPath: /configs
+      # volumes:
+      #   - name: config
+      #     persistentVolumeClaim:
+      #       claimName: config-pvc
 ---
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: config-pvc
-  namespace: stirling-pdf
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1G
-  storageClassName: longhorn
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: config-pvc
+#   namespace: stirling-pdf
+# spec:
+#   accessModes:
+#     - ReadWriteOnce
+#   resources:
+#     requests:
+#       storage: 1G
+#   storageClassName: longhorn
 ---
 apiVersion: v1
 kind: Service

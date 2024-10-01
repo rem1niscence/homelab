@@ -84,7 +84,7 @@ metadata:
   name: backup-local
   namespace: vaultwarden
 spec:
-  schedule: "14 15 * * *"
+  # schedule: "14 15 * * *"
   successfulJobsHistoryLimit: 2
   failedJobsHistoryLimit: 2
   jobTemplate:

@@ -3,6 +3,8 @@
 path=$1
 domain=$2
 
+kubectl create namespace homepage
+
 kubectl apply -f ./$path/cluster-role.yml
 
 kubectl apply -f ./$path/service-account.yml

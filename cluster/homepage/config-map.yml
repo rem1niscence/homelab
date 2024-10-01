@@ -348,12 +348,12 @@ data:
             description: Secure text & file sharing
         - Memos:
             icon: google-keep
-            href: https://memos.${DOMAIN}
+            href: https://memos.{{DOMAIN}}
             siteMonitor: http://memos-service.memos
             description: lightweight note taking
         - Commafeed:
             icon: commafeed
-            href: https://commafeed.${DOMAIN}
+            href: https://commafeed.{{DOMAIN}}
             siteMonitor: http://commafeed.commafeed
             description: RSS reader
         - Homebox:
@@ -381,6 +381,11 @@ data:
             href: https://ente.{{DOMAIN}}
             siteMonitor: http://web.ente
             description: Online photo backup / viewer
+        - Morphos:
+            icon: si-convertio
+            href: https://morphos.{{DOMAIN}}
+            siteMonitor: http://morphos.morphos
+            description: Self-hosted file converter 
     - Blog:
         - remini.dev:
             icon: mdi-post-outline

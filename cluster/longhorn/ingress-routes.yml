@@ -23,3 +23,18 @@ spec:
           port: 80
       middlewares:
         - name: longhorn-frontend-auth
+---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   namespace: longhorn-system
+#   name: longhorn-lb
+# spec:
+#   type: LoadBalancer
+#   ports:
+#     - name: http
+#       port: 8200
+#       protocol: TCP
+#       targetPort: http
+#   selector:
+#     app: longhorn-ui

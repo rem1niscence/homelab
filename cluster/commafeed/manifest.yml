@@ -19,20 +19,18 @@ spec:
         app: commafeed
     spec:
       nodeSelector:
-        type: main
+        type: pi
       containers:
         - name: commafeed
-          image: athou/commafeed:latest-h2
+          image: athou/commafeed:latest-postgresql-jvm
           ports:
             - containerPort: 8082
           env:
-            - name: "CF_DATABASE_DRIVERCLASS"
-              value: "org.postgresql.Driver"
-            - name: "CF_DATABASE_URL"
+            - name: "QUARKUS_DATASOURCE_JDBC_URL"
               value: "jdbc:postgresql://db:5432/commafeed"
-            - name: "CF_DATABASE_USER"
+            - name: "QUARKUS_DATASOURCE_USERNAME"
               value: "commafeed"
-            - name: "CF_DATABASE_PASSWORD"
+            - name: "QUARKUS_DATASOURCE_PASSWORD"
               value: "fIp2JZ3Sa4"
           volumeMounts:
             - name: data
@@ -61,7 +59,7 @@ spec:
         type: secondary
       containers:
         - name: db
-          image: postgres:alpine
+          image: postgres:16-alpine
           ports:
             - containerPort: 5432
           env:

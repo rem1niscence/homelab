@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Requires 'jq' installed.
+
 # Default dry-run to true
 dry_run=true
 

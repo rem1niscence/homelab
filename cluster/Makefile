@@ -103,3 +103,7 @@ ipv6_reload:
 	systemctl stop k3s
 	modprobe ip6table_filter
 	systemctl start k3s
+
+.PHONY: k-token
+k-token:
+	@k3s kubectl -n kubernetes-dashboard create token admin-user --duration=1000h

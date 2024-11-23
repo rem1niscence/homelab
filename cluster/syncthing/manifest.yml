@@ -19,7 +19,7 @@ spec:
         app: syncthing
     spec:
       nodeSelector:
-        type: pi
+        type: main
       containers:
         - name: syncthing
           image: linuxserver/syncthing:latest

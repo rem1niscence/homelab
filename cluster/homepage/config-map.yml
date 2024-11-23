@@ -187,24 +187,43 @@ data:
               accountid: ${CLOUDFLARE_ACCOUNT_ID}
               tunnelid: ${CLOUDFLARE_TUNNEL_ID}
               key: ${CLOUDFLARE_API_TOKEN}
-        - NetAlertX:
-            icon: mdi-router-network
-            href: https://netalertx.{{DOMAIN}}
-            siteMonitor: http://netalertx.netalertx
-            description: Network device monitoring tool
+        # - NetAlertX:
+        #     icon: mdi-router-network
+        #     href: https://netalertx.{{DOMAIN}}
+        #     siteMonitor: http://netalertx.netalertx
+        #     description: Network device monitoring tool
+        #     widget:
+        #         type: pialert
+        #         url: http://netalertx.netalertx
+        # - Romm:
+        #     icon: romm.svg
+        #     href: https://romm.{{DOMAIN}}
+        #     siteMonitor: http://romm.romm
+        #     description: Online game library and emulator
+        #     widget:
+        #       type: romm
+        #       url: http://romm.romm
+        #       username: ${ROMM_USERNAME}
+        #       password: ${ROMM_PASSWORD}
+        - Komga:
+            icon: komga.svg
+            href: https://komga.{{DOMAIN}}
+            siteMonitor: http://komga.komga:25600
+            description: Online Comic/Manga reader
             widget:
-                type: pialert
-                url: http://netalertx.netalertx
-        - Romm:
-            icon: romm.svg
-            href: https://romm.{{DOMAIN}}
-            siteMonitor: http://romm.romm
-            description: Online game library and emulator
+              type: komga
+              url: http://komga.komga:25600
+              username: ${KOMGA_USERNAME}
+              password: ${KOMGA_PASSWORD}
+        - Mylar3:
+            icon: sh-mylar3
+            href: https://mylar3.{{DOMAIN}}
+            siteMonitor: http://mylar3.mylar3:8090
+            description: Comic management tool
             widget:
-              type: romm
-              url: http://romm.romm
-              username: ${ROMM_USERNAME}
-              password: ${ROMM_PASSWORD}
+              type: mylar
+              url: http://mylar3.mylar3:8090
+              key: ${MYLAR3_API_KEY}
         - Grafana:
             icon: grafana.svg
             href: https://grafana.{{DOMAIN}}
@@ -385,7 +404,7 @@ data:
             icon: si-convertio
             href: https://morphos.{{DOMAIN}}
             siteMonitor: http://morphos.morphos
-            description: Self-hosted file converter 
+            description: Self-hosted file converter
     - Blog:
         - remini.dev:
             icon: mdi-post-outline

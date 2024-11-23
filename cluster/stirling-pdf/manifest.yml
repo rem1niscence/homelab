@@ -19,10 +19,10 @@ spec:
         app: stirling-pdf
     spec:
       nodeSelector:
-        type: main
+        type: pi
       containers:
         - name: stirling-pdf
-          image: frooodle/s-pdf:latest
+          image: ghcr.io/stirling-tools/stirling-pdf:latest
           ports:
             - containerPort: 8080
           env:

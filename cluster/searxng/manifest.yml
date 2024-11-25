@@ -1,0 +1,167 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: searxng
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: searxng
+  namespace: searxng
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: searxng
+  template:
+    metadata:
+      labels:
+        app: searxng
+    spec:
+      containers:
+        - name: searxng
+          image: searxng/searxng
+          ports:
+            - containerPort: 8080
+          env:
+            - name: UWSGI_WORKERS
+              value: "1"
+            - name: UWSGI_THREADS
+              value: "1"
+            - name: SEARXNG_REDIS_URL
+              value: "redis://redis:6379"
+            - name: SEARXNG_SETTINGS_PATH
+              value: "/config/settings.yml"
+            - name: SEARXNG_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: searxng
+                  key: SEARXNG_SECRET
+                  optional: false
+          securityContext:
+            capabilities:
+              drop:
+                - ALL
+              add:
+                - SETGID
+                - SETUID
+                - DAC_OVERRIDE
+          volumeMounts:
+            - name: config
+              mountPath: /etc/searxng
+            - name: settings
+              mountPath: /config
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: config
+        - name: settings
+          configMap:
+            name: settings
+            items:
+              - key: settings.yml
+                path: settings.yml
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: searxng
+  name: redis
+  labels:
+    app: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: redis
+          image: valkey/valkey:8-alpine
+          ports:
+            - containerPort: 6379
+          livenessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: 15
+            timeoutSeconds: 5
+          readinessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: 15
+            timeoutSeconds: 5
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: searxng
+  name: config
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1G
+  storageClassName: longhorn
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: searxng
+  namespace: searxng
+spec:
+  selector:
+    app: searxng
+  ports:
+    - port: 80
+      targetPort: 8080
+---
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: searxng
+  name: redis
+spec:
+  ports:
+    - port: 6379
+      targetPort: 6379
+  selector:
+    app: redis
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: searxng
+  namespace: searxng
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`searxng.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: searxng
+          port: 80
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: searxng
+  name: settings
+data:
+  settings.yml: |
+    use_default_settings: true
+    search:
+      safe_search: 0
+      autocomplete: 'duckduckgo'

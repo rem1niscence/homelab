@@ -325,11 +325,11 @@ data:
         #     href: https://n8n.{{DOMAIN}}
         #     siteMonitor: http://n8n.n8n
         #     description: Workflow automation tool
-        - Whoogle:
-            icon: google
-            href: https://whoogle.{{DOMAIN}}
-            siteMonitor: http://whoogle.whoogle
-            description: Privacy-focused Google front-end
+        - SearNXG:
+            icon: searxng.svg
+            href: https://searxng.{{DOMAIN}}
+            siteMonitor: http://searxng.searxng
+            description: Meta Search Engine
         - Kitchen Owl:
             icon: kitchenowl
             href: https://kitchenowl.{{DOMAIN}}
@@ -482,8 +482,11 @@ data:
         labels: true
         nodes: false
     - search:
-        provider: google
+        provider: custom
+        url: https://searxng.rvnserver.online/search?q=
         target: _blank
+        suggestionUrl: http://searxng.searxng/autocompleter?q=
+        showSearchSuggestions: true
     - openmeteo:
         latitude: 40.4168
         longitude: -3.703790

@@ -104,20 +104,8 @@ data:
           success-threshold: 3
 
     endpoints:
-      - name: Romm
-        url: "http://romm.romm"
-        conditions:
-          - "[STATUS] == 200"
-        alerts:
-              - type: discord
       - name: Bazarr
         url: "http://bazarr.servarr:6767"
-        conditions:
-          - "[STATUS] == 200"
-        alerts:
-              - type: discord
-      - name: Code server
-        url: "http://codeserver.codeserver"
         conditions:
           - "[STATUS] == 200"
         alerts:
@@ -130,18 +118,6 @@ data:
               - type: discord
       - name: Firefly III
         url: "http://firefly.firefly"
-        conditions:
-          - "[STATUS] == 200"
-        alerts:
-              - type: discord
-      - name: Hemmelig
-        url: "http://hemmelig.hemmelig"
-        conditions:
-          - "[STATUS] == 200"
-        alerts:
-              - type: discord
-      - name: Hoppscotch
-        url: "http://hoppscotch.hoppscotch"
         conditions:
           - "[STATUS] == 200"
         alerts:
@@ -164,20 +140,8 @@ data:
           - "[STATUS] == 200"
         alerts:
               - type: discord
-      - name: Kavita
-        url: "http://kavita.kavita"
-        conditions:
-          - "[STATUS] == 200"
-        alerts:
-              - type: discord
       - name: Keel.sh
         url: "http://keel.kube-system:9300"
-        conditions:
-          - "[STATUS] == 200"
-        alerts:
-              - type: discord
-      - name: Koillection
-        url: "http://koillection.koillection"
         conditions:
           - "[STATUS] == 200"
         alerts:
@@ -194,20 +158,8 @@ data:
           - "[STATUS] == 200"
         alerts:
               - type: discord
-      - name: Microbin
-        url: "http://microbin.microbin"
-        conditions:
-          - "[STATUS] == 200"
-        alerts:
-              - type: discord
       - name: Paperless
         url: "http://paperless.paperless"
-        conditions:
-          - "[STATUS] == 200"
-        alerts:
-              - type: discord
-      - name: NetAlertX
-        url: "http://netalertx.netalertx"
         conditions:
           - "[STATUS] == 200"
         alerts:
@@ -236,12 +188,6 @@ data:
           - "[STATUS] == 200"
         alerts:
               - type: discord
-      - name: Rancher
-        url: "http://rancher.cattle-system:443"
-        conditions:
-          - "[STATUS] == 400"
-        alerts:
-              - type: discord
       - name: Sonarr
         url: "http://sonarr.servarr:8989"
         conditions:
@@ -266,26 +212,8 @@ data:
           - "[STATUS] == 200"
         alerts:
               - type: discord
-      - name: True command
-        url: "http://true-command.true-command"
-        conditions:
-          - "[STATUS] == 200"
-        alerts:
-              - type: discord
       - name: TrueNAS SCALE
         url: "http://truenas.truenas"
-        conditions:
-          - "[STATUS] == 200"
-        alerts:
-              - type: discord
-      - name: Vaultwarden
-        url: "http://vaultwarden.vaultwarden"
-        conditions:
-          - "[STATUS] == 200"
-        alerts:
-              - type: discord
-      - name: Shiori
-        url: "http://shiori.shiori"
         conditions:
           - "[STATUS] == 200"
         alerts:
@@ -314,3 +242,99 @@ data:
           - "[STATUS] == 200"
         alerts:
               - type: discord
+      - name: Cyberchef
+        url: "http://cyberchef.cyberchef"
+        conditions:
+          - "[STATUS] == 200"
+        alerts:
+              - type: discord
+      - name: Memos
+        url: "http://memos-service.memos"
+        conditions:
+          - "[STATUS] == 200"
+        alerts:
+              - type: discord
+      - name: Drawio
+        url: "http://drawio.drawio"
+        conditions:
+          - "[STATUS] == 200"
+        alerts:
+              - type: discord
+      - name: SearXNG
+        url: "http://searxng.searxng"
+        conditions:
+          - "[STATUS] == 200"
+        alerts:
+              - type: discord
+      # - name: Vaultwarden
+      #   url: "http://vaultwarden.vaultwarden"
+      #   conditions:
+      #     - "[STATUS] == 200"
+      #   alerts:
+      #         - type: discord
+      # - name: Shiori
+      #   url: "http://shiori.shiori"
+      #   conditions:
+      #     - "[STATUS] == 200"
+      #   alerts:
+      #         - type: discord
+      # - name: True command
+      #   url: "http://true-command.true-command"
+      #   conditions:
+      #     - "[STATUS] == 200"
+      #   alerts:
+      #         - type: discord
+      # - name: Rancher
+      #   url: "http://rancher.cattle-system:443"
+      #   conditions:
+      #     - "[STATUS] == 400"
+      #   alerts:
+      #         - type: discord
+      # - name: Microbin
+      #   url: "http://microbin.microbin"
+      #   conditions:
+      #     - "[STATUS] == 200"
+      #   alerts:
+      #         - type: discord
+      # - name: NetAlertX
+      #   url: "http://netalertx.netalertx"
+      #   conditions:
+      #     - "[STATUS] == 200"
+      #   alerts:
+      #         - type: discord
+      # - name: Kavita
+      #   url: "http://kavita.kavita"
+      #   conditions:
+      #     - "[STATUS] == 200"
+      #   alerts:
+      #         - type: discord
+      # - name: Koillection
+      #   url: "http://koillection.koillection"
+      #   conditions:
+      #     - "[STATUS] == 200"
+      #   alerts:
+      #         - type: discord
+      # - name: Romm
+      #   url: "http://romm.romm"
+      #   conditions:
+      #     - "[STATUS] == 200"
+      #   alerts:
+      #         - type: discord
+      # - name: Hemmelig
+      #   url: "http://hemmelig.hemmelig"
+      #   conditions:
+      #     - "[STATUS] == 200"
+      #   alerts:
+      #         - type: discord
+      # - name: Hoppscotch
+      #   url: "http://hoppscotch.hoppscotch"
+      #   conditions:
+      #     - "[STATUS] == 200"
+      #   alerts:
+      #         - type: discord
+      # - name: Code server
+      #   url: "http://codeserver.codeserver"
+      #   conditions:
+      #     - "[STATUS] == 200"
+      #   alerts:
+      #         - type: discord

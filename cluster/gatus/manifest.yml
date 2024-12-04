@@ -109,175 +109,175 @@ data:
         conditions:
           - "[STATUS] == 200"
         alerts:
-              - type: discord
+          - type: discord
       - name: File browser
         url: "http://filebrowser.filebrowser"
         conditions:
           - "[STATUS] == 200"
         alerts:
-              - type: discord
+          - type: discord
       - name: Firefly III
         url: "http://firefly.firefly"
         conditions:
           - "[STATUS] == 200"
         alerts:
-              - type: discord
+          - type: discord
       - name: IT Tools
         url: "http://it-tools.it-tools"
         conditions:
           - "[STATUS] == 200"
         alerts:
-              - type: discord
+          - type: discord
       - name: Jellyfin
         url: "http://jellyfin.jellyfin:8096"
         conditions:
           - "[STATUS] == 200"
         alerts:
-              - type: discord
+          - type: discord
       - name: Jellyseerr
         url: "http://jellyseerr.jellyfin:5055"
         conditions:
           - "[STATUS] == 200"
         alerts:
-              - type: discord
+          - type: discord
       - name: Keel.sh
         url: "http://keel.kube-system:9300"
         conditions:
           - "[STATUS] == 200"
         alerts:
-              - type: discord
+          - type: discord
       - name: Kubernetes dashboard
         url: "http://kubernetes-dashboard.kubernetes-dashboard:443"
         conditions:
           - "[STATUS] == 400"
         alerts:
-              - type: discord
+          - type: discord
       - name: Longhorn
         url: "http://longhorn-frontend.longhorn-system"
         conditions:
           - "[STATUS] == 200"
         alerts:
-              - type: discord
+          - type: discord
       - name: Paperless
         url: "http://paperless.paperless"
         conditions:
           - "[STATUS] == 200"
         alerts:
-              - type: discord
+          - type: discord
       - name: Pihole
         url: "http://pihole.pihole"
         conditions:
           - "[STATUS] == 403"
         alerts:
-              - type: discord
+          - type: discord
       - name: Prowlarr
         url: "http://prowlarr.servarr:9696"
         conditions:
           - "[STATUS] == 200"
         alerts:
-              - type: discord
+          - type: discord
       - name: qBittorrent
         url: "http://qbittorrent.qbittorrent:8080"
         conditions:
           - "[STATUS] == 200"
         alerts:
-              - type: discord
+          - type: discord
       - name: Radarr
         url: "http://radarr.servarr:7878"
         conditions:
           - "[STATUS] == 200"
         alerts:
-              - type: discord
+          - type: discord
       - name: Sonarr
         url: "http://sonarr.servarr:8989"
         conditions:
           - "[STATUS] == 200"
         alerts:
-              - type: discord
+          - type: discord
       - name: Speed test
         url: "http://speedtest.speedtest"
         conditions:
           - "[STATUS] == 200"
         alerts:
-              - type: discord
+          - type: discord
       - name: Stirling PDF
         url: "http://stirling-pdf.stirling-pdf"
         conditions:
           - "[STATUS] == 200"
         alerts:
-              - type: discord
+          - type: discord
       - name: Syncthing
         url: "http://syncthing.syncthing"
         conditions:
           - "[STATUS] == 200"
         alerts:
-              - type: discord
+          - type: discord
       - name: TrueNAS SCALE
         url: "http://truenas.truenas"
         conditions:
           - "[STATUS] == 200"
         alerts:
-              - type: discord
+          - type: discord
       - name: Ente
         url: "http://ente-server.ente"
         conditions:
           - "[STATUS] == 404"
         alerts:
-              - type: discord
+          - type: discord
       - name: Morphos
         url: "http://morphos.morphos"
         conditions:
           - "[STATUS] == 200"
         alerts:
-              - type: discord
+          - type: discord
       - name: Mylar3
         url: "http://mylar3.mylar3:8090"
         conditions:
           - "[STATUS] == 200"
         alerts:
-              - type: discord
+          - type: discord
       - name: Komga
         url: "http://komga.komga:25600"
         conditions:
           - "[STATUS] == 200"
         alerts:
-              - type: discord
+          - type: discord
       - name: Cyberchef
         url: "http://cyberchef.cyberchef"
         conditions:
           - "[STATUS] == 200"
         alerts:
-              - type: discord
+          - type: discord
       - name: Memos
         url: "http://memos-service.memos"
         conditions:
           - "[STATUS] == 200"
         alerts:
-              - type: discord
+          - type: discord
       - name: Drawio
         url: "http://drawio.drawio"
         conditions:
           - "[STATUS] == 200"
         alerts:
-              - type: discord
+          - type: discord
       - name: SearXNG
         url: "http://searxng.searxng"
         conditions:
           - "[STATUS] == 200"
         alerts:
-              - type: discord
+          - type: discord
       - name: ByteStash
         url: "http://bytestash.bytestash"
         conditions:
           - "[STATUS] == 200"
         alerts:
-              - type: discord
-      - name: MailCow
-              url: "http://mailcatcher.mailcatcher"
-              conditions:
-                - "[STATUS] == 200"
-              alerts:
-                    - type: discord
+          - type: discord
+      # - name: MailCatcher
+      #   url: "http://mailcatcher.mailcatcher"
+      #   conditions:
+      #     - "[STATUS] == 200"
+      #   alerts:
+      #     - type: discord
       # - name: Vaultwarden
       #   url: "http://vaultwarden.vaultwarden"
       #   conditions:

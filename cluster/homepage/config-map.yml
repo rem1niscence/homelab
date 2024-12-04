@@ -159,16 +159,16 @@ data:
             widget:
               type: gatus
               url: http://gatus.gatus
-        - Kavita:
-            icon: kavita
-            href: https://kavita.{{DOMAIN}}
-            siteMonitor: http://kavita.kavita
-            description: Online book reader
-            widget:
-                type: kavita
-                url: http://kavita.kavita
-                username: ${KAVITA_USERNAME}
-                password: ${KAVITA_PASSWORD}
+        # - Kavita:
+        #     icon: kavita
+        #     href: https://kavita.{{DOMAIN}}
+        #     siteMonitor: http://kavita.kavita
+        #     description: Online book reader
+        #     widget:
+        #         type: kavita
+        #         url: http://kavita.kavita
+        #         username: ${KAVITA_USERNAME}
+        #         password: ${KAVITA_PASSWORD}
         - Prometheus:
             icon: prometheus.svg
             href: https://prometheus.{{DOMAIN}}
@@ -187,24 +187,6 @@ data:
               accountid: ${CLOUDFLARE_ACCOUNT_ID}
               tunnelid: ${CLOUDFLARE_TUNNEL_ID}
               key: ${CLOUDFLARE_API_TOKEN}
-        # - NetAlertX:
-        #     icon: mdi-router-network
-        #     href: https://netalertx.{{DOMAIN}}
-        #     siteMonitor: http://netalertx.netalertx
-        #     description: Network device monitoring tool
-        #     widget:
-        #         type: pialert
-        #         url: http://netalertx.netalertx
-        # - Romm:
-        #     icon: romm.svg
-        #     href: https://romm.{{DOMAIN}}
-        #     siteMonitor: http://romm.romm
-        #     description: Online game library and emulator
-        #     widget:
-        #       type: romm
-        #       url: http://romm.romm
-        #       username: ${ROMM_USERNAME}
-        #       password: ${ROMM_PASSWORD}
         - Komga:
             icon: komga.svg
             href: https://komga.{{DOMAIN}}
@@ -245,51 +227,16 @@ data:
             href: https://longhorn.{{DOMAIN}}
             siteMonitor: http://longhorn-frontend.longhorn-system
             description: Cloud-native distributed storage for K8S
-        # - Router:
-        #     icon: router.svg
-        #     href: https://router.{{DOMAIN}}
-        #     siteMonitor: http://router.truenas
-        #     description: Home router
-        - Rancher:
-            icon: rancher.svg
-            href: https://rancher.{{DOMAIN}}
-            siteMonitor: http://rancher.cattle-system:443
-            description: Kubernetes management platform
-        - Vaultwarden:
-            icon: vaultwarden.svg
-            href: https://vaultwarden.{{DOMAIN}}
-            siteMonitor: http://vaultwarden.vaultwarden
-            description: Self-hosted password management
         - FileRun:
             icon: filerun.svg
             href: https://cloud.{{DOMAIN}}
             siteMonitor: http://filerun.filerun
             description: Personal Cloud
-        - Hoppscotch:
-            icon: hoppscotch.png
-            href: https://hoppscotch.{{DOMAIN}}
-            siteMonitor: http://hoppscotch.hoppscotch
-            description: Web-based API testing tool
-        - Code Server:
-            icon: terminal.svg
-            href: https://codeserver.{{DOMAIN}}
-            siteMonitor: http://codeserver.codeserver
-            description: Online coding workspace
-        - Cloudbeaver:
-            icon: mdi-database-cog
-            href: https://cloudbeaver.{{DOMAIN}}
-            siteMonitor: http://cloudbeaver.cloudbeaver
-            description: Database management system
         - Kubernetes:
             icon: kubernetes-dashboard.png
             href: https://dashboard.{{DOMAIN}}
             siteMonitor: http://kubernetes-dashboard.kubernetes-dashboard:443
             description: Kubernete's dashboard
-        - True Command:
-            icon: truenas.png
-            href: https://true-command.{{DOMAIN}}
-            siteMonitor: http://true-command.true-command
-            description:  Management tool for TrueNAS systems.
         - File Browser:
             icon: filebrowser
             href: https://filebrowser.{{DOMAIN}}
@@ -310,36 +257,16 @@ data:
             href: https://firefly.{{DOMAIN}}
             siteMonitor: http://firefly.firefly
             description: Personal finance manager
-        - Mail Catcher:
-            icon: zohomail
-            href: https://mail.{{DOMAIN}}
-            siteMonitor: http://mailcatcher.mailcatcher
-            description: Simple local email server
         - Microbin:
             icon: si-pastebin
             href: https://microbin.${PUBLIC_DOMAIN}
             siteMonitor: http://microbin.microbin
             description: Personal pasta bin
-        # - N8N:
-        #     icon: n8n.svg
-        #     href: https://n8n.{{DOMAIN}}
-        #     siteMonitor: http://n8n.n8n
-        #     description: Workflow automation tool
         - SearNXG:
             icon: searxng.svg
             href: https://searxng.{{DOMAIN}}
             siteMonitor: http://searxng.searxng
             description: Meta Search Engine
-        - Kitchen Owl:
-            icon: kitchenowl
-            href: https://kitchenowl.{{DOMAIN}}
-            siteMonitor: http://front.kitchenowl
-            description: Recipe management software
-        - Shiori:
-            icon: shiori
-            href: https://shiori.{{DOMAIN}}
-            siteMonitor: http://shiori.shiori
-            description: Bookmarks manager
         - IT Tools:
             icon: it-tools.svg
             href: https://it-tools.{{DOMAIN}}
@@ -360,11 +287,6 @@ data:
             href: https://drawio.{{DOMAIN}}
             siteMonitor: http://drawio.drawio
             description: Diagramming tool
-        - Hemmelig:
-            icon: mdi-lock-outline
-            href: https://hemmelig.${PUBLIC_DOMAIN}
-            siteMonitor: http://hemmelig.hemmelig
-            description: Secure text & file sharing
         - Memos:
             icon: google-keep
             href: https://memos.{{DOMAIN}}
@@ -375,26 +297,6 @@ data:
             href: https://commafeed.{{DOMAIN}}
             siteMonitor: http://commafeed.commafeed
             description: RSS reader
-        - Homebox:
-            icon: homebox
-            href: https://homebox.${DOMAIN}
-            siteMonitor: http://homebox.homebox
-            description: Home inventory & organization
-        - Reactive Resume:
-            icon: mdi-note-text
-            href: https://resume.{{DOMAIN}}
-            siteMonitor: http://resume-client.resume
-            description: Online resume builder
-        - Koillection:
-            icon: koillection
-            href: https://koillection.{{DOMAIN}}
-            siteMonitor: http://koillection.koillection
-            description: Collection manager
-        - Penpot:
-            icon: si-penpot
-            href: https://penpot.${PUBLIC_DOMAIN}
-            siteMonitor: http://frontend.penpot
-            description: Graphic design tool
         - Ente:
             icon: si-googlephotos
             href: https://ente.{{DOMAIN}}
@@ -405,6 +307,109 @@ data:
             href: https://morphos.{{DOMAIN}}
             siteMonitor: http://morphos.morphos
             description: Self-hosted file converter
+        - ByteStash:
+            icon: si-codecrafters
+            href: https://bytestash.{{DOMAIN}}
+            siteMonitor: http://bytestash.bytestash
+            description: Code Snippet Manager
+        # - Mail Catcher:
+        #     icon: zohomail
+        #     href: https://mail.{{DOMAIN}}
+        #     siteMonitor: http://mailcatcher.mailcatcher
+        #     description: Simple local email server
+        # - Hoppscotch:
+        #     icon: hoppscotch.png
+        #     href: https://hoppscotch.{{DOMAIN}}
+        #     siteMonitor: http://hoppscotch.hoppscotch
+        #     description: Web-based API testing tool
+        # - Code Server:
+        #     icon: terminal.svg
+        #     href: https://codeserver.{{DOMAIN}}
+        #     siteMonitor: http://codeserver.codeserver
+        #     description: Online coding workspace
+        # - Cloudbeaver:
+        #     icon: mdi-database-cog
+        #     href: https://cloudbeaver.{{DOMAIN}}
+        #     siteMonitor: http://cloudbeaver.cloudbeaver
+        #     description: Database management system
+        # - N8N:
+        #     icon: n8n.svg
+        #     href: https://n8n.{{DOMAIN}}
+        #     siteMonitor: http://n8n.n8n
+        #     description: Workflow automation tool
+        # - Hemmelig:
+        #     icon: mdi-lock-outline
+        #     href: https://hemmelig.${PUBLIC_DOMAIN}
+        #     siteMonitor: http://hemmelig.hemmelig
+        #     description: Secure text & file sharing
+        # - Penpot:
+        #     icon: si-penpot
+        #     href: https://penpot.${PUBLIC_DOMAIN}
+        #     siteMonitor: http://frontend.penpot
+        #     description: Graphic design tool
+        # - Router:
+        #     icon: router.svg
+        #     href: https://router.{{DOMAIN}}
+        #     siteMonitor: http://router.truenas
+        #     description: Home router
+        # - Rancher:
+        #     icon: rancher.svg
+        #     href: https://rancher.{{DOMAIN}}
+        #     siteMonitor: http://rancher.cattle-system:443
+        #     description: Kubernetes management platform
+        # - Vaultwarden:
+        #     icon: vaultwarden.svg
+        #     href: https://vaultwarden.{{DOMAIN}}
+        #     siteMonitor: http://vaultwarden.vaultwarden
+        #     description: Self-hosted password management
+        # - Homebox:
+        #     icon: homebox
+        #     href: https://homebox.${DOMAIN}
+        #     siteMonitor: http://homebox.homebox
+        #     description: Home inventory & organization
+        # - Reactive Resume:
+        #     icon: mdi-note-text
+        #     href: https://resume.{{DOMAIN}}
+        #     siteMonitor: http://resume-client.resume
+        #     description: Online resume builder
+        # - Koillection:
+        #     icon: koillection
+        #     href: https://koillection.{{DOMAIN}}
+        #     siteMonitor: http://koillection.koillection
+        #     description: Collection manager
+        # - Shiori:
+        #     icon: shiori
+        #     href: https://shiori.{{DOMAIN}}
+        #     siteMonitor: http://shiori.shiori
+        #     description: Bookmarks manager
+        # - True Command:
+        #     icon: truenas.png
+        #     href: https://true-command.{{DOMAIN}}
+        #     siteMonitor: http://true-command.true-command
+        #     description:  Management tool for TrueNAS systems.
+        # - Kitchen Owl:
+        #     icon: kitchenowl
+        #     href: https://kitchenowl.{{DOMAIN}}
+        #     siteMonitor: http://front.kitchenowl
+        #     description: Recipe management software
+        # - NetAlertX:
+        #     icon: mdi-router-network
+        #     href: https://netalertx.{{DOMAIN}}
+        #     siteMonitor: http://netalertx.netalertx
+        #     description: Network device monitoring tool
+        #     widget:
+        #         type: pialert
+        #         url: http://netalertx.netalertx
+        # - Romm:
+        #     icon: romm.svg
+        #     href: https://romm.{{DOMAIN}}
+        #     siteMonitor: http://romm.romm
+        #     description: Online game library and emulator
+        #     widget:
+        #       type: romm
+        #       url: http://romm.romm
+        #       username: ${ROMM_USERNAME}
+        #       password: ${ROMM_PASSWORD}
     - Blog:
         - remini.dev:
             icon: mdi-post-outline
@@ -484,7 +489,7 @@ data:
     - search:
         provider: custom
         url: https://searxng.rvnserver.online/search?q=
-        target: _blank
+        target: _self
         suggestionUrl: http://searxng.searxng/autocompleter?q=
         showSearchSuggestions: true
     - openmeteo:

@@ -266,6 +266,18 @@ data:
           - "[STATUS] == 200"
         alerts:
               - type: discord
+      - name: ByteStash
+        url: "http://bytestash.bytestash"
+        conditions:
+          - "[STATUS] == 200"
+        alerts:
+              - type: discord
+      - name: MailCow
+              url: "http://mailcatcher.mailcatcher"
+              conditions:
+                - "[STATUS] == 200"
+              alerts:
+                    - type: discord
       # - name: Vaultwarden
       #   url: "http://vaultwarden.vaultwarden"
       #   conditions:

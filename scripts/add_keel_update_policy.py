@@ -3,9 +3,11 @@ from kubernetes import client, config
 config.load_kube_config()
 v1 = client.AppsV1Api()
 
-print("starting script")
 skipped_namespaces = ["kube-system",
+                      "cert-manager",
                       "default",
+                      "monitoring",
+                      "tailscale",
                       "longhorn-system",
                       "cattle-system",
                       "cattle-fleet-system",
@@ -16,8 +18,8 @@ namespaces = [ns.metadata.name for ns in client.CoreV1Api().list_namespace().ite
 # Define the annotations
 annotations_to_add = {
     "keel.sh/policy": "all",
-    "keel.sh/trigger": "poll",
-    "keel.sh/pollSchedule": "@every 1h"
+    "keel.sh/pollSchedule": "@every 1h",
+    "keel.sh/trigger": "poll"
 }
 
 # Iterate over namespaces
@@ -31,10 +33,17 @@ for namespace_name in namespaces:
             dep.metadata.annotations = {}
 
         # Add/overwrite the Keel annotations
+        modified = False
         for key, value in annotations_to_add.items():
-            if key not in dep.metadata.annotations:
-                dep.metadata.annotations[key] = value
-                # Update the deployment with the new annotations
-                v1.patch_namespaced_deployment(name=dep.metadata.name, namespace=namespace_name, body=dep)
+            if key in dep.metadata.annotations:
+              continue
+            dep.metadata.annotations[key] = value
+            modified = True
 
-                print(f"Added '{key}: {value}' annotation to all deployments in the '{namespace_name}' namespace.")
+        if not modified:
+            continue
+
+        # Update the deployment with the new annotations
+        v1.patch_namespaced_deployment(name=dep.metadata.name, namespace=namespace_name, body=dep)
+
+        print(f"Added keel annotation to deployment '{dep.metadata.name}' in the '{namespace_name}' namespace.")

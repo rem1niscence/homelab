@@ -165,3 +165,12 @@ data:
     search:
       safe_search: 0
       autocomplete: 'duckduckgo'
+    engines:
+      - name: bing
+        engine: bing
+        shortcut: bi
+        disabled: false
+      - name: wikidata
+        engine: wikidata
+        shortcut: wd
+        disabled: true

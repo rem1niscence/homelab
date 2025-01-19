@@ -42,6 +42,8 @@ spec:
       labels:
         app: db
     spec:
+      nodeSelector:
+        pi: pi-2
       containers:
         - name: db
           image: linuxserver/mariadb

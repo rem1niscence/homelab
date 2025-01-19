@@ -18,9 +18,11 @@ spec:
       labels:
         app: homebox
     spec:
+      nodeSelector:
+        type: pi
       containers:
         - name: homebox
-          image: ghcr.io/sysadminsmedia/homebox:latest
+          image: ghcr.io/sysadminsmedia/homebox
           ports:
             - containerPort: 7745
           env:

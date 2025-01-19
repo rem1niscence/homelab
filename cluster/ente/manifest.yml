@@ -24,7 +24,12 @@ spec:
       initContainers:
         - name: substitute-credentials
           image: bhgedigital/envsubst
-          command: ["/bin/sh", "-c", "envsubst < /config/server-config.yaml > /shared/local.yaml"]
+          command:
+            [
+              "/bin/sh",
+              "-c",
+              "envsubst < /config/server-config.yaml > /shared/local.yaml",
+            ]
           envFrom:
             - secretRef:
                 name: ente
@@ -162,11 +167,21 @@ spec:
       labels:
         app: minio
     spec:
+      nodeSelector:
+        type: main
       containers:
         - name: minio
           image: minio/minio
           command: ["minio"]
-          args: ["server", "/data", "--address", ":3200", "--console-address", ":3201"]
+          args:
+            [
+              "server",
+              "/data",
+              "--address",
+              ":3200",
+              "--console-address",
+              ":3201",
+            ]
           ports:
             - containerPort: 3200 # minio
             - containerPort: 3201 # console
@@ -391,7 +406,7 @@ spec:
         app: web
     spec:
       nodeSelector:
-        type: main
+        type: secondary
       containers:
         - name: web
           image: node:22-alpine3.19

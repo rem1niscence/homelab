@@ -272,6 +272,24 @@ data:
           - "[STATUS] == 200"
         alerts:
           - type: discord
+      - name: PDFDing
+        url: "http://pdfding.pdfding"
+        conditions:
+          - "[STATUS] == 400"
+        alerts:
+          - type: discord
+      - name: Beaver Habits
+        url: "http://beaverhabits.beaverhabits"
+        conditions:
+          - "[STATUS] == 200"
+        alerts:
+          - type: discord
+      - name: Kapowarr
+        url: "http://kapowarr.kapowarr"
+        conditions:
+          - "[STATUS] == 200"
+        alerts:
+          - type: discord
       # - name: MailCatcher
       #   url: "http://mailcatcher.mailcatcher"
       #   conditions:

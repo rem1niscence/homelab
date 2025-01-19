@@ -1,0 +1,90 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: beaverhabits
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: beaverhabits
+  namespace: beaverhabits
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: beaverhabits
+  template:
+    metadata:
+      labels:
+        app: beaverhabits
+    spec:
+      nodeSelector:
+        type: pi
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: beaverhabits
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+          image: daya0576/beaverhabits
+          ports:
+            - containerPort: 8080
+          env:
+            - name: FIRST_DAY_OF_WEEK
+              value: "1"
+            - name: HABITS_STORAGE
+              value: "DATABASE"
+            - name: MAX_USER_COUNT
+              value: "1"
+            - name: ENABLE_IOS_STANDALONE
+              value: "true"
+            - name: INDEX_SHOW_HABIT_COUNT
+              value: "true"
+          volumeMounts:
+            - name: data
+              mountPath: /app/.user
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: beaverhabits
+  name: data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1G
+  storageClassName: longhorn
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: beaverhabits
+  name: beaverhabits
+spec:
+  ports:
+    - port: 80
+      targetPort: 8080
+  selector:
+    app: beaverhabits
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: beaverhabits
+  namespace: beaverhabits
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`beaverhabits.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: beaverhabits
+          port: 80

@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: fileflows
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: fileflows
+  name: fileflows-intel
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fileflows-intel
+  template:
+    metadata:
+      labels:
+        app: fileflows-intel
+    spec:
+      nodeSelector:
+        type: main
+      hostname: nuc
+      containers:
+        - name: fileflows-intel
+          image: revenz/fileflows
+          securityContext:
+            privileged: true
+            allowPrivilegeEscalation: true
+            capabilities:
+              add:
+                - SYS_ADMIN
+                - SYS_RAWIO
+          ports:
+            - containerPort: 5000
+          env:
+            - name: TZ
+              value: "Europe/Madrid"
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: FFNODE
+              value: "1"
+            - name: ServerUrl
+              value: "http://fileflows"
+            - name: NodeName
+              value: "nuc"
+            - name: LIBVA_DRIVER_NAME
+              value: "iHD"
+            - name: LIBVA_DRIVERS_PATH
+              value: "/usr/lib/x86_64-linux-gnu/dri"
+            - name: DISPLAY
+              value: ":0"
+          volumeMounts:
+            - name: media
+              mountPath: /media
+      volumes:
+        - name: dri
+          hostPath:
+            path: /dev/dri
+            type: Directory
+        - name: media
+          persistentVolumeClaim:
+            claimName: media

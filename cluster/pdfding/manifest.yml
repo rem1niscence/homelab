@@ -1,0 +1,129 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pdfding
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pdfding
+  namespace: pdfding
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pdfding
+  template:
+    metadata:
+      labels:
+        app: pdfding
+    spec:
+      nodeSelector:
+        pi: pi-2
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: pdfding
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+          image: mrmn/pdfding:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DEFAULT_THEME
+              value: "dark"
+            - name: DEFAULT_THEME_COLOR
+              value: "green"
+            - name: HOST_NAME
+              value: "pdfding.{{DOMAIN}}"
+            - name: SECRET_KEY
+              value: "7710e578ba674e6da5a7abbe96d974d93"
+            - name: CSRF_COOKIE_SECURE
+              value: "false"
+            - name: SESSION_COOKIE_SECURE
+              value: "false"
+          volumeMounts:
+            - name: media
+              mountPath: /home/nonroot/pdfding/media
+            - name: db
+              mountPath: /home/nonroot/pdfding/db
+      volumes:
+        - name: media
+          persistentVolumeClaim:
+            claimName: media
+        - name: db
+          persistentVolumeClaim:
+            claimName: db
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: pdfding
+  name: db
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1G
+  storageClassName: longhorn
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: pdfding
+  name: media
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 3T
+  volumeName: pdfding-pv
+  storageClassName: local-path
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pdfding-pv
+spec:
+  capacity:
+    storage: 3T
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 10.0.0.95
+    path: /mnt/main_drive/data/containers/pdfding
+  storageClassName: local-path
+  mountOptions:
+    - vers=4.0
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: pdfding
+  name: pdfding
+spec:
+  ports:
+    - port: 80
+      targetPort: 8000
+  selector:
+    app: pdfding
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: pdfding
+  namespace: pdfding
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`pdfding.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: pdfding
+          port: 80
+# Command to promote an user to admin
+# python pdfding/manage.py make_admin -e user@email.com

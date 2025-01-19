@@ -86,6 +86,8 @@ data:
       service: http://microbin.microbin:80
     - hostname: penpot.{{DOMAIN}}
       service: http://frontend.penpot:80
+    - hostname: komga.{{DOMAIN}}
+      service: http://komga.komga:25600
     # - hostname: cloud.{{DOMAIN}}
     #   service: http://filebrowser.filebrowser:80
     # This rule matches any traffic which didn't match a previous rule, and responds with HTTP 404.

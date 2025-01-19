@@ -48,7 +48,7 @@ spec:
   accessModes:
     - ReadWriteMany
   nfs:
-    server: 10.0.0.95
+    server: 192.168.0.95
     path: /mnt/main_drive/data/containers/mylar3/comics
   storageClassName: local-path
   mountOptions:

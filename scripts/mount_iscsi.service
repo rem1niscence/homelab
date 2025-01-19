@@ -5,7 +5,7 @@ After=network.target
 [Service]
 Type=oneshot
 ExecStartPre=/bin/sleep 30
-ExecStart=/usr/bin/mount_iscsi 10.0.0.95 {VOLUME_NAME} /longhorn false
+ExecStart=/usr/bin/mount_iscsi 192.168.0.95 {VOLUME_NAME} /longhorn false
 RemainAfterExit=yes
 Restart=on-failure
 RestartSec=10s

@@ -21,7 +21,7 @@ metadata:
   namespace: truenas
 subsets:
   - addresses:
-      - ip: 10.0.0.95
+      - ip: 192.168.0.95
     ports:
       - port: 80
 ---
@@ -71,7 +71,7 @@ metadata:
   namespace: truenas
 subsets:
   - addresses:
-      - ip: 10.0.0.95
+      - ip: 192.168.0.95
     ports:
       - port: 10044
 ---
@@ -108,7 +108,7 @@ metadata:
   namespace: truenas
 subsets:
   - addresses:
-      - ip: 10.0.0.1
+      - ip: 192.168.0.1
     ports:
       - port: 80
 ---

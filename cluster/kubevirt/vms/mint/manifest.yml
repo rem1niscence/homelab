@@ -1,0 +1,106 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mint-vm
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mint-pv
+spec:
+  capacity:
+    storage: 128Gi
+  accessModes:
+    - ReadWriteMany
+  storageClassName: local-path
+  nfs:
+    server: 192.168.0.95
+    path: /mnt/ssd_2tb/vm/mint
+  mountOptions:
+    - vers=4.0
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mint-pvc
+  namespace: mint-vm
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 128Gi
+  volumeName: mint-pv
+  storageClassName: local-path
+---
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  labels:
+    kubevirt.io/os: linux
+  name: mint-vm
+  namespace: mint-vm
+spec:
+  runStrategy: Manual
+  template:
+    metadata:
+      labels:
+        kubevirt.io/domain: mint
+    spec:
+      nodeSelector:
+        type: secondary
+      domain:
+        cpu:
+          cores: 2
+        devices:
+          disks:
+          - disk:
+              bus: virtio
+            name: disk0
+          # - cdrom:
+          #     bus: sata
+          #     readonly: true
+          #   name: cloudinitdisk
+        resources:
+          requests:
+            memory: 4G
+      volumes:
+      - name: disk0 
+        persistentVolumeClaim:
+          claimName: mint-pvc
+      # - cloudInitNoCloud:
+      #     userData: |
+      #       #cloud-config
+      #       system_info:
+      #         default_user:
+      #           name: dennis
+      #           home: /home/dennis
+      #       password: SuperSecretPassword!
+      #       chpasswd: { expire: False }
+      #       hostname: debian-k8s
+      #       ssh_pwauth: True
+      #       disable_root: false
+      #       ssh_authorized_keys:
+      #       - ssh-rsa YOUR_SSH_PUB_KEY_HERE
+      #   name: cloudinitdisk
+
+# You need virtctl installed on the master node to start/stop this
+# $ virtctl start mint-vm
+# $ virtctl stop mint-vm
+
+# To add a new vm
+# 1. Make a qcow 2 image from an iso or get one from the internet
+# 1.1 $ qemu-img create -f qcow2 linux-mint.qcow2 128G (create an 128G empty qcow2 image)
+# 1.2 qemu-system-x86_64 -enable-kvm -m 4G -cpu host -drive file=linux-mint.qcow2,format=qcow2 -cdrom linuxmint-22.1-xfce-64bit.iso -boot d -vga virtio     -display vnc=:1 (makes a vm to install the os)
+# 1.3 Use a vnc client to connect to the vm and install the os
+# 1.4 (Optional) $ qemu-system-x86_64 -enable-kvm -m 4G -cpu host -drive file=linux-mint.qcow2,format=qcow2 -vga virtio -display vnc=:1 (start the vm without the cdrom)
+# 2. Make a pv and pvc for the vm (for example see the manifest.yml above)
+# 3. In one terminal run the cdi upload proxy 
+# $ sudo kubectl port-forward -n cdi service/cdi-uploadproxy 8443:443
+# 4. In another terminal run the cdi upload cli
+# $ sudo virtctl image-upload pvc mint-pvc Cno-create --image-path=linux-mint.qcow2  --uploadproxy-url=https://127.0.0.1:8443 --insecure 
+# NOTE: Make sure both the upload proxy and the upload cli are running on the same node to avoid network issues
+# 5. Create the vm manifest and apply it
+# $ kubectl apply -f manifest.yml
+# 6. Start the vm
+# $ virtctl start mint-vm

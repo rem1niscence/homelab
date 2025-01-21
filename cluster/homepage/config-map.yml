@@ -340,6 +340,11 @@ data:
             href: https://kapowarr.{{DOMAIN}}
             siteMonitor: http://kapowarr.kapowarr
             description: Comic management tool
+        - Kubevirt UI:
+            icon: vmware-workstation
+            href: https://kubevirt.{{DOMAIN}}
+            siteMonitor: http://kubevirt-manager.kubevirt-manager:8080
+            description: Virtual machine manager
         # - Mail Catcher:
         #     icon: zohomail
         #     href: https://mail.{{DOMAIN}}

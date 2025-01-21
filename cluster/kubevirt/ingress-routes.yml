@@ -1,0 +1,14 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: keel
+  namespace: kubevirt-manager
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`kubevirt.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: kubevirt-manager
+          port: 8080

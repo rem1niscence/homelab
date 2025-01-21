@@ -445,7 +445,7 @@ data:
             siteMonitor: http://blog.blog
             description: Personal blog
         - Umami:
-            icon: umami-analytics
+            icon: umami
             href: https://analytics.remini.dev
             siteMonitor: http://umami.umami
             description: Open-source website analytics

@@ -52,22 +52,25 @@ spec:
       domain:
         cpu:
           cores: 2
-        devices:
-          disks:
-          - disk:
-              bus: virtio
-            name: disk0
-          # - cdrom:
-          #     bus: sata
-          #     readonly: true
-          #   name: cloudinitdisk
+          sockets: 1
+          threads: 1
         resources:
           requests:
-            memory: 4G
+            memory: 4Gi
+            cpu: "2"
+        devices:
+          disks:
+            - disk:
+                bus: virtio
+              name: disk0
+              # - cdrom:
+              #     bus: sata
+              #     readonly: true
+              #   name: cloudinitdisk
       volumes:
-      - name: disk0 
-        persistentVolumeClaim:
-          claimName: mint-pvc
+        - name: disk0
+          persistentVolumeClaim:
+            claimName: mint-pvc
       # - cloudInitNoCloud:
       #     userData: |
       #       #cloud-config

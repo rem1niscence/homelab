@@ -22,25 +22,27 @@ spec:
         type: main
       containers:
         - name: pihole
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
+          # image: pihole/pihole:2024.07.0
           image: pihole/pihole:latest
           ports:
-            - containerPort: 8000
+            - containerPort: 80
             - containerPort: 53
               protocol: TCP
             - containerPort: 53
               protocol: UDP
           env:
             - name: TZ
-              value: "America/Santo_Domingo"
-            - name: WEBPASSWORD
-              value: O10A_hn4
+              value: "Europe/Madrid"
+            - name: FTLCONF_webserver_api_password 
+              value: 'O10A_hn4'
           volumeMounts:
             - name: config
               mountPath: /etc/pihole
               subPath: pihole-config
-            - name: config
-              mountPath: /etc/dnsmasq.d
-              subPath: dnsmasq-config
       volumes:
         - name: config
           persistentVolumeClaim:

@@ -290,6 +290,12 @@ data:
           - "[STATUS] == 200"
         alerts:
           - type: discord
+      - name: Nexterm
+        url: "http://nexterm.nexterm"
+        conditions:
+          - "[STATUS] == 200"
+        alerts:
+          - type: discord
       # - name: MailCatcher
       #   url: "http://mailcatcher.mailcatcher"
       #   conditions:

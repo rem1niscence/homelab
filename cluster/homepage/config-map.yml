@@ -73,6 +73,7 @@ data:
             description: Network-wide ad blocker
             widget:
               type: pihole
+              version: 6
               url: http://pihole.pihole
               key: ${PIHOLE_API_KEY}
         - Paperless:
@@ -206,6 +207,16 @@ data:
               type: mylar
               url: http://mylar3.mylar3:8090
               key: ${MYLAR3_API_KEY}
+        - Homebox:
+            icon: homebox
+            href: https://homebox.{{DOMAIN}}
+            siteMonitor: http://homebox.homebox
+            description: Home inventory & organization
+            widget:
+              type: homebox
+              url: http://homebox.homebox
+              username: ${HOMEBOX_USERNAME}
+              password: ${HOMEBOX_PASSWORD}
         - Fileflows:
             icon: fileflows.svg
             href: https://fileflows.{{DOMAIN}}
@@ -330,11 +341,6 @@ data:
             href: https://beaverhabits.{{DOMAIN}}
             siteMonitor: http://beaverhabits.beaverhabits
             description: Habit tracker
-        - Homebox:
-            icon: homebox
-            href: https://homebox.{{DOMAIN}}
-            siteMonitor: http://homebox.homebox
-            description: Home inventory & organization
         - Kapowarr:
             icon: kapowarr
             href: https://kapowarr.{{DOMAIN}}
@@ -345,6 +351,11 @@ data:
             href: https://kubevirt.{{DOMAIN}}
             siteMonitor: http://kubevirt-manager.kubevirt-manager:8080
             description: Virtual machine manager
+        - Nexterm:
+            icon: nexterm
+            href: https://nexterm.{{DOMAIN}}
+            siteMonitor: http://nexterm.nexterm
+            description: Remote connections manager
         # - Mail Catcher:
         #     icon: zohomail
         #     href: https://mail.{{DOMAIN}}

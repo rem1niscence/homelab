@@ -254,8 +254,8 @@ data:
           - "[STATUS] == 200"
         alerts:
           - type: discord
-      - name: Drawio
-        url: "http://drawio.drawio"
+      - name: Omni tools
+        url: "http://omnitools.omnitools"
         conditions:
           - "[STATUS] == 200"
         alerts:

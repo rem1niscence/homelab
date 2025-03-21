@@ -1,52 +1,54 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: drawio
+  name: omnitools
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: drawio
-  namespace: drawio
+  name: omnitools
+  namespace: omnitools
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: drawio
+      app: omnitools
   template:
     metadata:
       labels:
-        app: drawio
+        app: omnitools
     spec:
+      nodeSelector:
+        type: pi
       containers:
-        - name: drawio
-          image: jgraph/drawio
+        - name: omnitools
+          image: iib0011/omni-tools
           ports:
-            - containerPort: 8080
+            - containerPort: 80
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: drawio
-  namespace: drawio
+  name: omnitools
+  namespace: omnitools
 spec:
   selector:
-    app: drawio
+    app: omnitools
   ports:
     - port: 80
-      targetPort: 8080
+      targetPort: 80
 ---
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
-  name: drawio
-  namespace: drawio
+  name: omnitools
+  namespace: omnitools
 spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`drawio.{{DOMAIN}}`)
+    - match: Host(`omnitools.{{DOMAIN}}`)
       kind: Rule
       services:
-        - name: drawio
+        - name: omnitools
           port: 80

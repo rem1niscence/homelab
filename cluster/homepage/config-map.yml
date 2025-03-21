@@ -301,11 +301,11 @@ data:
             href: https://pdf.{{DOMAIN}}
             siteMonitor: http://stirling-pdf.stirling-pdf
             description: PDF Multitools
-        - Draw.io:
-            icon: si-diagramsdotnet
-            href: https://drawio.{{DOMAIN}}
-            siteMonitor: http://drawio.drawio
-            description: Diagramming tool
+        - Omni Tools:
+            icon: mdi-tools
+            href: https://omnitools.{{DOMAIN}}
+            siteMonitor: http://omnitools.omnitools
+            description: Handy miscellaneous tools
         - Memos:
             icon: google-keep
             href: https://memos.{{DOMAIN}}

@@ -24,12 +24,7 @@ spec:
       initContainers:
         - name: substitute-credentials
           image: bhgedigital/envsubst
-          command:
-            [
-              "/bin/sh",
-              "-c",
-              "envsubst < /config/server-config.yaml > /shared/local.yaml",
-            ]
+          command: ["/bin/sh", "-c", "envsubst < /config/server-config.yaml > /shared/local.yaml"]
           envFrom:
             - secretRef:
                 name: ente
@@ -173,15 +168,7 @@ spec:
         - name: minio
           image: minio/minio
           command: ["minio"]
-          args:
-            [
-              "server",
-              "/data",
-              "--address",
-              ":3200",
-              "--console-address",
-              ":3201",
-            ]
+          args: ["server", "/data", "--address", ":3200", "--console-address", ":3201"]
           ports:
             - containerPort: 3200 # minio
             - containerPort: 3201 # console
@@ -406,13 +393,12 @@ spec:
         app: web
     spec:
       nodeSelector:
-        type: secondary
+        type: pi
       containers:
         - name: web
-          image: node:22-alpine3.19
+          image: ghcr.io/ente-io/web:latest
           ports:
             - containerPort: 3000
-          command: ["sh", "/config/setup-web.sh"]
           env:
             - name: SERVER_PUBLIC_URL
               valueFrom:
@@ -420,33 +406,6 @@ spec:
                   name: ente
                   key: SERVER_PUBLIC_URL
                   optional: false
-          volumeMounts:
-            - name: setup-web
-              mountPath: /config
-      volumes:
-        - name: setup-web
-          configMap:
-            name: setup-web
-            items:
-              - key: setup-web.sh
-                path: setup-web.sh
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  namespace: ente
-  name: setup-web
-data:
-  setup-web.sh: |
-    #!/bin/sh
-
-    apk add --no-cache git
-    git clone https://github.com/ente-io/ente
-    cd ente
-    git submodule update --init --recursive
-    cd web
-    yarn install
-    NEXT_PUBLIC_ENTE_ENDPOINT=${SERVER_PUBLIC_URL} yarn dev
 ---
 apiVersion: v1
 kind: Service

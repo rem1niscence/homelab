@@ -356,6 +356,11 @@ data:
             href: https://vaultwarden.{{DOMAIN}}
             siteMonitor: http://vaultwarden.vaultwarden
             description: Self-hosted password management
+        - Dawarich:
+            icon: dawarich.svg
+            href: https://dawarich.{{DOMAIN}}
+            siteMonitor: http://dawarich.dawarich
+            description: Personal location tracker
         # - Mail Catcher:
         #     icon: zohomail
         #     href: https://mail.{{DOMAIN}}

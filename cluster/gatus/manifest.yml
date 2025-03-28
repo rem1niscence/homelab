@@ -296,6 +296,12 @@ data:
           - "[STATUS] == 200"
         alerts:
               - type: discord
+      - name: Dawarich
+        url: "http://dawarich.dawarich"
+        conditions:
+          - "[STATUS] == 403"
+        alerts:
+              - type: discord
       # - name: MailCatcher
       #   url: "http://mailcatcher.mailcatcher"
       #   conditions:

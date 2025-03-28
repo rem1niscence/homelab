@@ -1,0 +1,275 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dawarich
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: dawarich
+  name: dawarich
+  labels:
+    app: dawarich
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dawarich
+  template:
+    metadata:
+      labels:
+        app: dawarich
+    spec:
+      restartPolicy: Always
+      nodeSelector:
+        type: main
+      containers:
+        - name: dawarich
+          image: freikin/dawarich
+          ports:
+            - containerPort: 3000 # app
+            - containerPort: 9394 # prometheus exporter
+          command: ["/usr/local/bin/web-entrypoint.sh"]
+          args: ["bin/rails", "server", "-p", "3000", "-b", "::"]
+          livenessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+          envFrom:
+            - secretRef:
+                name: dawarich
+          volumeMounts:
+            - name: data
+              mountPath: /var/app/public
+              subPath: public
+            - name: data
+              mountPath: /var/app/tmp/imports/watched
+              subPath: watched
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: dawarich
+  name: sidekiq
+  labels:
+    app: sidekiq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sidekiq
+  template:
+    metadata:
+      labels:
+        app: sidekiq
+    spec:
+      restartPolicy: Always
+      nodeSelector:
+        type: pi
+      containers:
+        - name: dawarich
+          image: freikin/dawarich
+          command: ["/usr/local/bin/sidekiq-entrypoint.sh"]
+          args: ["sidekiq"]
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - "bundle exec sidekiqmon processes | grep ${HOSTNAME}"
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 10
+            failureThreshold: 3
+          envFrom:
+            - secretRef:
+                name: dawarich
+          volumeMounts:
+            - name: data
+              mountPath: /var/app/public
+              subPath: public
+            - name: data
+              mountPath: /var/app/tmp/imports/watched
+              subPath: watched
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: dawarich
+  name: redis
+  labels:
+    app: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      restartPolicy: Always
+      nodeSelector:
+        type: pi
+      containers:
+        - name: redis
+          image: valkey/valkey:8-alpine
+          ports:
+            - containerPort: 6379
+          livenessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: 15
+            timeoutSeconds: 5
+          readinessProbe:
+            exec:
+              command:
+                - redis-cli
+                - ping
+            initialDelaySeconds: 15
+            timeoutSeconds: 5
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: dawarich
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      nodeSelector:
+        type: secondary
+      containers:
+        - name: postgres
+          image: postgis/postgis:14-3.5-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: dawarich
+                  key: POSTGRES_DB
+                  optional: false
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: dawarich
+                  key: POSTGRES_USER
+                  optional: false
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dawarich
+                  key: POSTGRES_PASSWORD
+                  optional: false
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+              subPath: postgres
+            - name: data
+              mountPath: /var/shared
+              subPath: postgres_shared
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: dawarich
+  name: data
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 2G
+  storageClassName: longhorn
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: dawarich
+  name: redis
+spec:
+  ports:
+    - port: 6379
+      targetPort: 6379
+  selector:
+    app: redis
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: dawarich
+  name: postgres
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: postgres
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: dawarich
+  name: dawarich
+spec:
+  ports:
+    - name: app
+      port: 80
+      targetPort: 3000
+    - name: metrics
+      port: 9394
+      targetPort: 9394
+  selector:
+    app: dawarich
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: dawarich
+  namespace: dawarich
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`dawarich.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: dawarich
+          port: 80

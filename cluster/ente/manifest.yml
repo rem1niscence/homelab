@@ -400,11 +400,17 @@ spec:
           ports:
             - containerPort: 3000
           env:
-            - name: SERVER_PUBLIC_URL
+            - name: NEXT_PUBLIC_ENTE_ENDPOINT
               valueFrom:
                 secretKeyRef:
                   name: ente
-                  key: SERVER_PUBLIC_URL
+                  key: NEXT_PUBLIC_ENTE_ENDPOINT
+                  optional: false
+            - name: NEXT_PUBLIC_ENTE_ALBUMS_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: ente
+                  key: NEXT_PUBLIC_ENTE_ENDPOINT
                   optional: false
 ---
 apiVersion: v1

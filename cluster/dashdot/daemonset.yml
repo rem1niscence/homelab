@@ -49,7 +49,7 @@ spec:
             - name: DASHDOT_ACCEPT_OOKLA_EULA
               value: "true"
             - name: DASHDOT_SPEED_TEST_INTERVAL
-              value: "10" # minutes
+              value: "100000" # minutes
           volumeMounts:
             - name: root-volume
               mountPath: /mnt/host

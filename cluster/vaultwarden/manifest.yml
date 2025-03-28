@@ -3,19 +3,6 @@ kind: Namespace
 metadata:
   name: vaultwarden
 ---
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: vaultwarden
-  namespace: vaultwarden
-data:
-  WEBSOCKET_ENABLED: "true"
-  SEND_ALLOWED: "true"
-  SIGNUPS_ALLOWED: "false"
-  SIGNUPS_VERIFY: "true"
-  SIGNUPS_VERIFY_RESEND_TIME: "3600"
-  SIGNUPS_VERIFY_RESEND_LIMIT: "5"
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -37,8 +24,6 @@ spec:
         - name: vaultwarden
           image: vaultwarden/server:alpine
           envFrom:
-            - configMapRef:
-                name: vaultwarden
             - secretRef:
                 name: vaultwarden
           volumeMounts:

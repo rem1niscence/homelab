@@ -351,11 +351,11 @@ data:
             href: https://kubevirt.{{DOMAIN}}
             siteMonitor: http://kubevirt-manager.kubevirt-manager:8080
             description: Virtual machine manager
-        - Nexterm:
-            icon: nexterm
-            href: https://nexterm.{{DOMAIN}}
-            siteMonitor: http://nexterm.nexterm
-            description: Remote connections manager
+        - Vaultwarden:
+            icon: vaultwarden.svg
+            href: https://vaultwarden.{{DOMAIN}}
+            siteMonitor: http://vaultwarden.vaultwarden
+            description: Self-hosted password management
         # - Mail Catcher:
         #     icon: zohomail
         #     href: https://mail.{{DOMAIN}}
@@ -401,11 +401,6 @@ data:
         #     href: https://rancher.{{DOMAIN}}
         #     siteMonitor: http://rancher.cattle-system:443
         #     description: Kubernetes management platform
-        # - Vaultwarden:
-        #     icon: vaultwarden.svg
-        #     href: https://vaultwarden.{{DOMAIN}}
-        #     siteMonitor: http://vaultwarden.vaultwarden
-        #     description: Self-hosted password management
         # - Reactive Resume:
         #     icon: mdi-note-text
         #     href: https://resume.{{DOMAIN}}

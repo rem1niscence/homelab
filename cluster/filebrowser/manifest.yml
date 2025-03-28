@@ -93,6 +93,31 @@ spec:
   selector:
     app: filebrowser
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: filebrowser
+  name: filebrowser
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    app: filebrowser
+---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   namespace: filebrowser
+#   name: filebrowser-lb
+# spec:
+#   type: LoadBalancer
+#   ports:
+#     - port: 9050
+#       targetPort: 80
+#   selector:
+#     app: filebrowser
+---
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:

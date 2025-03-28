@@ -290,24 +290,18 @@ data:
           - "[STATUS] == 200"
         alerts:
           - type: discord
-      - name: Nexterm
-        url: "http://nexterm.nexterm"
+      - name: Vaultwarden
+        url: "http://vaultwarden.vaultwarden"
         conditions:
           - "[STATUS] == 200"
         alerts:
-          - type: discord
+              - type: discord
       # - name: MailCatcher
       #   url: "http://mailcatcher.mailcatcher"
       #   conditions:
       #     - "[STATUS] == 200"
       #   alerts:
       #     - type: discord
-      # - name: Vaultwarden
-      #   url: "http://vaultwarden.vaultwarden"
-      #   conditions:
-      #     - "[STATUS] == 200"
-      #   alerts:
-      #         - type: discord
       # - name: Shiori
       #   url: "http://shiori.shiori"
       #   conditions:

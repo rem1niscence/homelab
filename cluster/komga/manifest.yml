@@ -19,8 +19,8 @@ spec:
         app: komga
     spec:
       nodeSelector:
-        # pi: pi-3
-        type: secondary
+        type: pi
+        # type: secondary
       containers:
         - name: komga
           image: gotson/komga

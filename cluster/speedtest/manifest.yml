@@ -19,7 +19,7 @@ spec:
         app: speedtest
     spec:
       nodeSelector:
-        type: main
+        type: pi
       containers:
         - name: speedtest
           image: lscr.io/linuxserver/speedtest-tracker:latest

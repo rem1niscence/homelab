@@ -48,8 +48,8 @@ change-domain:
 
 .PHONY: tls
 tls:
-	$(call check_vars, DOMAIN CLOUDFLARE_TOKEN EMAIL)
-	@kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.17.0/cert-manager.yaml
+	$(call check_vars, DOMAIN CLOUDFLARE_TOKEN EMAIL ZONE_ID)
+	@kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.18.2/cert-manager.yaml
 	@echo "wait 10 seconds for cert-manager to be installed"
 	@ sleep 10
 	@sed -e "s;{{CLOUDFLARE_TOKEN}};$(CLOUDFLARE_TOKEN);g" ./tls/tls.yml | \

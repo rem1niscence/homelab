@@ -230,12 +230,6 @@ data:
           - "[STATUS] == 200"
         alerts:
           - type: discord
-      - name: Mylar3
-        url: "http://mylar3.mylar3:8090"
-        conditions:
-          - "[STATUS] == 200"
-        alerts:
-          - type: discord
       - name: Komga
         url: "http://komga.komga:25600"
         conditions:
@@ -296,12 +290,18 @@ data:
           - "[STATUS] == 200"
         alerts:
               - type: discord
-      - name: Dawarich
-        url: "http://dawarich.dawarich"
-        conditions:
-          - "[STATUS] == 403"
-        alerts:
-              - type: discord
+      # - name: Mylar3
+      #   url: "http://mylar3.mylar3:8090"
+      #   conditions:
+      #     - "[STATUS] == 200"
+      #   alerts:
+      #     - type: discord
+      # - name: Dawarich
+      #   url: "http://dawarich.dawarich"
+      #   conditions:
+      #     - "[STATUS] == 403"
+      #   alerts:
+      #         - type: discord
       # - name: MailCatcher
       #   url: "http://mailcatcher.mailcatcher"
       #   conditions:

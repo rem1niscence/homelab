@@ -132,7 +132,7 @@ spec:
     - ReadWriteMany
   nfs:
     server: 192.168.0.95
-    path: /mnt/main_drive/data/cloud
+    path: /mnt/main_drive/cloud
   storageClassName: local-path
   mountOptions:
     - vers=4.0

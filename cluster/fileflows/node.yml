@@ -24,6 +24,7 @@ spec:
       containers:
         - name: fileflows-intel
           image: revenz/fileflows
+          # image: revenz/fileflows:25.05
           securityContext:
             privileged: true
             allowPrivilegeEscalation: true

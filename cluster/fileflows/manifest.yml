@@ -23,6 +23,7 @@ spec:
       containers:
         - name: fileflows
           image: revenz/fileflows
+          # image: revenz/fileflows:25.05
           ports:
             - containerPort: 5000
           env:

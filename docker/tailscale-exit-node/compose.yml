@@ -13,26 +13,45 @@ services:
       - VPN_TYPE=wireguard
     env_file:
       - .env
-  tailscale:
-    container_name: tailscale-exit-node
+  tailscale-vpn:
+    container_name: tailscale-vpn
     image: tailscale/tailscale
     cap_add:
       - NET_ADMIN
       - NET_RAW
     volumes:
       - var-lib:/var/lib
-      - state:/state
+      - state-vpn:/state
       - /dev/net/tun:/dev/net/tun
     restart: unless-stopped
     environment:
-      - TS_HOSTNAME=amd-exit-node
-      - TS_EXTRA_ARGS=--advertise-routes=10.0.0.0/24 --advertise-exit-node
+      - TS_HOSTNAME=amd-vpn
+      - TS_EXTRA_ARGS=--advertise-routes=192.168.0.0/24 --advertise-exit-node
       - TS_STATE_DIR=/state
       - TS_NO_LOGS_NO_SUPPORT=true
     network_mode: "service:gluetun"
     env_file:
       - .env
+  tailscale-local:
+    container_name: tailscale-local
+    image: tailscale/tailscale
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    volumes:
+      - var-lib:/var/lib
+      - state-local:/state
+      - /dev/net/tun:/dev/net/tun
+    restart: unless-stopped
+    environment:
+      - TS_HOSTNAME=amd-local
+      - TS_EXTRA_ARGS=--advertise-routes=192.168.0.0/24 --advertise-exit-node
+      - TS_STATE_DIR=/state
+      - TS_NO_LOGS_NO_SUPPORT=true
+    env_file:
+      - .env
 volumes:
   gluetun-config:
   var-lib:
-  state:
+  state-vpn:
+  state-local:

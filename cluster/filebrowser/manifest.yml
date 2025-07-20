@@ -30,10 +30,15 @@ spec:
               mountPath: /database
             - name: db
               mountPath: /config
+            - name: cloud
+              mountPath: /srv/cloud
       volumes:
         - name: data
           persistentVolumeClaim:
             claimName: data-pvc
+        - name: cloud
+          persistentVolumeClaim:
+            claimName: cloud-pvc
         - name: db
           persistentVolumeClaim:
             claimName: db-pvc
@@ -66,6 +71,36 @@ spec:
     requests:
       storage: 3T
   volumeName: filebrowser-data-pv
+  storageClassName: local-path
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: filebrowser-cloud-pv
+spec:
+  capacity:
+    storage: 3T
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 192.168.0.95
+    path: /mnt/main_drive/cloud
+  storageClassName: local-path
+  mountOptions:
+    - vers=4.0
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: filebrowser
+  name: cloud-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 3T
+  volumeName: filebrowser-cloud-pv
   storageClassName: local-path
 ---
 apiVersion: v1

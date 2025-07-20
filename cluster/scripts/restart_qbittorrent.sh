@@ -21,7 +21,7 @@ fi
 echo "Pod Name: $POD_NAME"
 
 # Command of the process to restart
-PROCESS_NAME="/app/qbittorrent-nox --profile=/app --webui-port=8080"
+PROCESS_NAME="/app/qbittorrent-nox-lib1 --profile=/app --webui-port=8080 --confirm-legal-notice"
 
 PROCESS_PID=$(kubectl exec -n "$NAMESPACE" "$POD_NAME" -c $CONTAINER -- sh -c "pgrep -f '$PROCESS_NAME'")
 

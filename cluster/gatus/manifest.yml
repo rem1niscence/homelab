@@ -218,12 +218,6 @@ data:
           - "[STATUS] == 200"
         alerts:
           - type: discord
-      - name: Ente
-        url: "http://ente-server.ente"
-        conditions:
-          - "[STATUS] == 404"
-        alerts:
-          - type: discord
       - name: Morphos
         url: "http://morphos.morphos"
         conditions:
@@ -290,6 +284,18 @@ data:
           - "[STATUS] == 200"
         alerts:
               - type: discord
+      - name: Immich
+        url: "http://immich.immich"
+        conditions:
+          - "[STATUS] == 200"
+        alerts:
+              - type: discord
+      # - name: Ente
+      #   url: "http://ente-server.ente"
+      #   conditions:
+      #     - "[STATUS] == 404"
+      #   alerts:
+      #     - type: discord
       # - name: Mylar3
       #   url: "http://mylar3.mylar3:8090"
       #   conditions:

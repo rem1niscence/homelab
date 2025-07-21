@@ -225,6 +225,16 @@ data:
             widget:
               type: fileflows
               url: http://fileflows.fileflows
+        - Immich:
+            icon: immich.svg
+            href: https://immich.{{DOMAIN}}
+            siteMonitor: http://immich.immich
+            description: Media management tool
+            widget:
+              type: immich
+              url: http://immich.immich
+              key: ${IMMICH_API_KEY}
+              version: 2
         - Grafana:
             icon: grafana.svg
             href: https://grafana.{{DOMAIN}}
@@ -311,11 +321,11 @@ data:
             href: https://commafeed.{{DOMAIN}}
             siteMonitor: http://commafeed.commafeed
             description: RSS reader
-        - Ente:
-            icon: si-googlephotos
-            href: https://ente.{{DOMAIN}}
-            siteMonitor: http://web.ente
-            description: Online photo backup / viewer
+        # - Ente:
+        #     icon: si-googlephotos
+        #     href: https://ente.{{DOMAIN}}
+        #     siteMonitor: http://web.ente
+        #     description: Online photo backup / viewer
         - Morphos:
             icon: si-convertio
             href: https://morphos.{{DOMAIN}}

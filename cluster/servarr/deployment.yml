@@ -103,7 +103,7 @@ spec:
         app: prowlarr
     spec:
       nodeSelector:
-        type: main
+        type: pi
       containers:
         - name: prowlarr
           image: lscr.io/linuxserver/prowlarr:latest
@@ -128,26 +128,25 @@ spec:
           env:
             - name: LOG_LEVEL
               value: "info"
-        - name: gluetun
-          # image: qmcgaw/gluetun:v3.36.0
-          image: qmcgaw/gluetun:latest
-          securityContext:
-            capabilities:
-              add: ["NET_ADMIN"]
-            privileged: true
-          envFrom:
-            - secretRef:
-                name: gluetun
-          env:
-            - name: TZ
-              value: Etc/UTC
-            - name: VPN_TYPE
-              value: wireguard
-            - name: DNS_KEEP_NAMESERVER
-              value: "on"
-              # volumeMounts:
-              #   - name: gluetun-config
-              #     mountPath: /gluetun
+        # - name: gluetun
+        #   image: qmcgaw/gluetun:latest
+        #   securityContext:
+        #     capabilities:
+        #       add: ["NET_ADMIN"]
+        #     privileged: true
+        #   envFrom:
+        #     - secretRef:
+        #         name: gluetun
+        #   env:
+        #     - name: TZ
+        #       value: Etc/UTC
+        #     - name: VPN_TYPE
+        #       value: wireguard
+        #     - name: DNS_KEEP_NAMESERVER
+        #       value: "on"
+        # volumeMounts:
+        #   - name: gluetun-config
+        #     mountPath: /gluetun
       volumes:
         - name: data
           persistentVolumeClaim:

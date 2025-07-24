@@ -6,6 +6,10 @@ metadata:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 30m"
+    keel.sh/trigger: poll
   namespace: canopy
   name: node-1
   labels:
@@ -74,6 +78,10 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 30m"
+    keel.sh/trigger: poll
   namespace: canopy
   name: node-2
   labels:

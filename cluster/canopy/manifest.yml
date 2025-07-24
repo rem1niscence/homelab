@@ -1,0 +1,316 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: canopy
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: canopy
+  name: node-1
+  labels:
+    app: node-1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: node-1
+  template:
+    metadata:
+      labels:
+        app: node-1
+    spec:
+      nodeSelector:
+        type: secondary
+      containers:
+        - name: canopy
+          image: canopynetwork/canopy:latest
+          args: ["start"]
+          ports:
+            - containerPort: 50000
+            - containerPort: 50001
+            - containerPort: 50002
+            - containerPort: 50003
+            - containerPort: 50004
+            - containerPort: 9001
+            - containerPort: 9090
+          volumeMounts:
+            - name: data
+              mountPath: /root/.canopy
+              subPath: node-1
+            - name: config
+              mountPath: /root/.canopy/config.json
+              subPath: config.json
+            - name: config
+              mountPath: /root/.canopy/genesis.json
+              subPath: genesis.json
+            - name: config
+              mountPath: /root/.canopy/keystore.json
+              subPath: keystore.json
+            - name: validator-key
+              mountPath: /root/.canopy/validator_key.json
+              subPath: validator_key.json
+      volumes:
+        - name: validator-key
+          secret:
+            secretName: canopy
+            items:
+              - key: VALIDATOR_KEY
+                path: validator_key.json
+        - name: config
+          configMap:
+            name: config
+            items:
+              - key: node-1
+                path: config.json
+              - key: genesis-node-1
+                path: genesis.json
+              - key: keystore
+                path: keystore.json
+        - name: data
+          persistentVolumeClaim:
+            claimName: node-1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: canopy
+  name: node-2
+  labels:
+    app: node-2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: node-2
+  template:
+    metadata:
+      labels:
+        app: node-2
+    spec:
+      nodeSelector:
+        type: secondary
+      containers:
+        - name: canopy
+          image: canopynetwork/canopy:latest
+          args: ["start"]
+          ports:
+            - containerPort: 50000
+            - containerPort: 50001
+            - containerPort: 50002
+            - containerPort: 50003
+            - containerPort: 50004
+            - containerPort: 9002
+            - containerPort: 9090
+          volumeMounts:
+            - name: data
+              mountPath: /root/.canopy
+              subPath: node-2
+            - name: config
+              mountPath: /root/.canopy/config.json
+              subPath: config.json
+            - name: config
+              mountPath: /root/.canopy/keystore.json
+              subPath: keystore.json
+            - name: config
+              mountPath: /root/.canopy/genesis.json
+              subPath: genesis.json
+            - name: validator-key
+              mountPath: /root/.canopy/validator_key.json
+              subPath: validator_key.json
+      volumes:
+        - name: validator-key
+          secret:
+            secretName: canopy
+            items:
+              - key: VALIDATOR_KEY
+                path: validator_key.json
+        - name: config
+          configMap:
+            name: config
+            items:
+              - key: node-2
+                path: config.json
+              - key: genesis-node-2
+                path: genesis.json
+              - key: keystore
+                path: keystore.json
+        - name: data
+          persistentVolumeClaim:
+            claimName: node-2
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: canopy-node-1-pv
+spec:
+  capacity:
+    storage: 3T
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 192.168.0.95
+    path: /mnt/ssd_2tb/canopy
+  storageClassName: local-path
+  mountOptions:
+    - vers=4.0
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: canopy
+  name: node-1
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 3T
+  volumeName: canopy-node-1-pv
+  storageClassName: local-path
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: canopy-node-2-pv
+spec:
+  capacity:
+    storage: 3T
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 192.168.0.95
+    path: /mnt/ssd_2tb/canopy
+  storageClassName: local-path
+  mountOptions:
+    - vers=4.0
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: canopy
+  name: node-2
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 3T
+  volumeName: canopy-node-2-pv
+  storageClassName: local-path
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: canopy
+  name: node-1
+spec:
+  ports:
+    - port: 50000
+      targetPort: 50000
+      name: wallet
+    - port: 50001
+      targetPort: 50001
+      name: explorer
+    - port: 50002
+      targetPort: 50002
+      name: rpc
+    - port: 50003
+      targetPort: 50003
+      name: admin-rpc
+    - port: 9001
+      targetPort: 9001
+      name: external
+    - port: 9090
+      targetPort: 9090
+      name: metrics
+  selector:
+    app: node-1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: canopy
+  name: node-2
+spec:
+  ports:
+    - port: 50000
+      targetPort: 50000
+      name: wallet
+    - port: 50001
+      targetPort: 50001
+      name: explorer
+    - port: 50002
+      targetPort: 50002
+      name: rpc
+    - port: 50003
+      targetPort: 50003
+      name: admin-rpc
+    - port: 9001
+      targetPort: 9002
+      name: external
+    - port: 9090
+      targetPort: 9090
+      name: metrics
+  selector:
+    app: node-2
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  namespace: canopy
+  name: node-1
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host("wallet-1.{{DOMAIN}}")
+      kind: Rule
+      services:
+        - name: node-1
+          port: 50000
+    - match: Host("explorer-1.{{DOMAIN}}")
+      kind: Rule
+      services:
+        - name: node-1
+          port: 50001
+    - match: Host("rpc-node-1-canopy.{{DOMAIN}}")
+      kind: Rule
+      services:
+        - name: node-1
+          port: 50002
+    - match: Host("admin-rpc-node-1-canopy.{{DOMAIN}}")
+      kind: Rule
+      services:
+        - name: node-1
+          port: 50003
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  namespace: canopy
+  name: node-2
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host("wallet-2.{{DOMAIN}}")
+      kind: Rule
+      services:
+        - name: node-2
+          port: 50000
+    - match: Host("explorer-2.{{DOMAIN}}")
+      kind: Rule
+      services:
+        - name: node-2
+          port: 50001
+    - match: Host("rpc-node-2-canopy.{{DOMAIN}}")
+      kind: Rule
+      services:
+        - name: node-2
+          port: 50002
+    - match: Host("admin-rpc-node-2-canopy.{{DOMAIN}}")
+      kind: Rule
+      services:
+        - name: node-2
+          port: 50003

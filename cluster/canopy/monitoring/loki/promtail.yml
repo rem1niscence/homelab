@@ -1,0 +1,43 @@
+daemonset:
+  enabled: false
+
+deployment:
+  enabled: true
+  replicas: 1
+  nodeSelector:
+    type: "secondary"
+
+config:
+  logLevel: info
+  serverPort: 3101
+  lokiAddress: http://loki:3100/loki/api/v1/push
+  clients:
+    - url: http://loki:3100/loki/api/v1/push
+  snippets:
+    scrapeConfigs: |
+      - job_name: canopy_only
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names: ["canopy"]  # only this namespace
+        relabel_configs:
+          # Set the log path (required for k3s)
+          - action: replace
+            replacement: /var/log/pods/*$1/*.log
+            separator: /
+            source_labels:
+              - __meta_kubernetes_pod_uid
+              - __meta_kubernetes_pod_container_name
+            target_label: __path__
+
+          # add pod and container labels
+          - action: replace
+            source_labels: [__meta_kubernetes_pod_name]
+            target_label: pod
+          - action: replace
+            source_labels: [__meta_kubernetes_pod_container_name]
+            target_label: container
+
+          # drop all other metadata labels
+          - action: labeldrop
+            regex: "__meta_.+"

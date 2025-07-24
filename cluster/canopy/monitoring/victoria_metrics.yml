@@ -1,0 +1,66 @@
+# curl -g 'http://vm-canopy:8428/api/v1/query?query=probe_success{job="{job_name}"}'
+
+server:
+  fullnameOverride: vm-canopy
+  scrape:
+    enabled: true
+    configMap: ""
+    config:
+      global:
+        scrape_interval: 15s
+      scrape_configs:
+        - job_name: victoriametrics
+          static_configs:
+            - targets: ["localhost:8428"]
+        - job_name: "canopy"
+          static_configs:
+            - targets:
+                - node-1.canopy:9090
+                - node-2.canopy:9090
+
+        - job_name: "blackbox"
+          metrics_path: "/metrics"
+          static_configs:
+            - targets:
+                - blackbox:9115
+
+        - job_name: "blackbox_explorer_wallet_check"
+          metrics_path: /probe
+          params:
+            module: [http_200]
+          tls_config:
+            insecure_skip_verify: true
+          static_configs:
+            - targets:
+                - http://node-1:50000
+                - http://node-1:50001
+                - http://node-2:40000
+                - http://node-2:40001
+          relabel_configs:
+            - source_labels: [__address__]
+              target_label: __param_target
+            - source_labels: [__param_target]
+              target_label: instance
+            - target_label: __address__
+              replacement: "blackbox:9115"
+            - target_label: region
+              replacement: "local"
+
+        - job_name: "blackbox_rpc_height"
+          metrics_path: /probe
+          params:
+            module: [check_canopy_block_2xx]
+          tls_config:
+            insecure_skip_verify: true
+          static_configs:
+            - targets:
+                - http://node-1:50002/v1/query/height
+                - http://node-2:40002/v1/query/height
+              # targets here
+          relabel_configs:
+            - source_labels: [__address__]
+              target_label: __param_target
+            - source_labels: [__param_target]
+              target_label: instance
+            - target_label: __address__
+              replacement: "blackbox:9115"

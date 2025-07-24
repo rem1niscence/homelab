@@ -5,6 +5,9 @@
 # generated files of dns validation
 acme/
 
+cluster/canopy/config-map.yaml
+cluster/canopy/config-files
+
 *.config*
 
 .DS_STORE

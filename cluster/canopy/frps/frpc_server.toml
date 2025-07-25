@@ -1,0 +1,14 @@
+serverAddr = "frps"
+serverPort = 7000
+
+[auth]
+method = "token"
+token = "{{ .Envs.SERVER_TOKEN }}"
+
+[[proxies]]
+name = "frps-dashboard-stcp"
+type = "stcp"
+secretKey = "{{ .Envs.SERVER_DASHBOARD_SECRET_KEY }}"
+
+localIP = "frps"
+localPort = 7500

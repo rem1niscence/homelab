@@ -27,6 +27,9 @@ data:
       Media:
         style: row
         columns: 2
+      Canopy:
+        style: row
+        columns: 4
       Calendar:
         style: column
         # columns: 2
@@ -492,6 +495,37 @@ data:
             icon: mdi-cpu-64-bit
             href: https://truenas-dashdot.{{DOMAIN}}
             siteMonitor: http://truenas-dashdot.truenas:10044
+    - Canopy:
+        - Wallet 1:
+            icon: mdi-wallet
+            href: https://wallet-1.{{DOMAIN}}
+            siteMonitor: http://node-1.canopy:50000
+            description: Wallet for chain 1
+        - Explorer 1:
+            icon: mdi-web
+            href: https://explorer-1.{{DOMAIN}}
+            siteMonitor: http://node-1.canopy:50001
+            description: Explorer for chain 1
+        - Wallet 2:
+            icon: mdi-wallet
+            href: https://wallet-2.{{DOMAIN}}
+            siteMonitor: http://node-2.canopy:40000
+            description: Wallet for chain 2
+        - Explorer 2:
+            icon: mdi-web
+            href: https://explorer-2.{{DOMAIN}}
+            siteMonitor: http://node-2.canopy:40001
+            description: Explorer for chain 2
+        - FRP Client:
+            icon: sh-haproxy
+            href: https://frpc.{{DOMAIN}}
+            siteMonitor: http://frp.canopy
+            description: FRP Local Client
+        - FRP Server:
+            icon: sh-haproxy
+            href: https://frps.{{DOMAIN}}
+            siteMonitor: http://frp.canopy:7501
+            description: FRP Remove Server
     - Calendar:
         - Calendar:
             icon: nextcloud-calendar

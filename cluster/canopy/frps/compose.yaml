@@ -1,0 +1,29 @@
+services:
+  frps:
+    image: ghcr.io/fatedier/frps:v0.63.0
+    container_name: frps
+    volumes:
+      - ./frps.toml:/etc/frp/frps.toml
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "7000:7000"
+      - "7000:7000/udp"
+      - "50001:50001"
+      - "40001:40001"
+    command: ["-c", "/etc/frp/frps.toml"]
+
+  frpc:
+    image: ghcr.io/fatedier/frpc:v0.63.0
+    container_name: frpc
+    env_file:
+      - .env
+    volumes:
+      - ./frpc_server.toml:/etc/frp/frpc.toml
+    restart: always
+    ports:
+      - "7500:7500" # server_port
+    command: ["-c", "/etc/frp/frpc.toml"]
+# if you get any weird connection errors, try this on the server
+# sudo iptables -I INPUT -p tcp --dport {PORT} -j ACCEPT

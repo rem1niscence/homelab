@@ -1,11 +1,12 @@
 daemonset:
   enabled: false
 
+nodeSelector:
+  type: "secondary"
+
 deployment:
   enabled: true
   replicas: 1
-  nodeSelector:
-    type: "secondary"
 
 config:
   logLevel: info

@@ -4,6 +4,9 @@ service:
   type: ClusterIP
   port: 9115
 
+nodeSelector:
+  pi: pi-2
+
 config:
   modules:
     http_2xx:

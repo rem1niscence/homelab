@@ -1,7 +1,9 @@
-# curl -g 'http://vm-canopy:8428/api/v1/query?query=probe_success{job="{job_name}"}'
-
 server:
+  mode: deployment
   fullnameOverride: vm-canopy
+  nodeSelector:
+    pi: pi-3
+
   scrape:
     enabled: true
     configMap: ""
@@ -64,3 +66,12 @@ server:
               target_label: instance
             - target_label: __address__
               replacement: "blackbox:9115"
+
+  persistentVolume:
+    enabled: true
+    name: "victoria-metrics-canopy"
+    storageClass: "longhorn"
+    size: 2Gi
+    accessModes:
+      - ReadWriteOnce
+# curl -g 'http://vm-canopy:8428/api/v1/query?query=probe_success{job="{job_name}"}'

@@ -2,12 +2,15 @@ deploymentMode: "SingleBinary"
 
 singleBinary:
   replicas: 1
-persistence:
-  enabled: true
-  storageClassName: "longhorn"
-  accessModes:
-    - ReadWriteOnce
-  size: 2Gi
+  nodeSelector:
+    type: main
+  persistence:
+    enabled: true
+    enableStatefulSetAutoDeletePVC: true
+    storageClass: "longhorn"
+    accessModes:
+      - ReadWriteOnce
+    size: 2Gi
 
 loki:
   commonConfig:

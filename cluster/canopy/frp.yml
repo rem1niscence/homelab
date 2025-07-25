@@ -20,6 +20,13 @@ data:
     remotePort = 50001
 
     [[proxies]]
+    name = "node-2-explorer"
+    type = "tcp"
+    localIP = "node-2"
+    localPort = 40001
+    remotePort = 40001
+
+    [[proxies]]
     name = "frps-dashboard"
     type = "tcp"
     remotePort = 7502

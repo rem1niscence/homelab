@@ -152,6 +152,82 @@ spec:
 #       targetPort: 80
 #   selector:
 #     app: filebrowser
+# ----- WebDav Setup -----
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: filebrowser
+  name: webdav
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webdav
+  template:
+    metadata:
+      labels:
+        app: webdav
+    spec:
+      nodeSelector:
+        type: pi
+      containers:
+        - name: webdav
+          image: hacdias/webdav:latest
+          args: ["-c", "/config/config.yml"]
+          ports:
+            - containerPort: 6060
+          envFrom:
+            - secretRef:
+                name: webdav
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: cloud
+              mountPath: /data/cloud
+            - name: webdav
+              mountPath: /config
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data-pvc
+        - name: cloud
+          persistentVolumeClaim:
+            claimName: cloud-pvc
+        - name: webdav
+          configMap:
+            name: webdav
+            items:
+              - key: config
+                path: config.yml
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: filebrowser
+  name: webdav
+data:
+  config: |
+    port: 6060
+    directory: /data
+    behindProxy: true
+    permissions: CRUD
+
+    users:
+      - username: "{env}USERNAME"
+        password: "{env}PASSWORD"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: filebrowser
+  name: webdav
+spec:
+  ports:
+    - port: 80
+      targetPort: 6060
+  selector:
+    app: webdav
 ---
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
@@ -166,4 +242,9 @@ spec:
       kind: Rule
       services:
         - name: filebrowser
+          port: 80
+    - match: Host(`webdav.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: webdav
           port: 80

@@ -22,7 +22,7 @@ config:
             namespaces:
               names: ["canopy"]  # only this namespace
         relabel_configs:
-          # Set the log path (required for k3s)
+          # set the log path (required for k3s)
           - action: replace
             replacement: /var/log/pods/*$1/*.log
             separator: /
@@ -38,6 +38,15 @@ config:
           - action: replace
             source_labels: [__meta_kubernetes_pod_container_name]
             target_label: container
+
+          # extract deployment name
+          - action: replace
+            source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+            target_label: deployment
+          - action: replace
+            source_labels: [__meta_kubernetes_pod_label_app]
+            target_label: deployment
+            # fallback: if 'app.kubernetes.io/name' doesn't exist, use 'app'
 
           # drop all other metadata labels
           - action: labeldrop

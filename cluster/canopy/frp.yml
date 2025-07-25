@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: canopy
+  name: frpc
+data:
+  client: |
+    serverAddr = "{{ .Envs.FRP_SERVER_ADDR }}"
+    serverPort = {{ .Envs.FRP_SERVER_PORT }}
+
+    [auth]
+    method = "token"
+    token = "{{ .Envs.FRP_SERVER_TOKEN }}"
+
+    [[proxies]]
+    name = "node-1-explorer"
+    type = "tcp"
+    localIP = "node-1"
+    localPort = 50001
+    remotePort = 50001
+
+    [[proxies]]
+    name = "frps-dashboard"
+    type = "tcp"
+    remotePort = 7502
+    localIP = "{{ .Envs.FRP_SERVER_ADDR }}"
+    localPort = 7501
+
+    [webServer]
+    addr = "0.0.0.0"
+    port = 7500
+    user = "{{ .Envs.FRP_WEB_SERVER_USER }}"
+    password = "{{ .Envs.FRP_WEB_SERVER_PASSWORD }}"
+
+    [[visitors]]
+    name = "frps-dashboard-visitor"
+    type = "stcp"
+
+    # must match the provider's proxy name
+    serverName = "frps-dashboard-stcp"
+    secretKey = "{{ .Envs.FRPS_VISITOR_KEY }}"
+
+    bindAddr = "0.0.0.0"
+    bindPort = 7501

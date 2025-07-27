@@ -52,7 +52,7 @@ data:
             description: Reverse proxy
             widget:
               type: traefik
-              url: http://traefik-api.kube-system:9000
+              url: http://traefik-api.kube-system
         - TrueNAS SCALE:
             icon: truenas-scale.png
             href: https://truenas.{{DOMAIN}}/ui/

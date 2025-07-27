@@ -34,12 +34,8 @@ traefik:
 	$(call check_vars, DOMAIN)
 	@echo "setting up traefik"
 	@kubectl apply -f ./traefik/dashboard-service.yml
-	@kubectl apply -f ./traefik/ingress-routes.yml
-	@kubectl apply -f ./traefik/middleware.yml
-	@kubectl apply -f ./traefik/secrets.yml
-	@kubectl patch ingressroute/traefik-dashboard-secure --type=json --patch-file ./traefik/patch-dashboard-service.yml
 	@sed -e "s;{{DOMAIN}};$${DOMAIN};g" ./traefik/ingress-routes.yml | kubectl apply -f -
-	@echo "done ✅"
+	@echo "done ✅, remember to enable insecure api on the traefik deployment, check ./traefik/dashboard-service.yaml"
 
 .PHONY: change-domain
 change-domain:

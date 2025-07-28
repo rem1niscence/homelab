@@ -23,7 +23,7 @@ data:
         columns: 2
       System:
         style: row
-        columns: 5
+        columns: 6
       Media:
         style: row
         columns: 2
@@ -495,6 +495,10 @@ data:
             icon: mdi-cpu-64-bit
             href: https://truenas-dashdot.{{DOMAIN}}
             siteMonitor: http://truenas-dashdot.truenas:10044
+        - VM:
+            icon: mdi-cpu-64-bit
+            href: ${DASHDOT_VM_URL}
+            siteMonitor: ${DASHDOT_VM_PING}
     - Canopy:
         - Wallet 1:
             icon: mdi-wallet

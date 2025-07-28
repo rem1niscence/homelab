@@ -1,14 +1,15 @@
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
-  name: longhorn-frontend-auth
+  name: auth
   namespace: longhorn-system
 spec:
   basicAuth:
     secret: longhorn-frontend
+    removeHeader: true
 ---
 kind: IngressRoute
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 metadata:
   name: longhorn-frontend
   namespace: longhorn-system
@@ -22,19 +23,20 @@ spec:
         - name: longhorn-frontend
           port: 80
       middlewares:
-        - name: longhorn-frontend-auth
+        - name: auth
+          namespace: longhorn-system
 ---
-# apiVersion: v1
-# kind: Service
-# metadata:
-#   namespace: longhorn-system
-#   name: longhorn-lb
-# spec:
-#   type: LoadBalancer
-#   ports:
-#     - name: http
-#       port: 8200
-#       protocol: TCP
-#       targetPort: http
-#   selector:
-#     app: longhorn-ui
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: longhorn-system
+  name: longhorn-lb
+spec:
+  type: LoadBalancer
+  ports:
+    - name: http
+      port: 8200
+      protocol: TCP
+      targetPort: http
+  selector:
+    app: longhorn-ui

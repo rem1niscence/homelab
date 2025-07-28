@@ -8,6 +8,12 @@ kind: Deployment
 metadata:
   namespace: jellyfin
   name: jellyfin
+  labels:
+    app: jellyfin
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -50,6 +56,12 @@ kind: Deployment
 metadata:
   namespace: jellyfin
   name: jellyseerr
+  labels:
+    app: jellyseerr
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -78,7 +90,7 @@ spec:
           persistentVolumeClaim:
             claimName: jellyseerr-config-pvc
 ---
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: jellyfin
@@ -93,7 +105,7 @@ spec:
         - name: jellyfin
           port: 8096
 ---
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   namespace: jellyfin

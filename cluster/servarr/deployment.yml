@@ -8,6 +8,12 @@ kind: Deployment
 metadata:
   namespace: servarr
   name: radarr
+  labels:
+    app: radarr
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -50,6 +56,12 @@ kind: Deployment
 metadata:
   namespace: servarr
   name: sonarr
+  labels:
+    app: sonarr
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -92,6 +104,12 @@ kind: Deployment
 metadata:
   namespace: servarr
   name: prowlarr
+  labels:
+    app: prowlarr
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -160,6 +178,12 @@ kind: Deployment
 metadata:
   namespace: servarr
   name: bazarr
+  labels:
+    app: bazarr
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:

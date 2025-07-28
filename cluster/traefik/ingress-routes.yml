@@ -26,14 +26,14 @@ spec:
     - websecure
   routes:
     - kind: Rule
-      match: Host(`traefik.rvserver.online`)
+      match: Host(`traefik.{{DOMAIN}}`)
       services:
         - name: api@internal
           kind: TraefikService
       middlewares:
         - name: dashboard-auth
     - kind: Rule
-      match: Host(`traefik.rvserver.online`) && PathPrefix("/api")
+      match: Host(`traefik.{{DOMAIN}}`) && PathPrefix("/api")
       services:
         - name: api@internal
           kind: TraefikService

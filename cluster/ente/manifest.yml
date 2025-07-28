@@ -453,7 +453,7 @@ spec:
   selector:
     app: ente
 ---
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: ente
@@ -480,7 +480,7 @@ spec:
   selector:
     app: web
 ---
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: web
@@ -495,7 +495,7 @@ spec:
         - name: web
           port: 80
 ---
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: minio

@@ -23,7 +23,7 @@ spec:
       initContainers:
         - name: volume-permissions
           image: busybox
-          command: ['sh', '-c', 'chown -R 1000:1000 /romm/config && chmod -R 770 /romm/config']
+          command: ["sh", "-c", "chown -R 1000:1000 /romm/config && chmod -R 770 /romm/config"]
           volumeMounts:
             - name: config
               mountPath: /romm/config
@@ -248,7 +248,7 @@ spec:
   selector:
     app: mariadb
 ---
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: romm

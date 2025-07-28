@@ -60,7 +60,6 @@ dashboard:
 	@kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml
 	./scripts/setup_application.sh dashboard $${DOMAIN}
 	@k3s kubectl -n kubernetes-dashboard create token admin-user --duration=1000h
-	@kubectl patch ingressroute/traefik-dashboard-secure --type=json --patch-file traefik/patch-dashboard-service.yml
 	@echo "done ✅. Use the token to log in into the dashboard"
 
 .PHONY: app

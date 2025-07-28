@@ -8,6 +8,12 @@ kind: Deployment
 metadata:
   name: cloudflared
   namespace: cloudflared
+  labels:
+    app: cloudflared
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
 spec:
   selector:
     matchLabels:
@@ -48,6 +54,12 @@ spec:
       volumes:
         - name: creds
           secret:
+            # By default, the credentials file will be created under ~/.cloudflared/<tunnel ID>.json
+            # when you run `cloudflared tunnel create`. You can move it into a secret by using:
+            # ```sh
+            # kubectl create secret generic tunnel-credentials \
+            # --from-file=credentials.json=/Users/yourusername/.cloudflared/<tunnel ID>.json
+            # ```
             secretName: tunnel-credentials
         - name: config
           configMap:
@@ -80,16 +92,16 @@ data:
     # from the internet to cloudflared, run `cloudflared tunnel route dns <tunnel> <hostname>`.
     # E.g. `cloudflared tunnel route dns example-tunnel tunnel.example.com`.
     ingress:
-    - hostname: hemmelig.{{DOMAIN}}
-      service: http://hemmelig.hemmelig:80
-    - hostname: microbin.{{DOMAIN}}
-      service: http://microbin.microbin:80
     - hostname: penpot.{{DOMAIN}}
       service: http://frontend.penpot:80
     - hostname: komga.{{DOMAIN}}
       service: http://komga.komga:25600
-    # - hostname: jellyfin.{{DOMAIN}}
-    #   service: http://jellyfin.jellyfin:8096
+    - hostname: microbin.{{DOMAIN}}
+      service: http://microbin.microbin:80
+    - hostname: jellyfin.{{DOMAIN}}
+      service: http://jellyfin.jellyfin:8096
+    # - hostname: hemmelig.{{DOMAIN}}
+    #   service: http://hemmelig.hemmelig:80
     # - hostname: cloud.{{DOMAIN}}
     #   service: http://filebrowser.filebrowser:80
     # This rule matches any traffic which didn't match a previous rule, and responds with HTTP 404.

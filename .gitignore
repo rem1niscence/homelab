@@ -5,7 +5,8 @@
 # generated files of dns validation
 acme/
 
-cluster/canopy/config.yaml
+cluster/cloudflare-tunnel/*.json
+cluster/canopy/config.yml
 cluster/canopy/config-files
 
 *.config*

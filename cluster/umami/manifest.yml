@@ -8,6 +8,12 @@ kind: Deployment
 metadata:
   name: umami
   namespace: umami
+  labels:
+    app: umami
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -32,6 +38,12 @@ kind: Deployment
 metadata:
   name: db
   namespace: umami
+  labels:
+    app: db
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:

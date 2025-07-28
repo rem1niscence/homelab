@@ -44,8 +44,8 @@ data:
 
         if [ ! -f "$CHECKSUM_FILE" ] || [ "$NEW_CHECKSUM" != "$(cat $CHECKSUM_FILE)" ]; then
             echo "blog contents have changed, updating" && \
-            unzip -o /shared/latest.zip -d /shared && \ # /shared/public 
-            echo "blog contents have been zipped into /shared/public" 
+            unzip -o /shared/latest.zip -d /shared && \ # /shared/public
+            echo "blog contents have been zipped into /shared/public"
             echo $NEW_CHECKSUM > $CHECKSUM_FILE
         fi
 
@@ -57,6 +57,12 @@ kind: Deployment
 metadata:
   namespace: blog
   name: blog
+  labels:
+    app: blog
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
 spec:
   replicas: 2
   selector:
@@ -79,7 +85,7 @@ spec:
               cd /server
               echo "Building file server 🏗️" && \
               CGO_ENABLED=0 GO111MODULE=off go build -o /shared/server . && \
-              echo "Finished Building file server ✅" 
+              echo "Finished Building file server ✅"
           volumeMounts:
             - name: shared
               mountPath: /shared
@@ -96,13 +102,13 @@ spec:
               mountPath: /shared
         - name: poll-updates
           image: alpine
-          command: 
+          command:
             - sh
             - -c
             - |
               apk add --no-cache unzip
               cp /poll/poll-updates.sh /shared
-              chmod +x /shared/poll-updates.sh            
+              chmod +x /shared/poll-updates.sh
               /shared/poll-updates.sh
           volumeMounts:
             - name: shared
@@ -133,7 +139,7 @@ spec:
   selector:
     app: blog
 ---
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: blog

@@ -22,7 +22,7 @@ subjects:
     name: admin-user
     namespace: kubernetes-dashboard
 ---
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: kubernetes-dashboard
@@ -38,7 +38,7 @@ spec:
           port: 443
           serversTransport: dashboard-st
 ---
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: ServersTransport
 metadata:
   name: dashboard-st

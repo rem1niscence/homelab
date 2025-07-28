@@ -40,6 +40,12 @@ kind: Deployment
 metadata:
   name: firefly
   namespace: firefly
+  labels:
+    app: firefly
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -73,6 +79,12 @@ kind: Deployment
 metadata:
   name: mariadb
   namespace: firefly
+  labels:
+    app: mariadb
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -109,6 +121,12 @@ kind: Deployment
 metadata:
   name: redis
   namespace: firefly
+  labels:
+    app: redis
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -216,7 +234,7 @@ spec:
   selector:
     app: redis
 ---
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: firefly

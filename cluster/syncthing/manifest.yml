@@ -8,6 +8,12 @@ kind: Deployment
 metadata:
   namespace: syncthing
   name: syncthing
+  labels:
+    app: syncthing
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -116,7 +122,7 @@ spec:
       port: 21027
       targetPort: 21027
 ---
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: syncthing

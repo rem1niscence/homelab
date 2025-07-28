@@ -8,6 +8,12 @@ kind: Deployment
 metadata:
   namespace: it-tools
   name: it-tools
+  labels:
+    app: it-tools
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -39,7 +45,7 @@ spec:
       port: 80
       targetPort: 80
 ---
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: it-tools

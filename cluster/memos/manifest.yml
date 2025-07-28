@@ -8,6 +8,12 @@ kind: Deployment
 metadata:
   name: memos
   namespace: memos
+  labels:
+    app: memos
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -58,7 +64,7 @@ spec:
   selector:
     app: memos
 ---
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: memos

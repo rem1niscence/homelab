@@ -8,6 +8,12 @@ kind: Deployment
 metadata:
   namespace: filebrowser
   name: filebrowser
+  labels:
+    app: filebrowser
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -159,6 +165,12 @@ kind: Deployment
 metadata:
   namespace: filebrowser
   name: webdav
+  labels:
+    app: webdav
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -229,7 +241,7 @@ spec:
   selector:
     app: webdav
 ---
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: filebrowser

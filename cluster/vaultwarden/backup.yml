@@ -8,6 +8,12 @@ kind: Deployment
 metadata:
   name: backup
   namespace: vaultwarden
+  labels:
+    app: backup
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:

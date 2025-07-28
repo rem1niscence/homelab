@@ -6,14 +6,14 @@ metadata:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 30m"
-    keel.sh/trigger: poll
   namespace: canopy
   name: node-1
   labels:
     app: node-1
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 20m"
+    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -78,14 +78,14 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 30m"
-    keel.sh/trigger: poll
   namespace: canopy
   name: node-2
   labels:
     app: node-2
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 20m"
+    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -316,7 +316,7 @@ spec:
   selector:
     app: frpc
 ---
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   namespace: canopy

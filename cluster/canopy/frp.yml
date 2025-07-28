@@ -27,6 +27,20 @@ data:
     remotePort = 40001
 
     [[proxies]]
+    name = "node-1-external-address"
+    type = "tcp"
+    localIP = "node-1"
+    localPort = 9001
+    remotePort = 9001
+
+    [[proxies]]
+    name = "node-2-external-address"
+    type = "tcp"
+    localIP = "node-2"
+    localPort = 9002
+    remotePort = 9002
+
+    [[proxies]]
     name = "frps-dashboard"
     type = "tcp"
     remotePort = 7502

@@ -159,7 +159,7 @@ data:
         alerts:
           - type: discord
       - name: Longhorn
-        url: "http://longhorn-frontend.longhorn-system"
+        url: "http://longhorn-frontend.longhorn"
         conditions:
           - "[STATUS] == 200"
         alerts:

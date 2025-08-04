@@ -6,9 +6,8 @@ defaultSettings:
 ingress:
   enabled: true
   host: longhorn.local
-
 # Apply with:
-# helm upgrade longhorn longhorn/longhorn --namespace longhorn-system -f values.yml
+# helm upgrade longhorn longhorn/longhorn --namespace longhorn -f values.yml
 # NOTE: You might have to add the k3s kubeconfig path with --kubeconfig /etc/rancher/k3s/k3s.yaml
 # if you're having permission issues
 

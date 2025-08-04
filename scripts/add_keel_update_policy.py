@@ -11,7 +11,7 @@ skipped_namespaces = [
     "monitoring",
     "tailscale",
     "cdi",
-    "longhorn-system",
+    "longhorn",
     "cattle-system",
     "cattle-fleet-system",
     "kubevirt",

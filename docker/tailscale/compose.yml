@@ -15,6 +15,7 @@ services:
       - TS_STATE_DIR=/var/lib/tailscale
       - TS_USERSPACE=false
       - TS_EXTRA_ARGS=--accept-routes
+      - TS_NO_LOGS_NO_SUPPORT=true
     env_file:
       - .env
   watchtower:

@@ -35,7 +35,7 @@ data:
         # columns: 2
     providers:
       longhorn:
-        url: http://longhorn-frontend.longhorn-system
+        url: http://longhorn-frontend.longhorn
   bookmarks.yaml: |
     - Links:
         - Github:
@@ -258,7 +258,7 @@ data:
         - Longhorn:
             icon: longhorn.svg
             href: https://longhorn.{{DOMAIN}}
-            siteMonitor: http://longhorn-frontend.longhorn-system
+            siteMonitor: http://longhorn-frontend.longhorn
             description: Cloud-native distributed storage for K8S
         - Kubernetes:
             icon: kubernetes-dashboard.png

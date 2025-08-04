@@ -1,8 +1,17 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: longhorn-frontend
+  namespace: longhorn
+type: Opaque
+stringData:
+  users: "remini:$apr1$oNmfVmzk$rqXmzlsT6GPr7bc4XOLUv1"
+---
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
   name: auth
-  namespace: longhorn-system
+  namespace: longhorn
 spec:
   basicAuth:
     secret: longhorn-frontend
@@ -12,7 +21,7 @@ kind: IngressRoute
 apiVersion: traefik.io/v1alpha1
 metadata:
   name: longhorn-frontend
-  namespace: longhorn-system
+  namespace: longhorn
 spec:
   entryPoints:
     - websecure
@@ -24,12 +33,12 @@ spec:
           port: 80
       middlewares:
         - name: auth
-          namespace: longhorn-system
+          namespace: longhorn
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  namespace: longhorn-system
+  namespace: longhorn
   name: longhorn-lb
 spec:
   type: LoadBalancer

@@ -23,6 +23,9 @@ fi
 # start service in case it hasn't already
 service iscsid start
 
+# Capture devices before login
+DEVICES_BEFORE=$(lsblk -ndo NAME)
+
 # Discover the target
 iscsiadm -m discovery -t sendtargets -p $IP_ADDRESS
 
@@ -32,8 +35,16 @@ iscsiadm -m node -T $TARGET_NAME -p $IP_ADDRESS:3260 --login
 # Wait for the device to be available
 sleep 5
 
-# Find the device name
-DEVICE=$(ls /sys/class/block | grep -E '^sd[a-z]$' | tail -n1)
+# Capture devices after login
+DEVICES_AFTER=$(lsblk -ndo NAME)
+
+# Find the new device
+DEVICE=$(comm -13 <(echo "$DEVICES_BEFORE" | sort) <(echo "$DEVICES_AFTER" | sort) | grep '^sd' | head -n1)
+
+if [ -z "$DEVICE" ]; then
+    echo "Error: Could not determine iSCSI device"
+    exit 1
+fi
 
 # Unmount the device if it's mounted
 umount /dev/$DEVICE || true  # We use "|| true" to prevent the script from exiting if the device is not mounted.

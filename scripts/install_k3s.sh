@@ -45,8 +45,7 @@ elif [[ "$NODE_ROLE" == "lan-agent" ]]; then
         K3S_TOKEN="$K3S_TOKEN" \
         sh -s - agent \
         --node-ip="$LAN_IP" \
-        --node-external-ip="$TAILSCALE_IP" \
-        --flannel-backend=host-gw
+        --node-external-ip="$TAILSCALE_IP"
 elif [[ "$NODE_ROLE" == "remote-agent" ]]; then
     if [[ -z "${MASTER_TAILSCALE_IP:-}" ]]; then
         echo "ERROR: MASTER_TAILSCALE_IP must be set for remote agents."
@@ -57,8 +56,7 @@ elif [[ "$NODE_ROLE" == "remote-agent" ]]; then
         K3S_URL="https://${MASTER_TAILSCALE_IP}:6443" \
         K3S_TOKEN="$K3S_TOKEN" \
         sh -s - agent \
-        --node-external-ip="$TAILSCALE_IP" \
-        --flannel-backend=host-gw
+        --node-external-ip="$TAILSCALE_IP"
 else
     echo "ERROR: NODE_ROLE must be one of: server, lan-agent, remote-agent"
     exit 1

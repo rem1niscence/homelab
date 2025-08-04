@@ -45,7 +45,7 @@ change-domain:
 .PHONY: tls
 tls:
 	$(call check_vars, DOMAIN CLOUDFLARE_TOKEN EMAIL ZONE_ID)
-	@kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.18.2/cert-manager.yaml
+	@kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.18.2/cert-manager.yaml
 	@echo "wait 10 seconds for cert-manager to be installed"
 	@ sleep 10
 	@sed -e "s;{{CLOUDFLARE_TOKEN}};$(CLOUDFLARE_TOKEN);g" ./tls/tls.yml | \
@@ -64,9 +64,9 @@ dashboard:
 
 .PHONY: app
 app:
-	$(call check_vars, APP_PATH DOMAIN)
-	./scripts/setup_application.sh $${APP_PATH} $${DOMAIN}
-	@make APP_PATH=$${APP_PATH} DOMAIN=$${DOMAIN} change-domain
+	$(call check_vars, AP DOMAIN)
+	./scripts/setup_application.sh $${AP} $${DOMAIN}
+	@make APP_PATH=$${AP} DOMAIN=$${DOMAIN} change-domain
 
 .PHONY: rm-app
 rm-app:

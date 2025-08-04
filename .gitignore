@@ -12,3 +12,5 @@ cluster/canopy/config-files
 *.config*
 
 .DS_STORE
+
+copypasta.txt

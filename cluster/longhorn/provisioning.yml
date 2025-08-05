@@ -1,0 +1,91 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: longhorn-local
+provisioner: driver.longhorn.io
+allowVolumeExpansion: true
+parameters:
+  numberOfReplicas: "2"
+  staleReplicaTimeout: "2880" # 48 hours in minutes
+  fromBackup: ""
+  diskSelector: "local"
+  nodeSelector: "local"
+  recurringJobSelector: '[
+    {
+    "name":"local",
+    "isGroup":true
+    }
+    ]'
+---
+apiVersion: longhorn.io/v1beta2
+kind: RecurringJob
+metadata:
+  name: snapshot-job
+  namespace: longhorn
+spec:
+  cron: "30 */2 * * *"
+  task: "snapshot"
+  groups:
+    - local
+  retain: 2
+  concurrency: 3
+---
+apiVersion: longhorn.io/v1beta2
+kind: RecurringJob
+metadata:
+  name: backup-job
+  namespace: longhorn
+spec:
+  cron: "0 */6 * * *"
+  task: "backup"
+  groups:
+    - local
+  retain: 2
+  concurrency: 3
+---
+
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: longhorn-remote
+provisioner: driver.longhorn.io
+allowVolumeExpansion: true
+parameters:
+  numberOfReplicas: "2"
+  staleReplicaTimeout: "2880"
+  fromBackup: ""
+  diskSelector: "remote"
+  nodeSelector: "remote"
+  recurringJobSelector: '[
+    {
+    "name":"remote",
+    "isGroup":true
+    }
+    ]'
+---
+apiVersion: longhorn.io/v1beta2
+kind: RecurringJob
+metadata:
+  name: remote-snapshot-job
+  namespace: longhorn
+spec:
+  cron: "0 */2 * * *"
+  task: "snapshot"
+  groups:
+    - remote
+  retain: 2
+  concurrency: 3
+---
+apiVersion: longhorn.io/v1beta2
+kind: RecurringJob
+metadata:
+  name: remote-backup-job
+  namespace: longhorn
+spec:
+  cron: "30 */6 * * *"
+  task: "backup"
+  groups:
+    - remote
+  retain: 2
+  concurrency: 3

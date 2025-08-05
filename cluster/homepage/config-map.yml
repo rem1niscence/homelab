@@ -260,6 +260,11 @@ data:
             href: https://longhorn.{{DOMAIN}}
             siteMonitor: http://longhorn-frontend.longhorn
             description: Cloud-native distributed storage for K8S
+        - Container Registry:
+            icon: docker.svg
+            href: https://registry-ui.{{DOMAIN}}
+            siteMonitor: http://registry.registry
+            description: Private container registry
         - Kubernetes:
             icon: kubernetes-dashboard.png
             href: https://dashboard.{{DOMAIN}}

@@ -200,12 +200,6 @@ data:
           - "[STATUS] == 200"
         alerts:
           - type: discord
-      - name: TrueNAS SCALE
-        url: "http://truenas.truenas"
-        conditions:
-          - "[STATUS] == 200"
-        alerts:
-          - type: discord
       - name: Morphos
         url: "http://morphos.morphos"
         conditions:
@@ -278,6 +272,18 @@ data:
           - "[STATUS] == 200"
         alerts:
               - type: discord
+      - name: Container Registry
+        url: "http://registry.registry"
+        conditions:
+          - "[STATUS] == 200"
+        alerts:
+              - type: discord
+      # - name: TrueNAS SCALE
+      #   url: "http://truenas.truenas"
+      #   conditions:
+      #     - "[STATUS] == 200"
+      #   alerts:
+      #     - type: discord
       # - name: Ente
       #   url: "http://ente-server.ente"
       #   conditions:

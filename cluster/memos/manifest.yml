@@ -50,7 +50,7 @@ spec:
   resources:
     requests:
       storage: 1G
-  storageClassName: longhorn
+  storageClassName: longhorn-local
 ---
 apiVersion: v1
 kind: Service

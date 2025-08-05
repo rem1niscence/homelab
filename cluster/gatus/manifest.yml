@@ -38,33 +38,15 @@ spec:
                   name: gatus
                   key: DISCORD_WEB_HOOK_URL
           volumeMounts:
-            - name: data
-              mountPath: /data
             - name: config
               mountPath: /config
       volumes:
-        - name: data
-          persistentVolumeClaim:
-            claimName: data
         - name: config
           configMap:
             name: config
             items:
               - key: config.yaml
                 path: config.yaml
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  namespace: gatus
-  name: data
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1G
-  storageClassName: longhorn
 ---
 apiVersion: v1
 kind: Service

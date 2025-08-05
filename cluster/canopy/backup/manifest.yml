@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backup
+  namespace: canopy
+  labels:
+    app: backup
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backup
+  template:
+    metadata:
+      labels:
+        app: backup
+    spec:
+      serviceAccountName: backup-sa
+      nodeSelector:
+        type: pi
+      containers:
+        - name: backup
+          image: registry.local/canopy-backup:latest
+          imagePullPolicy: Always # TODO: Remove once image is stable
+          ports:
+            - containerPort: 5230
+          envFrom:
+            - secretRef:
+                name: backup
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: backup-sa
+  namespace: canopy
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: canopy
+  name: backup
+rules:
+  - apiGroups: ["apps"]
+    resources: ["deployments", "deployments/scale"]
+    verbs: ["get", "patch", update]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: backup
+  namespace: canopy
+subjects:
+  - kind: ServiceAccount
+    name: backup-sa
+    namespace: canopy
+roleRef:
+  kind: Role
+  name: backup
+  apiGroup: rbac.authorization.k8s.io

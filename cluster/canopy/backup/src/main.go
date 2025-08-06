@@ -2,12 +2,11 @@ package main
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"log/slog"
 	"os"
 	"time"
-
-	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/rest"
 )
 
 func main() {
@@ -37,43 +36,41 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
 	defer cancel()
 
-	logger.Info("scaling down deployment", slog.String("deployment", config.Deployment))
-	err = controller.ScaleDeployment(ctx, 0)
+	err = ScaleDeployment(ctx, controller, func() error {
+		return nil
+	})
 	if err != nil {
-		logger.Error("failed to scale down deployment", slog.String("error", err.Error()))
-		os.Exit(1)
-	}
-
-	if err := controller.WaitForScaling(ctx, 0); err != nil {
-		logger.Error("failed to scale down deployment", slog.String("deployment", config.Deployment),
-			slog.String("error", err.Error()))
-		os.Exit(1)
-	}
-
-	logger.Info("scaling up deployment", slog.String("deployment", config.Deployment))
-	err = controller.ScaleDeployment(ctx, 1)
-	if err != nil {
-		logger.Error("failed to scale up deployment", slog.String("error", err.Error()))
-		os.Exit(1)
-	}
-
-	if err := controller.WaitForScaling(ctx, 1); err != nil {
-		logger.Error("failed to scale up deployment", slog.String("deployment", config.Deployment),
-			slog.String("error", err.Error()))
+		logger.Error("failed to run scale deployment operation", slog.String("error", err.Error()))
 		os.Exit(1)
 	}
 
 	logger.Info("finish backing up canopy volume ✅")
 }
 
-func GetClientSet() (*kubernetes.Clientset, error) {
-	config, err := rest.InClusterConfig()
-	if err != nil {
-		return nil, err
+func ScaleDeployment(ctx context.Context, controller *Controller, fn func() error) error {
+	logger := controller.Logger
+	config := controller.Config
+
+	logger.Info("scaling down deployment", slog.String("deployment", config.Deployment))
+	if err := controller.ScaleDeployment(ctx, 0); err != nil {
+		return fmt.Errorf("failed to scale down deployment: %w", err)
 	}
-	clientConfig, err := kubernetes.NewForConfig(config)
-	if err != nil {
-		return nil, err
+	if err := controller.WaitForScaling(ctx, 0); err != nil {
+		return fmt.Errorf("failed to wait for scaling down deployment: %w", err)
 	}
-	return clientConfig, nil
+
+	var err error
+	if err = fn(); err != nil {
+		err = fmt.Errorf("failed to run operation: %w", err)
+	}
+
+	logger.Info("scaling up deployment", slog.String("deployment", config.Deployment))
+	if scaleErr := controller.ScaleDeployment(ctx, 1); scaleErr != nil {
+		return errors.Join(err, fmt.Errorf("failed to scale up deployment: %w", scaleErr))
+	}
+	if scaleErr := controller.WaitForScaling(ctx, 1); scaleErr != nil {
+		return errors.Join(err, fmt.Errorf("failed to wait for scaling up deployment: %w", scaleErr))
+	}
+
+	return nil
 }

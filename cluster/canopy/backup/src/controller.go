@@ -11,7 +11,20 @@ import (
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 )
+
+func GetClientSet() (*kubernetes.Clientset, error) {
+	config, err := rest.InClusterConfig()
+	if err != nil {
+		return nil, err
+	}
+	clientConfig, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		return nil, err
+	}
+	return clientConfig, nil
+}
 
 type Controller struct {
 	Client       *kubernetes.Clientset
@@ -29,6 +42,10 @@ func NewController(client *kubernetes.Clientset, logger *slog.Logger, config *Co
 		PollTimeout:  1 * time.Minute,
 		PollInterval: 5 * time.Second,
 	}
+}
+
+func (c *Controller) GetDeployment(ctx context.Context) (*appsv1.Deployment, error) {
+	return c.Client.AppsV1().Deployments(c.Config.Namespace).Get(ctx, c.Config.Deployment, v1.GetOptions{})
 }
 
 func (c *Controller) ScaleDeployment(ctx context.Context, scale int) error {
@@ -49,10 +66,6 @@ func (c *Controller) ScaleDeployment(ctx context.Context, scale int) error {
 	return nil
 }
 
-func (c *Controller) GetDeployment(ctx context.Context) (*appsv1.Deployment, error) {
-	return c.Client.AppsV1().Deployments(c.Config.Namespace).Get(ctx, c.Config.Deployment, v1.GetOptions{})
-}
-
 func (c *Controller) WaitForScaling(ctx context.Context, wanted int) error {
 	return wait.PollUntilContextTimeout(ctx, c.PollInterval, c.PollTimeout, false,
 		func(ctx context.Context) (done bool, err error) {
@@ -67,6 +80,6 @@ func (c *Controller) WaitForScaling(ctx context.Context, wanted int) error {
 				slog.Int("current_replicas", int(*deployment.Spec.Replicas)),
 				slog.Int("available_replicas", int(deployment.Status.AvailableReplicas)),
 			)
-			return int(*deployment.Spec.Replicas) == wanted, nil
+			return int(deployment.Status.AvailableReplicas) == wanted, nil
 		})
 }

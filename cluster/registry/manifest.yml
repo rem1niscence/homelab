@@ -20,7 +20,7 @@ spec:
     matchLabels:
       app: registry
   template:
-    metadata:ƒ
+    metadata:
       labels:
         app: registry
     spec:
@@ -153,6 +153,11 @@ spec:
     # .local domains may trigger a delay on Mac due mDNS/Bonjour lookup first
     # which needs to be resolved before the request is forwarded to the registry
     - match: Host(`registry.local`)
+      kind: Rule
+      services:
+        - name: registry
+          port: 80
+    - match: Host(`registry.home`)
       kind: Rule
       services:
         - name: registry

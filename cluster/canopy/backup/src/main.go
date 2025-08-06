@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"path/filepath"
 	"time"
 )
 
@@ -18,7 +19,7 @@ func main() {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 	logger.Info("starting backup controller at", slog.String("time", time.Now().String()))
 
-	controller, _, err := initialize(logger)
+	controller, backup, err := Initialize(logger)
 	if err != nil {
 		logger.Error("failed to initialize", slog.String("error", err.Error()))
 		os.Exit(1)
@@ -28,7 +29,7 @@ func main() {
 	defer cancel()
 
 	err = ScaleDeployment(ctx, controller, func() error {
-		return nil
+		return PerformBackup(ctx, controller.Config, logger, backup)
 	})
 	if err != nil {
 		logger.Error("failed to run scale deployment operation", slog.String("error", err.Error()))
@@ -38,8 +39,8 @@ func main() {
 	logger.Info("finish backing up canopy volume ✅")
 }
 
-// initialize initializes the necessary components for the backup process.
-func initialize(logger *slog.Logger) (*Controller, IBackup, error) {
+// Initialize initializes the necessary components for the backup process.
+func Initialize(logger *slog.Logger) (*Controller, IBackup, error) {
 	client, err := GetClientSet()
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to get client set: %w", err)
@@ -50,7 +51,7 @@ func initialize(logger *slog.Logger) (*Controller, IBackup, error) {
 		return nil, nil, fmt.Errorf("failed to get config: %w", err)
 	}
 
-	logger.Info("config loaded", slog.Any("config", config))
+	// logger.Info("config loaded", slog.Any("config", config))
 
 	if err := config.Validate(); err != nil {
 		return nil, nil, fmt.Errorf("config validation failed: %w", err)
@@ -91,6 +92,50 @@ func ScaleDeployment(ctx context.Context, controller *Controller, fn func() erro
 	if scaleErr := controller.WaitForScaling(ctx, 1); scaleErr != nil {
 		return errors.Join(err, fmt.Errorf("failed to wait for scaling up deployment: %w", scaleErr))
 	}
+
+	return err
+}
+
+func PerformBackup(ctx context.Context, config *Config, logger *slog.Logger, backup IBackup) error {
+	logger.Info("starting canopy backup")
+
+	fileName := fmt.Sprintf("%s.tar.gz", config.BackupKey)
+	backupFile := filepath.Join(config.BackupPath, fileName)
+
+	defer func() {
+		if _, err := os.Stat(backupFile); err == nil {
+			logger.Info("deleting backup")
+			if err := os.Remove(backupFile); err != nil {
+				logger.Error("failed to delete existing backup", slog.String("error", err.Error()))
+			}
+		}
+	}()
+
+	// check if source path exists
+	if _, err := os.Stat(config.SourcePath); os.IsNotExist(err) {
+		return fmt.Errorf("backup path does not exist: %w", err)
+	}
+
+	// create backup directory if it doesn't exist
+	if _, err := os.Stat(config.BackupPath); os.IsNotExist(err) {
+		if err := os.MkdirAll(config.BackupPath, 0755); err != nil {
+			return fmt.Errorf("failed to create backup directory: %w", err)
+		}
+	}
+
+	logger.Info("started compressing backup")
+	if err := CompressFolder(config.SourcePath, backupFile); err != nil {
+		return fmt.Errorf("compression failed: %w", err)
+	}
+	logger.Info("finished compressing backup")
+
+	logger.Info("started uploading file to external storage")
+	if err := backup.Backup(ctx, backupFile, config.BackupKey); err != nil {
+		return fmt.Errorf("upload failed: %w", err)
+	}
+	logger.Info("finished uploading file to external storage")
+
+	logger.Info("deleting backup successfully")
 
 	return nil
 }

@@ -5,6 +5,29 @@ import (
 	"os"
 )
 
+type Config struct {
+	CronSchedule string
+	SourcePath   string
+	BackupKey    string
+	BackupPath   string
+	Deployment   string
+	Namespace    string
+	S3           S3Config
+}
+
+func (c Config) Validate() error {
+	if c.Deployment == "" {
+		return errors.New("DEPLOYMENT is required")
+	}
+	if c.Namespace == "" {
+		return errors.New("NAMESPACE is required")
+	}
+	if err := c.S3.Validate(); err != nil {
+		return err
+	}
+	return nil
+}
+
 type S3Config struct {
 	AccessKey       string
 	SecretAccessKey string
@@ -32,33 +55,12 @@ func (s S3Config) Validate() error {
 	return nil
 }
 
-type Config struct {
-	CronSchedule string
-	CanopyPath   string
-	DBFolderName string
-	Deployment   string
-	Namespace    string
-	S3           S3Config
-}
-
-func (c Config) Validate() error {
-	if c.Deployment == "" {
-		return errors.New("DEPLOYMENT is required")
-	}
-	if c.Namespace == "" {
-		return errors.New("NAMESPACE is required")
-	}
-	if err := c.S3.Validate(); err != nil {
-		return err
-	}
-	return nil
-}
-
 func LoadConfig() (*Config, error) {
 	return &Config{
 		CronSchedule: getenv("CRON_SCHEDULE", "0 */6 * * *"),
-		CanopyPath:   getenv("CANOPY_PATH", "/root/.canopy"),
-		DBFolderName: getenv("DB_FOLDER_NAME", "canopy"),
+		SourcePath:   getenv("SOURCE_PATH", "/root/.canopy/canopy"),
+		BackupKey:    getenv("BACKUP_KEY", "canopy_backup.tar.gz"),
+		BackupPath:   getenv("BACKUP_PATH", "/backup"),
 		Deployment:   getenv("DEPLOYMENT", ""),
 		Namespace:    getenv("NAMESPACE", ""),
 		S3: S3Config{

@@ -71,9 +71,9 @@ func (b BackupS3) Backup(ctx context.Context, filePath, key string) error {
 	return err
 }
 
-// CompressFolder compresses a folder into a tar.gz file
+// CompressFolder compresses a folder into a tar.gz file using gzip + tar compression
 func CompressFolder(sourceDir, targetFile string) error {
-	file, err := os.Create(fmt.Sprintf("%s.tar.gz", targetFile))
+	file, err := os.Create(targetFile)
 	if err != nil {
 		return fmt.Errorf("failed to create target file: %w", err)
 	}

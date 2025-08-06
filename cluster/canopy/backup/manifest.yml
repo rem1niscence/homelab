@@ -28,9 +28,21 @@ spec:
           imagePullPolicy: Always # TODO: Remove once image is stable
           ports:
             - containerPort: 5230
+          env:
+            # Require by ORACLE S3 Compatibility layer
+            - name: AWS_REQUEST_CHECKSUM_CALCULATION
+              value: WHEN_REQUIRED
           envFrom:
             - secretRef:
                 name: backup
+          volumeMounts:
+            - name: data
+              mountPath: /root/.canopy
+              subPath: test-1
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: test
 ---
 apiVersion: v1
 kind: ServiceAccount

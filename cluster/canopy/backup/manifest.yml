@@ -1,5 +1,5 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: batch/v1
+kind: CronJob
 metadata:
   name: backup
   namespace: canopy
@@ -10,39 +10,39 @@ metadata:
     keel.sh/pollSchedule: "@every 1h"
     keel.sh/trigger: poll
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: backup
-  template:
-    metadata:
-      labels:
-        app: backup
+  schedule: "0 */6 * * *"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
     spec:
-      serviceAccountName: backup-sa
-      nodeSelector:
-        type: pi
-      containers:
-        - name: backup
-          image: registry.local/canopy-backup:latest
-          imagePullPolicy: Always # TODO: Remove once image is stable
-          ports:
-            - containerPort: 5230
-          env:
-            # Require by ORACLE S3 Compatibility layer
-            - name: AWS_REQUEST_CHECKSUM_CALCULATION
-              value: WHEN_REQUIRED
-          envFrom:
-            - secretRef:
-                name: backup
-          volumeMounts:
+      template:
+        metadata:
+          labels:
+            app: backup
+        spec:
+          serviceAccountName: backup-sa
+          nodeSelector:
+            type: pi
+          restartPolicy: OnFailure
+          containers:
+            - name: backup
+              image: registry.local/canopy-backup:latest
+              imagePullPolicy: Always # TODO: Remove once image is stable
+              env:
+                # Require by ORACLE S3 Compatibility layer
+                - name: AWS_REQUEST_CHECKSUM_CALCULATION
+                  value: WHEN_REQUIRED
+              envFrom:
+                - secretRef:
+                    name: backup
+              volumeMounts:
+                - name: data
+                  mountPath: /root/.canopy
+                  subPath: test-1
+          volumes:
             - name: data
-              mountPath: /root/.canopy
-              subPath: test-1
-      volumes:
-        - name: data
-          persistentVolumeClaim:
-            claimName: test
+              persistentVolumeClaim:
+                claimName: test
 ---
 apiVersion: v1
 kind: ServiceAccount

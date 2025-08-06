@@ -7,13 +7,12 @@ import (
 
 // Config represents the configuration for the backup process.
 type Config struct {
-	CronSchedule string
-	Deployment   string
-	Namespace    string
-	SourcePath   string
-	BackupKey    string
-	BackupPath   string
-	S3           S3Config
+	Deployment string
+	Namespace  string
+	SourcePath string
+	BackupKey  string
+	BackupPath string
+	S3         S3Config
 }
 
 // Validate checks if the configuration is valid.
@@ -62,12 +61,11 @@ func (s S3Config) Validate() error {
 // LoadConfig loads the configuration from environment variables.
 func LoadConfig() (*Config, error) {
 	return &Config{
-		CronSchedule: getenv("CRON_SCHEDULE", "0 */6 * * *"),
-		Deployment:   getenv("DEPLOYMENT", ""),
-		Namespace:    getenv("NAMESPACE", ""),
-		SourcePath:   getenv("SOURCE_PATH", ""),
-		BackupKey:    getenv("BACKUP_KEY", ""),
-		BackupPath:   getenv("BACKUP_PATH", "/backup"),
+		Deployment: getenv("DEPLOYMENT", ""),
+		Namespace:  getenv("NAMESPACE", ""),
+		SourcePath: getenv("SOURCE_PATH", ""),
+		BackupKey:  getenv("BACKUP_KEY", ""),
+		BackupPath: getenv("BACKUP_PATH", "/backup"),
 		S3: S3Config{
 			AccessKey:       getenv("S3_ACCESS_KEY", ""),
 			SecretAccessKey: getenv("S3_SECRET_ACCESS_KEY", ""),

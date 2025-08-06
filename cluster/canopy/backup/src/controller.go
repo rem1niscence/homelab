@@ -14,6 +14,7 @@ import (
 	"k8s.io/client-go/rest"
 )
 
+// GetClientSet returns a Kubernetes clientset for the current cluster
 func GetClientSet() (*kubernetes.Clientset, error) {
 	config, err := rest.InClusterConfig()
 	if err != nil {
@@ -26,6 +27,7 @@ func GetClientSet() (*kubernetes.Clientset, error) {
 	return clientConfig, nil
 }
 
+// Controller represents a Kubernetes controller for managing deployment scaling
 type Controller struct {
 	Client       *kubernetes.Clientset
 	Logger       *slog.Logger
@@ -34,6 +36,7 @@ type Controller struct {
 	PollInterval time.Duration
 }
 
+// NewController creates a new Kubernetes controller
 func NewController(client *kubernetes.Clientset, logger *slog.Logger, config *Config) *Controller {
 	return &Controller{
 		Client:       client,
@@ -44,10 +47,12 @@ func NewController(client *kubernetes.Clientset, logger *slog.Logger, config *Co
 	}
 }
 
+// GetDeployment retrieves the deployment from Kubernetes.
 func (c *Controller) GetDeployment(ctx context.Context) (*appsv1.Deployment, error) {
 	return c.Client.AppsV1().Deployments(c.Config.Namespace).Get(ctx, c.Config.Deployment, v1.GetOptions{})
 }
 
+// ScaleDeployment scales the deployment to the desired number of replicas
 func (c *Controller) ScaleDeployment(ctx context.Context, scale int) error {
 	scaleConfig := &autoscalingv1.Scale{
 		ObjectMeta: v1.ObjectMeta{
@@ -66,6 +71,7 @@ func (c *Controller) ScaleDeployment(ctx context.Context, scale int) error {
 	return nil
 }
 
+// WaitForScaling waits for the deployment to scale to the desired number of replicas
 func (c *Controller) WaitForScaling(ctx context.Context, wanted int) error {
 	return wait.PollUntilContextTimeout(ctx, c.PollInterval, c.PollTimeout, false,
 		func(ctx context.Context) (done bool, err error) {

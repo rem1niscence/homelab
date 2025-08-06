@@ -5,18 +5,51 @@ import (
 	"os"
 )
 
+type S3Config struct {
+	AccessKey       string
+	SecretAccessKey string
+	Region          string
+	Endpoint        string
+	Bucket          string
+}
+
+func (s S3Config) Validate() error {
+	if s.AccessKey == "" {
+		return errors.New("S3_ACCESS_KEY is required")
+	}
+	if s.SecretAccessKey == "" {
+		return errors.New("S3_SECRET_ACCESS_KEY is required")
+	}
+	if s.Region == "" {
+		return errors.New("S3_REGION is required")
+	}
+	if s.Endpoint == "" {
+		return errors.New("S3_ENDPOINT is required")
+	}
+	if s.Bucket == "" {
+		return errors.New("S3_BUCKET is required")
+	}
+	return nil
+}
+
 type Config struct {
 	CronSchedule string
 	CanopyPath   string
-	S3Path       string
 	DBFolderName string
 	Deployment   string
 	Namespace    string
+	S3           S3Config
 }
 
 func (c Config) Validate() error {
-	if c.S3Path == "" {
-		return errors.New("S3_STORAGE_PATH is required")
+	if c.Deployment == "" {
+		return errors.New("DEPLOYMENT is required")
+	}
+	if c.Namespace == "" {
+		return errors.New("NAMESPACE is required")
+	}
+	if err := c.S3.Validate(); err != nil {
+		return err
 	}
 	return nil
 }
@@ -26,9 +59,15 @@ func LoadConfig() (*Config, error) {
 		CronSchedule: getenv("CRON_SCHEDULE", "0 */6 * * *"),
 		CanopyPath:   getenv("CANOPY_PATH", "/root/.canopy"),
 		DBFolderName: getenv("DB_FOLDER_NAME", "canopy"),
-		S3Path:       getenv("S3_STORAGE_PATH", ""),
 		Deployment:   getenv("DEPLOYMENT", ""),
 		Namespace:    getenv("NAMESPACE", ""),
+		S3: S3Config{
+			AccessKey:       getenv("S3_ACCESS_KEY", ""),
+			SecretAccessKey: getenv("S3_SECRET_ACCESS_KEY", ""),
+			Region:          getenv("S3_REGION", ""),
+			Endpoint:        getenv("S3_ENDPOINT", ""),
+			Bucket:          getenv("S3_BUCKET", ""),
+		},
 	}, nil
 }
 

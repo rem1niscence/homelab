@@ -7,9 +7,9 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   namespace: canopy
-  name: keystore-init-script
+  name: scripts
 data:
-  init.sh: |
+  keystore-init.sh: |
     #!/bin/bash
     TARGET_FILE="/root/.canopy/keystore.json"
     SOURCE_FILE="/tmp/keystore/keystore.json"
@@ -20,4 +20,23 @@ data:
       echo "Copy completed"
     else
       echo "keystore.json already exists at $TARGET_FILE, skipping copy"
+    fi
+  height.sh: |
+    #!/bin/sh
+    HEIGHT_FILE="/root/.canopy/height.txt"
+
+    if [ -z "$PORT" ]; then
+      echo "Error: PORT environment variable is not set"
+      exit 1
+    fi
+
+    echo "Querying height from http://localhost:$PORT/v1/query/height"
+    HEIGHT=$(curl -X POST "http://localhost:$PORT/v1/query/height" 2>/dev/null)
+
+    if [ $? -eq 0 ] && [ ! -z "$HEIGHT" ]; then
+      echo "$HEIGHT" > "$HEIGHT_FILE"
+      echo "Height $HEIGHT saved to $HEIGHT_FILE"
+    else
+      echo "Failed to query height or empty response"
+      exit 1
     fi

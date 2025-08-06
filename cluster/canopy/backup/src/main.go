@@ -10,16 +10,11 @@ import (
 	"time"
 )
 
-type app struct {
-	controller *Controller
-	backup     *IBackup
-}
-
 func main() {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
-	logger.Info("starting backup controller at", slog.String("time", time.Now().String()))
+	logger.Info("starting backup controller")
 
-	controller, backup, err := Initialize(logger)
+	controller, uploader, err := Initialize(logger)
 	if err != nil {
 		logger.Error("failed to initialize", slog.String("error", err.Error()))
 		os.Exit(1)
@@ -29,7 +24,7 @@ func main() {
 	defer cancel()
 
 	err = ScaleDeployment(ctx, controller, func() error {
-		return PerformBackup(ctx, controller.Config, logger, backup)
+		return PerformBackup(ctx, controller.Config, logger, uploader)
 	})
 	if err != nil {
 		logger.Error("failed to run scale deployment operation", slog.String("error", err.Error()))
@@ -40,7 +35,7 @@ func main() {
 }
 
 // Initialize initializes the necessary components for the backup process.
-func Initialize(logger *slog.Logger) (*Controller, IBackup, error) {
+func Initialize(logger *slog.Logger) (*Controller, Uploader, error) {
 	client, err := GetClientSet()
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to get client set: %w", err)
@@ -60,12 +55,12 @@ func Initialize(logger *slog.Logger) (*Controller, IBackup, error) {
 	controller := NewController(client, logger, config)
 
 	s3 := config.S3
-	backup, err := NewBackupS3(s3.AccessKey, s3.SecretAccessKey, s3.Region, s3.Endpoint, s3.Bucket)
+	uploader, err := NewCustomS3Uploader(s3.AccessKey, s3.SecretAccessKey, s3.Region, s3.Endpoint, s3.Bucket)
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed to create backup: %w", err)
+		return nil, nil, fmt.Errorf("failed to create uploader: %w", err)
 	}
 
-	return controller, backup, nil
+	return controller, uploader, nil
 }
 
 func ScaleDeployment(ctx context.Context, controller *Controller, fn func() error) error {
@@ -96,20 +91,12 @@ func ScaleDeployment(ctx context.Context, controller *Controller, fn func() erro
 	return err
 }
 
-func PerformBackup(ctx context.Context, config *Config, logger *slog.Logger, backup IBackup) error {
+func PerformBackup(ctx context.Context, config *Config, logger *slog.Logger, uploader Uploader) error {
 	logger.Info("starting canopy backup")
 
+	// get backup file path
 	fileName := fmt.Sprintf("%s.tar.gz", config.BackupKey)
 	backupFile := filepath.Join(config.BackupPath, fileName)
-
-	defer func() {
-		if _, err := os.Stat(backupFile); err == nil {
-			logger.Info("deleting backup")
-			if err := os.Remove(backupFile); err != nil {
-				logger.Error("failed to delete existing backup", slog.String("error", err.Error()))
-			}
-		}
-	}()
 
 	// check if source path exists
 	if _, err := os.Stat(config.SourcePath); os.IsNotExist(err) {
@@ -123,19 +110,27 @@ func PerformBackup(ctx context.Context, config *Config, logger *slog.Logger, bac
 		}
 	}
 
+	now := time.Now()
 	logger.Info("started compressing backup")
-	if err := CompressFolder(config.SourcePath, backupFile); err != nil {
+	// compress backup
+	if err := CompressFolderCMD(config.SourcePath, backupFile); err != nil {
 		return fmt.Errorf("compression failed: %w", err)
 	}
-	logger.Info("finished compressing backup")
+	// get backup file size for logging
+	fileInfo, err := os.Stat(backupFile)
+	if err != nil {
+		return fmt.Errorf("failed to get backup file info: %w", err)
+	}
+	logger.Info("finished compressing backup",
+		slog.String("took", time.Since(now).String()), slog.Int64("size", fileInfo.Size()))
 
+	// upload backup file
 	logger.Info("started uploading file to external storage")
-	if err := backup.Backup(ctx, backupFile, config.BackupKey); err != nil {
+	now = time.Now()
+	if err := uploader.UploadFS(ctx, backupFile, config.BackupKey); err != nil {
 		return fmt.Errorf("upload failed: %w", err)
 	}
-	logger.Info("finished uploading file to external storage")
-
-	logger.Info("deleting backup successfully")
+	logger.Info("finished uploading file to external storage", slog.String("took", time.Since(now).String()))
 
 	return nil
 }

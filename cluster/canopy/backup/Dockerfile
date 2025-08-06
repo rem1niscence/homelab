@@ -12,6 +12,8 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o backup-controller .
 
 FROM alpine:latest
 
+RUN apk add --no-cache tar pigz ca-certificates
+
 COPY --from=builder /app/backup-controller /usr/local/bin/backup-controller
 
 CMD ["backup-controller"]

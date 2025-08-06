@@ -5,16 +5,18 @@ import (
 	"os"
 )
 
+// Config represents the configuration for the backup process.
 type Config struct {
 	CronSchedule string
+	Deployment   string
+	Namespace    string
 	SourcePath   string
 	BackupKey    string
 	BackupPath   string
-	Deployment   string
-	Namespace    string
 	S3           S3Config
 }
 
+// Validate checks if the configuration is valid.
 func (c Config) Validate() error {
 	if c.Deployment == "" {
 		return errors.New("DEPLOYMENT is required")
@@ -28,6 +30,7 @@ func (c Config) Validate() error {
 	return nil
 }
 
+// S3Config represents the configuration for the S3 backup process.
 type S3Config struct {
 	AccessKey       string
 	SecretAccessKey string
@@ -36,6 +39,7 @@ type S3Config struct {
 	Bucket          string
 }
 
+// Validate checks if the S3 configuration is valid.
 func (s S3Config) Validate() error {
 	if s.AccessKey == "" {
 		return errors.New("S3_ACCESS_KEY is required")
@@ -55,14 +59,15 @@ func (s S3Config) Validate() error {
 	return nil
 }
 
+// LoadConfig loads the configuration from environment variables.
 func LoadConfig() (*Config, error) {
 	return &Config{
 		CronSchedule: getenv("CRON_SCHEDULE", "0 */6 * * *"),
-		SourcePath:   getenv("SOURCE_PATH", "/root/.canopy/canopy"),
-		BackupKey:    getenv("BACKUP_KEY", "canopy_backup.tar.gz"),
-		BackupPath:   getenv("BACKUP_PATH", "/backup"),
 		Deployment:   getenv("DEPLOYMENT", ""),
 		Namespace:    getenv("NAMESPACE", ""),
+		SourcePath:   getenv("SOURCE_PATH", ""),
+		BackupKey:    getenv("BACKUP_KEY", ""),
+		BackupPath:   getenv("BACKUP_PATH", "/backup"),
 		S3: S3Config{
 			AccessKey:       getenv("S3_ACCESS_KEY", ""),
 			SecretAccessKey: getenv("S3_SECRET_ACCESS_KEY", ""),

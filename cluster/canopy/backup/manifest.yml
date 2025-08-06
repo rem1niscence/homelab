@@ -58,7 +58,7 @@ metadata:
 rules:
   - apiGroups: ["apps"]
     resources: ["deployments", "deployments/scale"]
-    verbs: ["get", "patch", update]
+    verbs: ["get", "patch", "update"]
   - apiGroups: [""]
     resources: ["pods"]
     verbs: ["list", "watch"]

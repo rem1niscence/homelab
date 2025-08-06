@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 
@@ -17,20 +18,20 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
-var _ IBackup = BackupS3{}
+var _ Uploader = UploadS3{}
 
-type IBackup interface {
-	Backup(ctx context.Context, filePath string, key string) error
+type Uploader interface {
+	UploadFS(ctx context.Context, filePath string, key string) error
 }
 
-type BackupS3 struct {
+type UploadS3 struct {
 	s3Client *s3.Client
 	Bucket   string
 	Key      string
 }
 
-// NewBackupS3 creates a new BackupS3 instance with the given parameters for a custom S3-compatible storage.
-func NewBackupS3(accessKey, secretKey, region, endpoint, bucket string) (*BackupS3, error) {
+// NewCustomS3Uploader creates a new S3 client with the given parameters for a custom S3-compatible storage.
+func NewCustomS3Uploader(accessKey, secretKey, region, endpoint, bucket string) (*UploadS3, error) {
 	cfg, err := config.LoadDefaultConfig(context.TODO(),
 		config.WithRegion(region),
 		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(
@@ -43,7 +44,7 @@ func NewBackupS3(accessKey, secretKey, region, endpoint, bucket string) (*Backup
 		return nil, err
 	}
 
-	return &BackupS3{
+	return &UploadS3{
 		s3Client: s3.NewFromConfig(cfg, func(o *s3.Options) {
 			o.BaseEndpoint = aws.String(endpoint)
 			o.UsePathStyle = true
@@ -55,7 +56,7 @@ func NewBackupS3(accessKey, secretKey, region, endpoint, bucket string) (*Backup
 	}, nil
 }
 
-func (b BackupS3) Backup(ctx context.Context, filePath, key string) error {
+func (b UploadS3) UploadFS(ctx context.Context, filePath, key string) error {
 	file, err := os.Open(filePath)
 	if err != nil {
 		return err
@@ -84,6 +85,7 @@ func CompressFolder(sourceDir, targetFile string) error {
 	tarWriter := tar.NewWriter(gzWriter)
 	defer tarWriter.Close()
 
+	baseName := filepath.Base(sourceDir)
 	return filepath.Walk(sourceDir, func(filePath string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -99,7 +101,7 @@ func CompressFolder(sourceDir, targetFile string) error {
 			return fmt.Errorf("failed to get relative path: %w", err)
 		}
 
-		header.Name = strings.ReplaceAll(relPath, "\\", "/")
+		header.Name = filepath.Join(baseName, strings.ReplaceAll(relPath, "\\", "/"))
 		if err := tarWriter.WriteHeader(header); err != nil {
 			return fmt.Errorf("failed to write tar header: %w", err)
 		}
@@ -117,4 +119,64 @@ func CompressFolder(sourceDir, targetFile string) error {
 		}
 		return nil
 	})
+}
+
+// CompressFolderCMD compresses a folder into a tar.gz file using tar + pigz
+// requires pigz to be installed on the system
+func CompressFolderCMD(sourceDir, targetFile string) error {
+	// get absolute paths
+	absSource, err := filepath.Abs(sourceDir)
+	if err != nil {
+		return fmt.Errorf("failed to get absolute source path: %w", err)
+	}
+	absTarget, err := filepath.Abs(targetFile)
+	if err != nil {
+		return fmt.Errorf("failed to get absolute target path: %w", err)
+	}
+	parentDir := filepath.Dir(absSource)
+	folderName := filepath.Base(absSource)
+
+	// construct the commands
+	cmd := exec.Command("tar", "-cv", folderName)
+	cmd.Dir = parentDir
+
+	pigzCmd := exec.Command("pigz")
+
+	// create the pipeline
+	pipe, err := cmd.StdoutPipe()
+	if err != nil {
+		return fmt.Errorf("failed to create pipe: %w", err)
+	}
+
+	pigzCmd.Stdin = pipe
+	outputFile, err := os.Create(absTarget)
+	if err != nil {
+		return fmt.Errorf("failed to create output file: %w", err)
+	}
+	defer outputFile.Close()
+
+	pigzCmd.Stdout = outputFile
+	pigzCmd.Stderr = os.Stderr
+
+	// start both commands
+	if err := pigzCmd.Start(); err != nil {
+		return fmt.Errorf("failed to start pigz: %w", err)
+	}
+
+	if err := cmd.Start(); err != nil {
+		return fmt.Errorf("failed to start tar: %w", err)
+	}
+
+	// wait for completion
+	if err := cmd.Wait(); err != nil {
+		return fmt.Errorf("tar command failed: %w", err)
+	}
+
+	pipe.Close()
+
+	if err := pigzCmd.Wait(); err != nil {
+		return fmt.Errorf("pigz command failed: %w", err)
+	}
+
+	return nil
 }

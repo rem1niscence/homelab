@@ -1,0 +1,293 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: canopy
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: canopy
+  name: test-1
+  labels:
+    app: test-1
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 20m"
+    keel.sh/trigger: poll
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: test-1
+  template:
+    metadata:
+      labels:
+        app: test-1
+    spec:
+      nodeSelector:
+        node.canopy: "true"
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: canopy.node.type
+                    operator: In
+                    values:
+                      - remote
+            - weight: 50
+              preference:
+                matchExpressions:
+                  - key: canopy.node.type
+                    operator: In
+                    values:
+                      - local
+      containers:
+        - name: canopy
+          image: canopynetwork/canopy:latest
+          args: ["start"]
+          ports:
+            - containerPort: 50000
+            - containerPort: 50001
+            - containerPort: 50002
+            - containerPort: 50003
+            - containerPort: 50004
+            - containerPort: 9001
+            - containerPort: 9090
+          volumeMounts:
+            - name: data
+              mountPath: /root/.canopy
+              subPath: test-1
+            - name: config
+              mountPath: /root/.canopy/config.json
+              subPath: config.json
+            - name: config
+              mountPath: /root/.canopy/genesis.json
+              subPath: genesis.json
+            - name: config
+              mountPath: /root/.canopy/keystore.json
+              subPath: keystore.json
+            - name: config
+              mountPath: /root/.canopy/validator_key.json
+              subPath: validator_key.json
+      volumes:
+        - name: config
+          configMap:
+            name: test
+            items:
+              - key: config-1
+                path: config.json
+              - key: genesis
+                path: genesis.json
+              - key: keystore
+                path: keystore.json
+              - key: validator-key-1
+                path: validator_key.json
+        - name: data
+          persistentVolumeClaim:
+            claimName: test
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: canopy
+  name: test-2
+  labels:
+    app: test-2
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 20m"
+    keel.sh/trigger: poll
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: test-2
+  template:
+    metadata:
+      labels:
+        app: test-2
+    spec:
+      nodeSelector:
+        node.canopy: "true"
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: canopy.node.type
+                    operator: In
+                    values:
+                      - remote
+            - weight: 50
+              preference:
+                matchExpressions:
+                  - key: canopy.node.type
+                    operator: In
+                    values:
+                      - local
+      containers:
+        - name: canopy
+          image: canopynetwork/canopy:latest
+          args: ["start"]
+          ports:
+            - containerPort: 50000
+            - containerPort: 50001
+            - containerPort: 50002
+            - containerPort: 50003
+            - containerPort: 50004
+            - containerPort: 9002
+            - containerPort: 9090
+          volumeMounts:
+            - name: data
+              mountPath: /root/.canopy
+              subPath: test-2
+            - name: config
+              mountPath: /root/.canopy/config.json
+              subPath: config.json
+            - name: config
+              mountPath: /root/.canopy/genesis.json
+              subPath: genesis.json
+            - name: config
+              mountPath: /root/.canopy/keystore.json
+              subPath: keystore.json
+            - name: config
+              mountPath: /root/.canopy/validator_key.json
+              subPath: validator_key.json
+      volumes:
+        - name: config
+          configMap:
+            name: test
+            items:
+              - key: config-2
+                path: config.json
+              - key: genesis
+                path: genesis.json
+              - key: keystore
+                path: keystore.json
+              - key: validator-key-2
+                path: validator_key.json
+        - name: data
+          persistentVolumeClaim:
+            claimName: test
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: canopy
+  name: test
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1G
+  storageClassName: longhorn-remote
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: canopy
+  name: test-1
+spec:
+  ports:
+    - port: 50000
+      targetPort: 50000
+      name: wallet
+    - port: 50001
+      targetPort: 50001
+      name: explorer
+    - port: 50002
+      targetPort: 50002
+      name: rpc
+    - port: 50003
+      targetPort: 50003
+      name: admin-rpc
+    - port: 9001
+      targetPort: 9001
+      name: external
+    - port: 9090
+      targetPort: 9090
+      name: metrics
+  selector:
+    app: test-1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: canopy
+  name: test-2
+spec:
+  ports:
+    - port: 50000
+      targetPort: 50000
+      name: wallet
+    - port: 50001
+      targetPort: 50001
+      name: explorer
+    - port: 50002
+      targetPort: 50002
+      name: rpc
+    - port: 50003
+      targetPort: 50003
+      name: admin-rpc
+    - port: 9001
+      targetPort: 9001
+      name: external
+    - port: 9090
+      targetPort: 9090
+      name: metrics
+  selector:
+    app: test-2
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  namespace: canopy
+  name: test
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host("test-wallet.{{DOMAIN}}")
+      kind: Rule
+      services:
+        - name: test-1
+          port: 50000
+    - match: Host("test-explorer.{{DOMAIN}}")
+      kind: Rule
+      services:
+        - name: test-1
+          port: 50001
+    - match: Host("test-rpc-canopy.{{DOMAIN}}")
+      kind: Rule
+      services:
+        - name: test-1
+          port: 50002
+    - match: Host("test-admin-rpc.{{DOMAIN}}")
+      kind: Rule
+      services:
+        - name: test-1
+          port: 50003
+#     - match: Host("wallet-2.{{DOMAIN}}")
+#       kind: Rule
+#       services:
+#         - name: test-2
+#           port: 40000
+#     - match: Host("explorer-2.{{DOMAIN}}")
+#       kind: Rule
+#       services:
+#         - name: test-2
+#           port: 40001
+#     - match: Host("rpc-test-2-canopy.{{DOMAIN}}")
+#       kind: Rule
+#       services:
+#         - name: test-2
+#           port: 40002
+#     - match: Host("admin-rpc-test-2-canopy.{{DOMAIN}}")
+#       kind: Rule
+#       services:
+#         - name: test-2
+#           port: 40003

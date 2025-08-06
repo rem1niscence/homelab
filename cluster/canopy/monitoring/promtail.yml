@@ -1,12 +1,12 @@
 daemonset:
-  enabled: false
+  enabled: true
 
 nodeSelector:
-  type: "secondary"
+  canopy: "promtail"
 
-deployment:
-  enabled: true
-  replicas: 1
+# deployment:
+#   enabled: true
+#   replicas: 1
 
 config:
   logLevel: info

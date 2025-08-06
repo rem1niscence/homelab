@@ -19,7 +19,8 @@ server:
             - targets:
                 - node-1.canopy:9090
                 - node-2.canopy:9090
-
+                - test-1.canopy:9090
+                - test-2.canopy:9090
         - job_name: "blackbox"
           metrics_path: "/metrics"
           static_configs:

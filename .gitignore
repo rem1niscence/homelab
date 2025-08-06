@@ -6,7 +6,7 @@
 acme/
 
 cluster/cloudflare-tunnel/*.json
-cluster/canopy/config.yml
+cluster/canopy/nodes/main/config.yml
 cluster/canopy/config-files
 
 *.config*
@@ -14,3 +14,7 @@ cluster/canopy/config-files
 .DS_STORE
 
 copypasta.txt
+
+.claude
+
+tmp

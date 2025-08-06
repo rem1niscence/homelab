@@ -1,4 +1,4 @@
-module github.com/reminiscence/homelab/cluster/canopy/backup
+module github.com/reminiscence/homelab/cluster/canopy/scripts
 
 go 1.24.0
 

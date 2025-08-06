@@ -1,4 +1,4 @@
-package main
+package kubernetes
 
 import (
 	"context"
@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"time"
 
+	"github.com/reminiscence/homelab/cluster/canopy/scripts/pkg/config"
 	appsv1 "k8s.io/api/apps/v1"
 	autoscalingv1 "k8s.io/api/autoscaling/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -31,13 +32,13 @@ func GetClientSet() (*kubernetes.Clientset, error) {
 type Controller struct {
 	Client       *kubernetes.Clientset
 	Logger       *slog.Logger
-	Config       *Config
+	Config       *config.Config
 	PollTimeout  time.Duration
 	PollInterval time.Duration
 }
 
 // NewController creates a new Kubernetes controller
-func NewController(client *kubernetes.Clientset, logger *slog.Logger, config *Config) *Controller {
+func NewController(client *kubernetes.Clientset, logger *slog.Logger, config *config.Config) *Controller {
 	return &Controller{
 		Client:       client,
 		Logger:       logger,

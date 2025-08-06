@@ -1,3 +1,4 @@
+# To manually create a job out of this: kubectl create job backup-manual --from=cronjob/backup
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -22,7 +23,7 @@ spec:
         spec:
           serviceAccountName: backup-sa
           nodeSelector:
-            type: pi
+            type: secondary
           restartPolicy: OnFailure
           containers:
             - name: backup
@@ -38,11 +39,11 @@ spec:
               volumeMounts:
                 - name: data
                   mountPath: /root/.canopy
-                  subPath: test-1
+                  subPath: node-1
           volumes:
             - name: data
               persistentVolumeClaim:
-                claimName: test
+                claimName: node-2
 ---
 apiVersion: v1
 kind: ServiceAccount

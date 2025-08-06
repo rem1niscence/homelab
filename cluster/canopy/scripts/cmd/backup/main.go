@@ -8,11 +8,25 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/reminiscence/homelab/cluster/canopy/scripts/pkg/config"
+	"github.com/reminiscence/homelab/cluster/canopy/scripts/pkg/kubernetes"
+	"github.com/reminiscence/homelab/cluster/canopy/scripts/pkg/storage"
 )
 
 func main() {
+	now := time.Now()
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 	logger.Info("starting backup controller")
+
+	var err error
+
+	defer func() {
+		if err != nil {
+			logger.Error("failed to run backup ❌",
+				slog.String("error", err.Error()), slog.String("took", time.Since(now).String()))
+		}
+	}()
 
 	controller, uploader, err := Initialize(logger)
 	if err != nil {
@@ -31,17 +45,17 @@ func main() {
 		os.Exit(1)
 	}
 
-	logger.Info("finish backing up canopy volume ✅")
+	logger.Info("finish backing up canopy volume ✅", slog.String("took", time.Since(now).String()))
 }
 
 // Initialize initializes the necessary components for the backup process.
-func Initialize(logger *slog.Logger) (*Controller, Uploader, error) {
-	client, err := GetClientSet()
+func Initialize(logger *slog.Logger) (*kubernetes.Controller, storage.Uploader, error) {
+	client, err := kubernetes.GetClientSet()
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to get client set: %w", err)
 	}
 
-	config, err := LoadConfig()
+	config, err := config.LoadConfig()
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to get config: %w", err)
 	}
@@ -52,10 +66,10 @@ func Initialize(logger *slog.Logger) (*Controller, Uploader, error) {
 		return nil, nil, fmt.Errorf("config validation failed: %w", err)
 	}
 
-	controller := NewController(client, logger, config)
+	controller := kubernetes.NewController(client, logger, config)
 
 	s3 := config.S3
-	uploader, err := NewCustomS3Uploader(s3.AccessKey, s3.SecretAccessKey, s3.Region, s3.Endpoint, s3.Bucket)
+	uploader, err := storage.NewCustomS3Uploader(s3.AccessKey, s3.SecretAccessKey, s3.Region, s3.Endpoint, s3.Bucket)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to create uploader: %w", err)
 	}
@@ -63,7 +77,7 @@ func Initialize(logger *slog.Logger) (*Controller, Uploader, error) {
 	return controller, uploader, nil
 }
 
-func ScaleDeployment(ctx context.Context, controller *Controller, fn func() error) error {
+func ScaleDeployment(ctx context.Context, controller *kubernetes.Controller, fn func() error) error {
 	logger := controller.Logger
 	config := controller.Config
 
@@ -91,7 +105,7 @@ func ScaleDeployment(ctx context.Context, controller *Controller, fn func() erro
 	return err
 }
 
-func PerformBackup(ctx context.Context, config *Config, logger *slog.Logger, uploader Uploader) error {
+func PerformBackup(ctx context.Context, config *config.Config, logger *slog.Logger, uploader storage.Uploader) error {
 	logger.Info("starting canopy backup")
 
 	// get backup file path
@@ -113,7 +127,7 @@ func PerformBackup(ctx context.Context, config *Config, logger *slog.Logger, upl
 	now := time.Now()
 	logger.Info("started compressing backup")
 	// compress backup
-	if err := CompressFolderCMD(config.SourcePath, backupFile); err != nil {
+	if err := storage.CompressFolderCMD(config.SourcePath, backupFile); err != nil {
 		return fmt.Errorf("compression failed: %w", err)
 	}
 	// get backup file size for logging

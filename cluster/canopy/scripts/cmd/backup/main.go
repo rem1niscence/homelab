@@ -69,7 +69,7 @@ func Initialize(logger *slog.Logger) (*kubernetes.Controller, storage.Uploader, 
 	controller := kubernetes.NewController(client, logger, config)
 
 	s3 := config.S3
-	uploader, err := storage.NewCustomS3Uploader(s3.AccessKey, s3.SecretAccessKey, s3.Region, s3.Endpoint, s3.Bucket)
+	uploader, err := storage.NewCustomS3StorageManager(s3.AccessKey, s3.SecretAccessKey, s3.Region, s3.Endpoint, s3.Bucket)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to create uploader: %w", err)
 	}
@@ -141,7 +141,16 @@ func PerformBackup(ctx context.Context, config *config.Config, logger *slog.Logg
 	// upload backup file
 	logger.Info("started uploading file to external storage")
 	now = time.Now()
-	if err := uploader.UploadFS(ctx, backupFile, config.BackupKey); err != nil {
+
+	// open backup file
+	file, err := os.Open(backupFile)
+	if err != nil {
+		return fmt.Errorf("failed to open backup file for upload: %w", err)
+	}
+	defer file.Close()
+
+	// upload backup file
+	if err := uploader.Upload(ctx, file, config.BackupKey); err != nil {
 		return fmt.Errorf("upload failed: %w", err)
 	}
 	logger.Info("finished uploading file to external storage", slog.String("took", time.Since(now).String()))

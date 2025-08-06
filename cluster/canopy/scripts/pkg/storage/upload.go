@@ -2,7 +2,7 @@ package storage
 
 import (
 	"context"
-	"os"
+	"io"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	v4 "github.com/aws/aws-sdk-go-v2/aws/signer/v4"
@@ -11,20 +11,29 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
-var _ Uploader = UploadS3{}
+var _ StorageManager = (*S3StorageManager)(nil)
 
 type Uploader interface {
-	UploadFS(ctx context.Context, filePath string, key string) error
+	Upload(ctx context.Context, reader io.Reader, key string) error
 }
 
-type UploadS3 struct {
+type Downloader interface {
+	Download(ctx context.Context, location string) (io.ReadCloser, error)
+}
+
+type StorageManager interface {
+	Uploader
+	Downloader
+}
+
+type S3StorageManager struct {
 	s3Client *s3.Client
 	Bucket   string
 	Key      string
 }
 
-// NewCustomS3Uploader creates a new S3 client with the given parameters for a custom S3-compatible storage.
-func NewCustomS3Uploader(accessKey, secretKey, region, endpoint, bucket string) (*UploadS3, error) {
+// NewCustomS3StorageManager creates a new S3 client with the given parameters for a custom S3-compatible storage.
+func NewCustomS3StorageManager(accessKey, secretKey, region, endpoint, bucket string) (*S3StorageManager, error) {
 	cfg, err := config.LoadDefaultConfig(context.TODO(),
 		config.WithRegion(region),
 		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(
@@ -37,7 +46,7 @@ func NewCustomS3Uploader(accessKey, secretKey, region, endpoint, bucket string) 
 		return nil, err
 	}
 
-	return &UploadS3{
+	return &S3StorageManager{
 		s3Client: s3.NewFromConfig(cfg, func(o *s3.Options) {
 			o.BaseEndpoint = aws.String(endpoint)
 			o.UsePathStyle = true
@@ -49,18 +58,24 @@ func NewCustomS3Uploader(accessKey, secretKey, region, endpoint, bucket string) 
 	}, nil
 }
 
-func (b UploadS3) UploadFS(ctx context.Context, filePath, key string) error {
-	file, err := os.Open(filePath)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	_, err = b.s3Client.PutObject(ctx, &s3.PutObjectInput{
-		Bucket: aws.String(b.Bucket),
+func (s *S3StorageManager) Upload(ctx context.Context, reader io.Reader, key string) error {
+	_, err := s.s3Client.PutObject(ctx, &s3.PutObjectInput{
+		Bucket: aws.String(s.Bucket),
 		Key:    aws.String(key),
-		Body:   file,
+		Body:   reader,
 	})
 
 	return err
+}
+
+func (s *S3StorageManager) Download(ctx context.Context, location string) (io.ReadCloser, error) {
+	result, err := s.s3Client.GetObject(ctx, &s3.GetObjectInput{
+		Bucket: aws.String(s.Bucket),
+		Key:    aws.String(location),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return result.Body, nil
 }

@@ -9,7 +9,6 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/reminiscence/homelab/cluster/canopy/scripts/pkg/config"
 	"github.com/reminiscence/homelab/cluster/canopy/scripts/pkg/kubernetes"
 	"github.com/reminiscence/homelab/cluster/canopy/scripts/pkg/storage"
 )
@@ -35,7 +34,7 @@ func main() {
 		}
 	}()
 
-	controller, uploader, err := Initialize(logger)
+	config, controller, uploader, err := Initialize(logger)
 	if err != nil {
 		logger.Error("failed to initialize", slog.String("error", err.Error()))
 		os.Exit(1)
@@ -45,7 +44,7 @@ func main() {
 	defer cancel()
 
 	err = ScaleDeployment(ctx, controller, func() error {
-		return PerformBackup(ctx, controller.Config, logger, uploader)
+		return PerformBackup(ctx, config, logger, uploader)
 	})
 	if err != nil {
 		logger.Error("failed to run scale deployment operation", slog.String("error", err.Error()))
@@ -56,32 +55,32 @@ func main() {
 }
 
 // Initialize initializes the necessary components for the backup process.
-func Initialize(logger *slog.Logger) (*kubernetes.Controller, storage.Uploader, error) {
+func Initialize(logger *slog.Logger) (*BackupConfig, *kubernetes.Controller, storage.Uploader, error) {
 	client, err := kubernetes.GetClientSet()
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed to get client set: %w", err)
+		return nil, nil, nil, fmt.Errorf("failed to get client set: %w", err)
 	}
 
-	config, err := config.LoadBackupConfig()
+	config, err := LoadBackupConfig()
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed to get config: %w", err)
+		return nil, nil, nil, fmt.Errorf("failed to get config: %w", err)
 	}
 
 	// logger.Info("config loaded", slog.Any("config", config))
 
 	if err := config.Validate(); err != nil {
-		return nil, nil, fmt.Errorf("config validation failed: %w", err)
+		return nil, nil, nil, fmt.Errorf("config validation failed: %w", err)
 	}
 
-	controller := kubernetes.NewController(client, logger, config)
+	controller := kubernetes.NewController(client, logger, config.Controller)
 
 	s3 := config.S3
 	uploader, err := storage.NewCustomS3StorageManager(s3.AccessKey, s3.SecretAccessKey, s3.Region, s3.Endpoint, s3.Bucket)
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed to create uploader: %w", err)
+		return nil, nil, nil, fmt.Errorf("failed to create uploader: %w", err)
 	}
 
-	return controller, uploader, nil
+	return config, controller, uploader, nil
 }
 
 func ScaleDeployment(ctx context.Context, controller *kubernetes.Controller, fn func() error) error {
@@ -112,7 +111,7 @@ func ScaleDeployment(ctx context.Context, controller *kubernetes.Controller, fn 
 	return err
 }
 
-func PerformBackup(ctx context.Context, config *config.BackupConfig, logger *slog.Logger, uploader storage.Uploader) error {
+func PerformBackup(ctx context.Context, config *BackupConfig, logger *slog.Logger, uploader storage.Uploader) error {
 	logger.Info("starting canopy backup")
 
 	// create backup directory if it doesn't exist
@@ -147,7 +146,7 @@ func PerformBackup(ctx context.Context, config *config.BackupConfig, logger *slo
 }
 
 // prepareBackup handles the compression or file preparation logic for a backup item
-func prepareBackup(ctx context.Context, item config.BackupItem,
+func prepareBackup(ctx context.Context, item BackupItem,
 	sourcePath string, backupDir string, logger *slog.Logger) (*BackupResult, error) {
 	if item.Compress {
 		logger.Info("started compressing backup",

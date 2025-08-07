@@ -7,10 +7,13 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"runtime"
 	"time"
 
+	"github.com/reminiscence/homelab/cluster/canopy/scripts/internal/lifecycle"
 	"github.com/reminiscence/homelab/cluster/canopy/scripts/pkg/kubernetes"
 	"github.com/reminiscence/homelab/cluster/canopy/scripts/pkg/storage"
+	"golang.org/x/sync/errgroup"
 )
 
 // BackupResult holds the result of backup preparation
@@ -40,8 +43,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), config.GlobalTimeout)
 	defer cancel()
+
+	// add signal handling for graceful shutdown
+	ctx = lifecycle.GracefulShutdown(ctx, logger, cancel)
 
 	err = ScaleDeployment(ctx, controller, func() error {
 		return PerformBackup(ctx, config, logger, uploader)
@@ -51,7 +57,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	logger.Info("finish backing up canopy volume ✅", slog.String("took", time.Since(now).String()))
+	logger.Info("finished backing up canopy volume ✅", slog.String("took", time.Since(now).String()))
 }
 
 // Initialize initializes the necessary components for the backup process.
@@ -65,8 +71,6 @@ func Initialize(logger *slog.Logger) (*BackupConfig, *kubernetes.Controller, sto
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("failed to get config: %w", err)
 	}
-
-	// logger.Info("config loaded", slog.Any("config", config))
 
 	if err := config.Validate(); err != nil {
 		return nil, nil, nil, fmt.Errorf("config validation failed: %w", err)
@@ -100,11 +104,23 @@ func ScaleDeployment(ctx context.Context, controller *kubernetes.Controller, fn 
 		err = fmt.Errorf("failed to run operation: %w", err)
 	}
 
+	// always attempt to scale back up, even if main context is done
+	scaleUpCtx := ctx
+	if ctx.Err() != nil {
+		logger.Error("main context is done, creating new context for scale up operation",
+			slog.String("error", ctx.Err().Error()))
+
+		// create a new context with the poll timeout as limit
+		var cancel context.CancelFunc
+		scaleUpCtx, cancel = context.WithTimeout(context.Background(), controller.Config.PollTimeout)
+		defer cancel()
+	}
+
 	logger.Info("scaling up deployment", slog.String("deployment", config.Deployment))
-	if scaleErr := controller.ScaleDeployment(ctx, 1); scaleErr != nil {
+	if scaleErr := controller.ScaleDeployment(scaleUpCtx, 1); scaleErr != nil {
 		return errors.Join(err, fmt.Errorf("failed to scale up deployment: %w", scaleErr))
 	}
-	if scaleErr := controller.WaitForScaling(ctx, 1); scaleErr != nil {
+	if scaleErr := controller.WaitForScaling(scaleUpCtx, 1); scaleErr != nil {
 		return errors.Join(err, fmt.Errorf("failed to wait for scaling up deployment: %w", scaleErr))
 	}
 
@@ -121,28 +137,36 @@ func PerformBackup(ctx context.Context, config *BackupConfig, logger *slog.Logge
 		}
 	}
 
+	eg := errgroup.Group{}
+	eg.SetLimit(runtime.NumCPU())
+
 	// process each backup item
 	for i, item := range config.BackupItems {
-		logger.Info("processing backup item", slog.Int("item", i+1), slog.String("key", item.BackupKey))
+		i, item := i, item
+		eg.Go(func() error {
+			logger.Info("processing backup item", slog.Int("item", i+1), slog.String("key", item.BackupKey))
 
-		// prepare backup (compress or use source file directly)
-		result, err := prepareBackup(ctx, item, item.SourcePath, config.BackupPath, logger)
-		if err != nil {
-			return fmt.Errorf("failed to prepare backup for item %d: %w", i+1, err)
-		}
+			// prepare backup (compress or use source file directly)
+			result, err := prepareBackup(ctx, item, item.SourcePath, config.BackupPath, logger)
+			if err != nil {
+				return fmt.Errorf("failed to prepare backup for item %d: %w", i+1, err)
+			}
 
-		// skip if preparation indicated to skip this item
-		if result.Skipped {
-			continue
-		}
+			// skip if preparation indicated to skip this item
+			if result.Skipped {
+				return nil
+			}
 
-		// upload the prepared backup
-		if err := uploadBackup(ctx, result, item.BackupKey, uploader, logger); err != nil {
-			return fmt.Errorf("failed to upload backup for item %d: %w", i+1, err)
-		}
+			// upload the prepared backup
+			if err := uploadBackup(ctx, result, item.BackupKey, uploader, logger); err != nil {
+				return fmt.Errorf("failed to upload backup for item %d: %w", i+1, err)
+			}
+
+			return nil
+		})
 	}
 
-	return nil
+	return eg.Wait()
 }
 
 // prepareBackup handles the compression or file preparation logic for a backup item

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/reminiscence/homelab/cluster/canopy/scripts/pkg/config"
 )
@@ -17,10 +18,11 @@ type BackupItem struct {
 
 // BackupConfig represents the configuration for the backup process.
 type BackupConfig struct {
-	BackupPath  string
-	BackupItems []BackupItem
-	Controller  *config.ControllerConfig
-	S3          *config.S3Config
+	GlobalTimeout time.Duration
+	BackupPath    string
+	BackupItems   []BackupItem
+	Controller    *config.ControllerConfig
+	S3            *config.S3Config
 }
 
 // Validate checks if the configuration is valid.
@@ -51,22 +53,25 @@ func (b BackupConfig) Validate() error {
 // LoadBackupConfig loads the configuration from environment variables.
 func LoadBackupConfig() (*BackupConfig, error) {
 	backupConfig := &BackupConfig{
+		GlobalTimeout: time.Duration(config.GetInt64("GLOBAL_TIMEOUT", 10)) * time.Minute,
+		BackupPath:    config.GetEnvString("BACKUP_PATH", ""),
 		Controller: &config.ControllerConfig{
-			Deployment: config.Getenv("DEPLOYMENT", ""),
-			Namespace:  config.Getenv("NAMESPACE", ""),
+			Deployment:   config.GetEnvString("DEPLOYMENT", ""),
+			Namespace:    config.GetEnvString("NAMESPACE", ""),
+			PollTimeout:  time.Duration(config.GetInt64("POLL_TIMEOUT", 2)) * time.Minute,
+			PollInterval: time.Duration(config.GetInt64("POLL_INTERVAL", 5)) * time.Second,
 		},
-		BackupPath: config.Getenv("BACKUP_PATH", ""),
 		S3: &config.S3Config{
-			AccessKey:       config.Getenv("S3_ACCESS_KEY", ""),
-			SecretAccessKey: config.Getenv("S3_SECRET_ACCESS_KEY", ""),
-			Region:          config.Getenv("S3_REGION", ""),
-			Endpoint:        config.Getenv("S3_ENDPOINT", ""),
-			Bucket:          config.Getenv("S3_BUCKET", ""),
+			AccessKey:       config.GetEnvString("S3_ACCESS_KEY", ""),
+			SecretAccessKey: config.GetEnvString("S3_SECRET_ACCESS_KEY", ""),
+			Region:          config.GetEnvString("S3_REGION", ""),
+			Endpoint:        config.GetEnvString("S3_ENDPOINT", ""),
+			Bucket:          config.GetEnvString("S3_BUCKET", ""),
 		},
 	}
 
 	// parse backup items from JSON
-	backupItemsJSON := config.Getenv("BACKUP_ITEMS", "")
+	backupItemsJSON := config.GetEnvString("BACKUP_ITEMS", "")
 	var items []BackupItem
 	if err := json.Unmarshal([]byte(backupItemsJSON), &items); err != nil {
 		return nil, fmt.Errorf("failed to parse BACKUP_ITEMS JSON: %w", err)

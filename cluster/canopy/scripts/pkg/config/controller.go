@@ -1,11 +1,16 @@
 package config
 
-import "errors"
+import (
+	"errors"
+	"time"
+)
 
 // ControllerConfig represents the configuration for the controller process.
 type ControllerConfig struct {
-	Deployment string
-	Namespace  string
+	Deployment   string
+	Namespace    string
+	PollTimeout  time.Duration
+	PollInterval time.Duration
 }
 
 // Validate checks if the controller configuration is valid.

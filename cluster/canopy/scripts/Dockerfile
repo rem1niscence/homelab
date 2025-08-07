@@ -8,7 +8,7 @@ RUN go mod download
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -o app ./cmd/${BINARY_PATH}
 
-FROM alpine:latest
+FROM alpine:3.22
 RUN apk add --no-cache tar pigz ca-certificates
 COPY --from=builder /app/app /usr/local/bin/app
 CMD ["app"]

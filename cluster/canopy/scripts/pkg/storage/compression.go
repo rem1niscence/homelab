@@ -93,7 +93,13 @@ func CompressFolderCMD(ctx context.Context, sourceDir, targetFile string) error 
 	if err != nil {
 		return fmt.Errorf("failed to create output file: %w", err)
 	}
-	defer outputFile.Close()
+	defer func() {
+		outputFile.Close()
+		if err != nil {
+			// clean up on failure
+			os.Remove(absTarget)
+		}
+	}()
 
 	pigzCmd.Stdout = outputFile
 	pigzCmd.Stderr = os.Stderr

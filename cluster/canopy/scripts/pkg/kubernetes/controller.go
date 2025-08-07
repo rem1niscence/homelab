@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"time"
 
 	"github.com/reminiscence/homelab/cluster/canopy/scripts/pkg/config"
 	appsv1 "k8s.io/api/apps/v1"
@@ -30,21 +29,17 @@ func GetClientSet() (*kubernetes.Clientset, error) {
 
 // Controller represents a Kubernetes controller for managing deployment scaling
 type Controller struct {
-	Client       *kubernetes.Clientset
-	Logger       *slog.Logger
-	Config       *config.ControllerConfig
-	PollTimeout  time.Duration
-	PollInterval time.Duration
+	Client *kubernetes.Clientset
+	Logger *slog.Logger
+	Config *config.ControllerConfig
 }
 
 // NewController creates a new Kubernetes controller
 func NewController(client *kubernetes.Clientset, logger *slog.Logger, config *config.ControllerConfig) *Controller {
 	return &Controller{
-		Client:       client,
-		Logger:       logger,
-		Config:       config,
-		PollTimeout:  1 * time.Minute,
-		PollInterval: 5 * time.Second,
+		Client: client,
+		Logger: logger,
+		Config: config,
 	}
 }
 
@@ -74,7 +69,7 @@ func (c *Controller) ScaleDeployment(ctx context.Context, scale int) error {
 
 // WaitForScaling waits for the deployment to scale to the desired number of replicas
 func (c *Controller) WaitForScaling(ctx context.Context, wanted int) error {
-	return wait.PollUntilContextTimeout(ctx, c.PollInterval, c.PollTimeout, false,
+	return wait.PollUntilContextTimeout(ctx, c.Config.PollInterval, c.Config.PollTimeout, false,
 		func(ctx context.Context) (done bool, err error) {
 			deployment, err := c.GetDeployment(ctx)
 			if err != nil {

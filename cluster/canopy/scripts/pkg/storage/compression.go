@@ -126,3 +126,57 @@ func CompressFolderCMD(ctx context.Context, sourceDir, targetFile string) error 
 
 	return nil
 }
+
+// DecompressCMD decompresses a tar.gz file using pigz + tar
+func DecompressCMD(ctx context.Context, sourceFile, targetDir string) error {
+	// get absolute paths
+	absSource, err := filepath.Abs(sourceFile)
+	if err != nil {
+		return fmt.Errorf("failed to get absolute source path: %w", err)
+	}
+	absTarget, err := filepath.Abs(targetDir)
+	if err != nil {
+		return fmt.Errorf("failed to get absolute target path: %w", err)
+	}
+
+	// ensure target directory exists
+	if err := os.MkdirAll(absTarget, 0755); err != nil {
+		return fmt.Errorf("failed to create target directory: %w", err)
+	}
+
+	// construct the commands: pigz -dc source | tar -C target -xv
+	pigzCmd := exec.CommandContext(ctx, "pigz", "-dc", absSource)
+	tarCmd := exec.CommandContext(ctx, "tar", "-C", absTarget, "-xv")
+
+	// create the pipeline
+	pipe, err := pigzCmd.StdoutPipe()
+	if err != nil {
+		return fmt.Errorf("failed to create pipe: %w", err)
+	}
+
+	tarCmd.Stdin = pipe
+	pigzCmd.Stderr = os.Stderr
+	tarCmd.Stderr = os.Stderr
+
+	// start both commands
+	if err := tarCmd.Start(); err != nil {
+		return fmt.Errorf("failed to start tar: %w", err)
+	}
+
+	if err := pigzCmd.Start(); err != nil {
+		return fmt.Errorf("failed to start pigz: %w", err)
+	}
+
+	// wait for completion
+	if err := pigzCmd.Wait(); err != nil {
+		return fmt.Errorf("pigz command failed: %w", err)
+	}
+
+	pipe.Close()
+
+	if err := tarCmd.Wait(); err != nil {
+		return fmt.Errorf("tar command failed: %w", err)
+	}
+
+	return nil
+}

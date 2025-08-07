@@ -53,7 +53,7 @@ func (b BackupConfig) Validate() error {
 // LoadBackupConfig loads the configuration from environment variables.
 func LoadBackupConfig() (*BackupConfig, error) {
 	backupConfig := &BackupConfig{
-		GlobalTimeout: time.Duration(config.GetInt64("GLOBAL_TIMEOUT", 10)) * time.Minute,
+		GlobalTimeout: time.Duration(config.GetInt64("GLOBAL_TIMEOUT", 15)) * time.Minute,
 		BackupPath:    config.GetEnvString("BACKUP_PATH", ""),
 		Controller: &config.ControllerConfig{
 			Deployment:   config.GetEnvString("DEPLOYMENT", ""),

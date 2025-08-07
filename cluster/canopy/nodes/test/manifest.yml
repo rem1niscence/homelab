@@ -184,7 +184,7 @@ spec:
   resources:
     requests:
       storage: 1G
-  storageClassName: longhorn-remote
+  storageClassName: longhorn-canopy
 ---
 apiVersion: v1
 kind: Service

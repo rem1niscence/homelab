@@ -33,6 +33,22 @@ spec:
               mountPath: /tmp/keystore
             - name: scripts
               mountPath: /scripts
+        - name: check-snapshot
+          image: registry.local/canopy-restore:latest
+          envFrom:
+            - secretRef:
+                name: restore
+          env:
+            - name: HEIGHT_FILE
+              value: height_1.txt
+            - name: HEIGHT_FILE_URL
+              value: height_1.txt
+            - name: SNAPSHOT_URL
+              value: canopy_backup_1.tar.gz
+          volumeMounts:
+            - name: data
+              mountPath: /root/.canopy
+              subPath: observer-1
       containers:
         - name: canopy
           image: canopynetwork/canopy:latest
@@ -135,6 +151,22 @@ spec:
               mountPath: /tmp/keystore
             - name: scripts
               mountPath: /scripts
+        - name: check-snapshot
+          image: registry.local/canopy-restore:latest
+          envFrom:
+            - secretRef:
+                name: restore
+          env:
+            - name: HEIGHT_FILE
+              value: height_2.txt
+            - name: HEIGHT_FILE_URL
+              value: height_2.txt
+            - name: SNAPSHOT_URL
+              value: canopy_backup_2.tar.gz
+          volumeMounts:
+            - name: data
+              mountPath: /root/.canopy
+              subPath: observer-2
       containers:
         - name: canopy
           image: canopynetwork/canopy:latest
@@ -203,22 +235,6 @@ spec:
             claimName: observer-2
 ---
 apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: canopy-observer-1-pv
-spec:
-  capacity:
-    storage: 3T
-  accessModes:
-    - ReadWriteMany
-  nfs:
-    server: 192.168.0.95
-    path: /mnt/ssd_2tb/canopy
-  storageClassName: local-path
-  mountOptions:
-    - vers=4.0
----
-apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   namespace: canopy
@@ -228,25 +244,8 @@ spec:
     - ReadWriteMany
   resources:
     requests:
-      storage: 3T
-  volumeName: canopy-observer-1-pv
-  storageClassName: local-path
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: canopy-observer-2-pv
-spec:
-  capacity:
-    storage: 3T
-  accessModes:
-    - ReadWriteMany
-  nfs:
-    server: 192.168.0.95
-    path: /mnt/ssd_2tb/canopy
-  storageClassName: local-path
-  mountOptions:
-    - vers=4.0
+      storage: 8G
+  storageClassName: longhorn-canopy
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -258,9 +257,8 @@ spec:
     - ReadWriteMany
   resources:
     requests:
-      storage: 3T
-  volumeName: canopy-observer-2-pv
-  storageClassName: local-path
+      storage: 5G
+  storageClassName: longhorn-canopy
 ---
 apiVersion: v1
 kind: Service

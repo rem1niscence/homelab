@@ -40,3 +40,22 @@ data:
       echo "Failed to query height or empty response"
       exit 1
     fi
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: longhorn-canopy
+provisioner: driver.longhorn.io
+allowVolumeExpansion: true
+parameters:
+  numberOfReplicas: "2"
+  staleReplicaTimeout: "2880"
+  fromBackup: ""
+  diskSelector: "remote"
+  nodeSelector: "remote"
+  recurringJobSelector: '[
+    {
+    "name":"canopy",
+    "isGroup":true
+    }
+    ]'

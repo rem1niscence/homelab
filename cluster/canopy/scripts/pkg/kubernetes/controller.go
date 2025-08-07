@@ -32,13 +32,13 @@ func GetClientSet() (*kubernetes.Clientset, error) {
 type Controller struct {
 	Client       *kubernetes.Clientset
 	Logger       *slog.Logger
-	Config       *config.Config
+	Config       *config.BackupConfig
 	PollTimeout  time.Duration
 	PollInterval time.Duration
 }
 
 // NewController creates a new Kubernetes controller
-func NewController(client *kubernetes.Clientset, logger *slog.Logger, config *config.Config) *Controller {
+func NewController(client *kubernetes.Clientset, logger *slog.Logger, config *config.BackupConfig) *Controller {
 	return &Controller{
 		Client:       client,
 		Logger:       logger,

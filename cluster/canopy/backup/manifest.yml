@@ -1,11 +1,11 @@
-# To manually create a job out of this: kubectl create job backup-manual --from=cronjob/backup
+# To manually create a job out of this: kubectl create job backup-manual --from=cronjob/backup-1
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: backup
+  name: backup-1
   namespace: canopy
   labels:
-    app: backup
+    app: backup-1
   annotations:
     keel.sh/policy: all
     keel.sh/pollSchedule: "@every 1h"
@@ -19,7 +19,69 @@ spec:
       template:
         metadata:
           labels:
-            app: backup
+            app: backup-1
+        spec:
+          serviceAccountName: backup-sa
+          nodeSelector:
+            type: secondary
+          # restartPolicy: OnFailure
+          containers:
+            - name: backup
+              image: registry.local/canopy-backup:latest
+              imagePullPolicy: Always # TODO: Remove once image is stable
+              env:
+                # Require by ORACLE S3 Compatibility layer
+                - name: AWS_REQUEST_CHECKSUM_CALCULATION
+                  value: WHEN_REQUIRED
+                - name: DEPLOYMENT
+                  value: node-1
+                - name: BACKUP_ITEMS
+                  value: |
+                    [
+                      {
+                        "key": "canopy_backup_1.tar.gz",
+                        "path": "/root/.canopy/canopy",
+                        "compress": true
+                      },
+                      {
+                        "key": "height_1.txt",
+                        "path": "/root/.canopy/height_1.txt",
+                        "compress": false
+                      }
+                    ]
+              envFrom:
+                - secretRef:
+                    name: backup
+              volumeMounts:
+                - name: data
+                  mountPath: /root/.canopy
+                  subPath: node-1
+          volumes:
+            - name: data
+              persistentVolumeClaim:
+                claimName: node-1
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: backup-2
+  namespace: canopy
+  labels:
+    app: backup-2
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
+spec:
+  schedule: "0 */6 * * *"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: backup-2
         spec:
           serviceAccountName: backup-sa
           nodeSelector:
@@ -33,13 +95,29 @@ spec:
                 # Require by ORACLE S3 Compatibility layer
                 - name: AWS_REQUEST_CHECKSUM_CALCULATION
                   value: WHEN_REQUIRED
+                - name: DEPLOYMENT
+                  value: node-2
+                - name: BACKUP_ITEMS
+                  value: |
+                    [
+                      {
+                        "key": "canopy_backup_2.tar.gz",
+                        "path": "/root/.canopy/canopy",
+                        "compress": true
+                      },
+                      {
+                        "key": "height_2.txt",
+                        "path": "/root/.canopy/height_2.txt",
+                        "compress": false
+                      }
+                    ]
               envFrom:
                 - secretRef:
                     name: backup
               volumeMounts:
                 - name: data
                   mountPath: /root/.canopy
-                  subPath: node-1
+                  subPath: node-2
           volumes:
             - name: data
               persistentVolumeClaim:

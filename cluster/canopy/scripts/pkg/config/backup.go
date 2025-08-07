@@ -1,27 +1,49 @@
 package config
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
 	"os"
 )
 
-// Config represents the configuration for the backup process.
-type Config struct {
-	Deployment string
-	Namespace  string
-	SourcePath string
-	BackupKey  string
-	BackupPath string
-	S3         S3Config
+// BackupItem represents a single backup item configuration.
+type BackupItem struct {
+	BackupKey  string `json:"key"`
+	SourcePath string `json:"path"`
+	Compress   bool   `json:"compress"`
+}
+
+// BackupConfig represents the configuration for the backup process.
+type BackupConfig struct {
+	Deployment  string
+	Namespace   string
+	BackupPath  string
+	BackupItems []BackupItem
+	S3          S3Config
 }
 
 // Validate checks if the configuration is valid.
-func (c Config) Validate() error {
+func (c BackupConfig) Validate() error {
 	if c.Deployment == "" {
 		return errors.New("DEPLOYMENT is required")
 	}
 	if c.Namespace == "" {
 		return errors.New("NAMESPACE is required")
+	}
+	if c.BackupPath == "" {
+		return errors.New("BACKUP_PATH is required")
+	}
+	if len(c.BackupItems) == 0 {
+		return errors.New("at least one backup item is required")
+	}
+	for i, item := range c.BackupItems {
+		if item.BackupKey == "" {
+			return fmt.Errorf("backup item %d: BackupKey is required", i)
+		}
+		if item.SourcePath == "" {
+			return fmt.Errorf("backup item %d: SourcePath is required", i)
+		}
 	}
 	if err := c.S3.Validate(); err != nil {
 		return err
@@ -58,14 +80,12 @@ func (s S3Config) Validate() error {
 	return nil
 }
 
-// LoadConfig loads the configuration from environment variables.
-func LoadConfig() (*Config, error) {
-	return &Config{
+// LoadBackupConfig loads the configuration from environment variables.
+func LoadBackupConfig() (*BackupConfig, error) {
+	config := &BackupConfig{
 		Deployment: getenv("DEPLOYMENT", ""),
 		Namespace:  getenv("NAMESPACE", ""),
-		SourcePath: getenv("SOURCE_PATH", ""),
-		BackupKey:  getenv("BACKUP_KEY", ""),
-		BackupPath: getenv("BACKUP_PATH", "/backup"),
+		BackupPath: getenv("BACKUP_PATH", ""),
 		S3: S3Config{
 			AccessKey:       getenv("S3_ACCESS_KEY", ""),
 			SecretAccessKey: getenv("S3_SECRET_ACCESS_KEY", ""),
@@ -73,7 +93,17 @@ func LoadConfig() (*Config, error) {
 			Endpoint:        getenv("S3_ENDPOINT", ""),
 			Bucket:          getenv("S3_BUCKET", ""),
 		},
-	}, nil
+	}
+
+	// parse backup items from JSON
+	backupItemsJSON := getenv("BACKUP_ITEMS", "")
+	var items []BackupItem
+	if err := json.Unmarshal([]byte(backupItemsJSON), &items); err != nil {
+		return nil, fmt.Errorf("failed to parse BACKUP_ITEMS JSON: %w", err)
+	}
+	config.BackupItems = items
+
+	return config, nil
 }
 
 func getenv(key, defaultValue string) string {

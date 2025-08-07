@@ -71,6 +71,8 @@ spec:
           env:
             - name: PORT
               value: "50002"
+            - name: FILE_NAME
+              value: "height_1.txt"
           volumeMounts:
             - name: data
               mountPath: /root/.canopy
@@ -171,6 +173,8 @@ spec:
           env:
             - name: PORT
               value: "40002"
+            - name: FILE_NAME
+              value: "height_2.txt"
           volumeMounts:
             - name: data
               mountPath: /root/.canopy

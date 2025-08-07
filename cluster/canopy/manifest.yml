@@ -23,7 +23,7 @@ data:
     fi
   height.sh: |
     #!/bin/sh
-    HEIGHT_FILE="/root/.canopy/height.txt"
+    HEIGHT_FILE="/root/.canopy/$FILE_NAME"
 
     if [ -z "$PORT" ]; then
       echo "Error: PORT environment variable is not set"

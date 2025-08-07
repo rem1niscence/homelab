@@ -3,6 +3,7 @@ package storage
 import (
 	"archive/tar"
 	"compress/gzip"
+	"context"
 	"fmt"
 	"io"
 	"os"
@@ -62,7 +63,7 @@ func CompressFolder(sourceDir, targetFile string) error {
 
 // CompressFolderCMD compresses a folder into a tar.gz file using tar + pigz
 // requires pigz to be installed on the system
-func CompressFolderCMD(sourceDir, targetFile string) error {
+func CompressFolderCMD(ctx context.Context, sourceDir, targetFile string) error {
 	// get absolute paths
 	absSource, err := filepath.Abs(sourceDir)
 	if err != nil {
@@ -76,10 +77,10 @@ func CompressFolderCMD(sourceDir, targetFile string) error {
 	folderName := filepath.Base(absSource)
 
 	// construct the commands
-	cmd := exec.Command("tar", "-cv", folderName)
+	cmd := exec.CommandContext(ctx, "tar", "-cv", folderName)
 	cmd.Dir = parentDir
 
-	pigzCmd := exec.Command("pigz")
+	pigzCmd := exec.CommandContext(ctx, "pigz")
 
 	// create the pipeline
 	pipe, err := cmd.StdoutPipe()

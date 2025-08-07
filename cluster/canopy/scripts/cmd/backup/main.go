@@ -14,6 +14,13 @@ import (
 	"github.com/reminiscence/homelab/cluster/canopy/scripts/pkg/storage"
 )
 
+// BackupResult holds the result of backup preparation
+type BackupResult struct {
+	FilePath string
+	Size     int64
+	Skipped  bool
+}
+
 func main() {
 	now := time.Now()
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
@@ -55,7 +62,7 @@ func Initialize(logger *slog.Logger) (*kubernetes.Controller, storage.Uploader, 
 		return nil, nil, fmt.Errorf("failed to get client set: %w", err)
 	}
 
-	config, err := config.LoadConfig()
+	config, err := config.LoadBackupConfig()
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to get config: %w", err)
 	}
@@ -105,55 +112,122 @@ func ScaleDeployment(ctx context.Context, controller *kubernetes.Controller, fn 
 	return err
 }
 
-func PerformBackup(ctx context.Context, config *config.Config, logger *slog.Logger, uploader storage.Uploader) error {
+func PerformBackup(ctx context.Context, config *config.BackupConfig, logger *slog.Logger, uploader storage.Uploader) error {
 	logger.Info("starting canopy backup")
-
-	// get backup file path
-	fileName := fmt.Sprintf("%s.tar.gz", config.BackupKey)
-	backupFile := filepath.Join(config.BackupPath, fileName)
-
-	// check if source path exists
-	if _, err := os.Stat(config.SourcePath); os.IsNotExist(err) {
-		return fmt.Errorf("backup path does not exist: %w", err)
-	}
 
 	// create backup directory if it doesn't exist
 	if _, err := os.Stat(config.BackupPath); os.IsNotExist(err) {
 		if err := os.MkdirAll(config.BackupPath, 0755); err != nil {
-			return fmt.Errorf("failed to create backup directory: %w", err)
+			return fmt.Errorf("failed to create backup directory: %s: %w", config.BackupPath, err)
 		}
 	}
 
-	now := time.Now()
-	logger.Info("started compressing backup")
-	// compress backup
-	if err := storage.CompressFolderCMD(config.SourcePath, backupFile); err != nil {
-		return fmt.Errorf("compression failed: %w", err)
-	}
-	// get backup file size for logging
-	fileInfo, err := os.Stat(backupFile)
-	if err != nil {
-		return fmt.Errorf("failed to get backup file info: %w", err)
-	}
-	logger.Info("finished compressing backup",
-		slog.String("took", time.Since(now).String()), slog.Int64("size", fileInfo.Size()))
+	// process each backup item
+	for i, item := range config.BackupItems {
+		logger.Info("processing backup item", slog.Int("item", i+1), slog.String("key", item.BackupKey))
 
-	// upload backup file
-	logger.Info("started uploading file to external storage")
-	now = time.Now()
+		// prepare backup (compress or use source file directly)
+		result, err := prepareBackup(ctx, item, item.SourcePath, config.BackupPath, logger)
+		if err != nil {
+			return fmt.Errorf("failed to prepare backup for item %d: %w", i+1, err)
+		}
+
+		// skip if preparation indicated to skip this item
+		if result.Skipped {
+			continue
+		}
+
+		// upload the prepared backup
+		if err := uploadBackup(ctx, result, item.BackupKey, uploader, logger); err != nil {
+			return fmt.Errorf("failed to upload backup for item %d: %w", i+1, err)
+		}
+	}
+
+	return nil
+}
+
+// prepareBackup handles the compression or file preparation logic for a backup item
+func prepareBackup(ctx context.Context, item config.BackupItem,
+	sourcePath string, backupDir string, logger *slog.Logger) (*BackupResult, error) {
+	if item.Compress {
+		logger.Info("started compressing backup",
+			slog.String("key", item.BackupKey),
+			slog.String("path", sourcePath))
+		fileName := fmt.Sprintf("%s.tar.gz", item.BackupKey)
+		backupFile := filepath.Join(backupDir, fileName)
+
+		now := time.Now()
+		if err := storage.CompressFolderCMD(ctx, sourcePath, backupFile); err != nil {
+			return nil, fmt.Errorf("compression failed: %w", err)
+		}
+
+		// get backup file size for logging
+		fileInfo, err := os.Stat(backupFile)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get backup file info: %w", err)
+		}
+
+		logger.Info("finished creating backup",
+			slog.String("key", item.BackupKey),
+			slog.String("took", time.Since(now).String()),
+			slog.Int64("size", fileInfo.Size()))
+
+		return &BackupResult{
+			FilePath: backupFile,
+			Size:     fileInfo.Size(),
+			Skipped:  false,
+		}, nil
+	} else {
+		// for uncompressed backups, check if source is a single file
+		sourceInfo, err := os.Stat(sourcePath)
+		if err != nil {
+			return nil, fmt.Errorf("failed to stat source path: %w", err)
+		}
+
+		if sourceInfo.IsDir() {
+			logger.Error("compression is disabled but source is a directory, skipping item",
+				slog.String("key", item.BackupKey))
+			return &BackupResult{Skipped: true}, nil
+		}
+
+		logger.Info("using source file directly for uncompressed backup",
+			slog.String("key", item.BackupKey),
+			slog.String("path", sourcePath),
+			slog.Int64("size", sourceInfo.Size()))
+
+		return &BackupResult{
+			FilePath: sourcePath,
+			Size:     sourceInfo.Size(),
+			Skipped:  false,
+		}, nil
+	}
+}
+
+// uploadBackup handles the upload logic for a prepared backup file
+func uploadBackup(ctx context.Context, result *BackupResult, backupKey string,
+	uploader storage.Uploader, logger *slog.Logger) error {
+	if result.Skipped {
+		return nil
+	}
+
+	logger.Info("started uploading file to external storage", slog.String("key", backupKey))
+	uploadStart := time.Now()
 
 	// open backup file
-	file, err := os.Open(backupFile)
+	file, err := os.Open(result.FilePath)
 	if err != nil {
 		return fmt.Errorf("failed to open backup file for upload: %w", err)
 	}
 	defer file.Close()
 
 	// upload backup file
-	if err := uploader.Upload(ctx, file, config.BackupKey); err != nil {
+	if err := uploader.Upload(ctx, file, backupKey); err != nil {
 		return fmt.Errorf("upload failed: %w", err)
 	}
-	logger.Info("finished uploading file to external storage", slog.String("took", time.Since(now).String()))
+
+	logger.Info("finished uploading file to external storage",
+		slog.String("key", backupKey),
+		slog.String("took", time.Since(uploadStart).String()))
 
 	return nil
 }

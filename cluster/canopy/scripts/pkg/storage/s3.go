@@ -13,19 +13,6 @@ import (
 
 var _ StorageManager = (*S3StorageManager)(nil)
 
-type Uploader interface {
-	Upload(ctx context.Context, reader io.Reader, key string) error
-}
-
-type Downloader interface {
-	Download(ctx context.Context, location string) (io.ReadCloser, error)
-}
-
-type StorageManager interface {
-	Uploader
-	Downloader
-}
-
 type S3StorageManager struct {
 	s3Client *s3.Client
 	Bucket   string

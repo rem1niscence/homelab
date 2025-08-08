@@ -12,7 +12,12 @@ import (
 	"time"
 
 	"github.com/reminiscence/homelab/cluster/canopy/scripts/internal/lifecycle"
+	"github.com/reminiscence/homelab/cluster/canopy/scripts/pkg/fsutils"
 	"github.com/reminiscence/homelab/cluster/canopy/scripts/pkg/storage"
+)
+
+const (
+	backupPrefix = "backup_"
 )
 
 func main() {
@@ -47,7 +52,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	logger.Info("finish restoring canopy snapshot ✅", slog.String("took", time.Since(now).String()))
+	logger.Info("finished restoring canopy snapshot ✅", slog.String("took", time.Since(now).String()))
 }
 
 // Initialize initializes the necessary components for the restore process.
@@ -70,122 +75,185 @@ func Initialize(logger *slog.Logger) (*RestoreConfig, storage.Downloader, error)
 	return config, downloader, nil
 }
 
-func PerformRestore(ctx context.Context, config *RestoreConfig, logger *slog.Logger, downloader storage.Downloader) error {
-	logger.Info("starting canopy restore")
+// ConfigWithNames represents the configuration for the restore process with the full path names of the
+// files
+type ConfigWithPaths struct {
+	RestoreConfig
+	DbPath                string
+	HeightPath            string
+	BackupDbPath          string
+	BackupHeightPath      string
+	DownloadSnapshotPath  string
+	DownloadHeightPath    string
+	ExtractedSnapshotPath string
+}
+
+func PerformRestore(ctx context.Context, config *RestoreConfig, logger *slog.Logger, downloader storage.Downloader) (err error) {
+	configPath := ConfigWithPaths{
+		RestoreConfig: *config,
+
+		DbPath:     filepath.Join(config.RootFolder, config.DbFolder),
+		HeightPath: filepath.Join(config.RootFolder, config.HeightFile),
+
+		BackupDbPath:     filepath.Join(config.RootFolder, backupPrefix+config.DbFolder),
+		BackupHeightPath: filepath.Join(config.RootFolder, backupPrefix+config.HeightFile),
+
+		DownloadSnapshotPath: filepath.Join(config.DownloadFolder, config.SnapshotFile),
+		DownloadHeightPath:   filepath.Join(config.DownloadFolder, config.HeightFile),
+
+		ExtractedSnapshotPath: filepath.Join(config.DownloadFolder, config.DbFolder),
+	}
+
+	// remove backup files regardless
+	defer fsutils.RemoveAll(configPath.BackupDbPath, configPath.BackupHeightPath)
 
 	// check if files exist
-	heightExists, dbExists, err := checkExistingFiles(config, logger)
-	if err != nil {
-		return fmt.Errorf("failed to check existing files: %w", err)
-	}
-
+	exists := fsutils.ExistsAll(configPath.DbPath, configPath.HeightPath)
+	dbExists, heightExists := exists[0], exists[1]
 	// decide whether to restore
-	shouldRestore := false
-	if !heightExists && !dbExists {
-		logger.Info("no existing files found, proceeding with restore")
-		shouldRestore = true
-	} else if heightExists && dbExists {
-		logger.Info("existing files found, checking height difference")
-		restore, err := shouldRestoreBasedOnHeight(ctx, config, logger, downloader)
-		if err != nil {
-			shouldRestore = true
-			logger.Error("failed to check height", "error", err)
-		} else {
-			shouldRestore = restore
-		}
-	} else {
-		logger.Info("only some files exist, proceeding with restore")
-		shouldRestore = true
+	restore, err := shouldRestore(ctx, heightExists, dbExists, logger, config, downloader)
+	if err != nil {
+		logger.Error("failed to decide whether to restore", slog.String("error", err.Error()))
 	}
-
-	if !shouldRestore {
-		logger.Info("restore not needed, exiting")
+	if !restore {
+		logger.Info("no restore needed, skipping")
 		return nil
 	}
+	logger.Info("snapshot restore required,	 starting")
 
-	// perform restore
-	return downloadAndRestore(ctx, config, logger, downloader)
-}
-
-// checkExistingFiles checks if HeightFile and DbFolder exist in RootFolder
-func checkExistingFiles(config *RestoreConfig, logger *slog.Logger) (heightExists, dbExists bool, err error) {
-	heightPath := filepath.Join(config.RootFolder, config.HeightFile)
-	dbPath := filepath.Join(config.RootFolder, config.DbFolder)
-
-	logger.Info("checking for files", "heightPath", heightPath, "dbPath", dbPath)
-
-	if _, err := os.Stat(heightPath); err == nil {
-		heightExists = true
-		logger.Info("height file exists", slog.String("path", heightPath))
-	}
-
-	if _, err := os.Stat(dbPath); err == nil {
-		dbExists = true
-		logger.Info("database folder exists", slog.String("path", dbPath))
-	}
-
-	return heightExists, dbExists, nil
-}
-
-// parseHeightFile reads a height file and parses the single number to int64
-func parseHeightFile(filePath string) (int64, error) {
-	content, err := os.ReadFile(filePath)
-	if err != nil {
-		return 0, fmt.Errorf("failed to read height file: %w", err)
-	}
-	return parseHeightContent(content)
-}
-
-// parseHeightContent parses height content (bytes) to int64
-func parseHeightContent(content []byte) (int64, error) {
-	heightStr := strings.TrimSpace(string(content))
-	height, err := strconv.ParseInt(heightStr, 10, 64)
-	if err != nil {
-		return 0, fmt.Errorf("failed to parse height '%s': %w", heightStr, err)
-	}
-	return height, nil
-}
-
-// downloadAndParseRemoteHeight downloads the remote height file and parses it
-func downloadAndParseRemoteHeight(ctx context.Context, config *RestoreConfig, downloader storage.Downloader) (int64, error) {
-	// create download folder if needed
+	// create download folder
 	if err := os.MkdirAll(config.DownloadFolder, 0755); err != nil {
-		return 0, fmt.Errorf("failed to create download folder: %w", err)
+		return fmt.Errorf("failed to create download folder: %w", err)
+	}
+	defer fsutils.RemoveAll(config.DownloadFolder)
+
+	// download snapshot files
+	downloads := map[string]string{
+		configPath.DownloadSnapshotPath: config.SnapshotFileURL,
+		configPath.DownloadHeightPath:   config.HeightFileURL,
+	}
+	for path, url := range downloads {
+		now := time.Now()
+		logger.Info("downloading file", slog.String("path", path))
+		if err := downloadFile(ctx, downloader, url, path); err != nil {
+			return fmt.Errorf("failed to download file: %s: %w", path, err)
+		}
+		logger.Info("downloaded file", slog.String("path", path),
+			slog.String("took", time.Since(now).String()))
 	}
 
-	// download remote height file
-	reader, err := downloader.Download(ctx, config.HeightFileURL)
-	if err != nil {
-		return 0, fmt.Errorf("failed to download remote height file: %w", err)
+	// extract snapshot, is assumed to be compressed
+	now := time.Now()
+	logger.Info("extracting snapshot")
+	if err := storage.DecompressCMD(ctx, configPath.DownloadSnapshotPath, config.DownloadFolder); err != nil {
+		return fmt.Errorf("failed to extract snapshot: %w", err)
 	}
-	defer reader.Close()
+	logger.Info("extracted snapshot",
+		slog.String("path", configPath.DownloadFolder),
+		slog.String("took", time.Since(now).String()))
 
-	// read content
-	content, err := io.ReadAll(reader)
-	if err != nil {
-		return 0, fmt.Errorf("failed to read remote height file content: %w", err)
+	// confirm extracted DB exists
+	if !fsutils.ExistsAll(configPath.ExtractedSnapshotPath)[0] {
+		return fmt.Errorf("extracted DB does not exist")
 	}
 
-	height, err := parseHeightContent(content)
-	if err != nil {
-		return 0, fmt.Errorf("failed to parse remote height: %w", err)
+	// rename current files to backup
+	rename := map[string]string{
+		configPath.DbPath:     configPath.BackupDbPath,
+		configPath.HeightPath: configPath.BackupHeightPath,
 	}
-	return height, nil
+	for src, dst := range rename {
+		if _, err := os.Stat(src); err == nil {
+			logger.Info("renaming existing path", slog.String("source_path", src))
+			if err := os.Rename(src, dst); err != nil {
+				return fmt.Errorf("failed to rename existing path: %w", err)
+			}
+			logger.Info("renamed existing path", slog.String("destination_path", dst))
+		}
+		// restore previous files if an error occurs during the rest of the process
+		defer func() {
+			if err != nil {
+				if _, err := os.Stat(src); err != nil {
+					os.Remove(src)
+				}
+				os.Rename(dst, src)
+			}
+		}()
+	}
+
+	// copy extracted files to final location (avoid cross-device link)
+	copyFiles := map[string]string{
+		configPath.DownloadHeightPath:    configPath.HeightPath,
+		configPath.ExtractedSnapshotPath: configPath.DbPath,
+	}
+	for src, dst := range copyFiles {
+		fileInfo, err := os.Stat(src)
+		if err != nil {
+			return fmt.Errorf("failed to stat file %s: %w", src, err)
+		}
+		now := time.Now()
+		isDir := fileInfo.IsDir()
+		logger.Info("copying path",
+			slog.String("source_path", src),
+			slog.String("destination_path", dst))
+		if isDir {
+			if err := os.MkdirAll(dst, 0755); err != nil {
+				return fmt.Errorf("failed to create destination directory: %s: %w", dst, err)
+			}
+			if err := copyDir(src, dst); err != nil {
+				return fmt.Errorf("failed to copy directory: %s: %w", src, err)
+			}
+		} else {
+			if err := copyFile(src, dst); err != nil {
+				return fmt.Errorf("failed to copy file: %s: %w", src, err)
+			}
+		}
+		logger.Info("copied path",
+			slog.String("source_path", src),
+			slog.String("destination_path", dst),
+			slog.String("took", time.Since(now).String()),
+		)
+	}
+
+	return nil
 }
 
-// shouldRestoreBasedOnHeight compares local and remote heights
-func shouldRestoreBasedOnHeight(ctx context.Context, config *RestoreConfig, logger *slog.Logger, downloader storage.Downloader) (bool, error) {
+func shouldRestore(ctx context.Context, heightExists bool, dbExists bool,
+	logger *slog.Logger, config *RestoreConfig, downloader storage.Downloader) (bool, error) {
+	// no files exist, restore
+	if !heightExists && !dbExists {
+		return true, nil
+	}
+	// both files exist, check heights
+	if heightExists && dbExists {
+		return compareHeights(ctx, config, logger, downloader)
+	}
+	// only one file exists, restore
+	return true, nil
+}
+
+// compareHeights compares local and remote heights, checking whether local
+// height is higher than remote height threshold
+func compareHeights(ctx context.Context, config *RestoreConfig,
+	logger *slog.Logger, downloader storage.Downloader) (bool, error) {
 	// get local height
-	localHeightPath := filepath.Join(config.RootFolder, config.HeightFile)
-	localHeight, err := parseHeightFile(localHeightPath)
+	rawLocalHeight, err := os.ReadFile(filepath.Join(config.RootFolder, config.HeightFile))
 	if err != nil {
-		return false, fmt.Errorf("failed to parse local height: %w", err)
+		return true, fmt.Errorf("failed to read local height file: %w", err)
+	}
+	localHeight, err := strconv.ParseInt(strings.TrimSpace(string(rawLocalHeight)), 10, 64)
+	if err != nil {
+		return true, fmt.Errorf("failed to parse local height: %w", err)
 	}
 
 	// get remote height
-	remoteHeight, err := downloadAndParseRemoteHeight(ctx, config, downloader)
+	rawRemoteHeight, err := downloadBytes(ctx, config.HeightFileURL, downloader)
 	if err != nil {
-		return false, fmt.Errorf("failed to get remote height: %w", err)
+		return true, fmt.Errorf("failed to download remote height: %w", err)
+	}
+	remoteHeight, err := strconv.ParseInt(strings.TrimSpace(string(rawRemoteHeight)), 10, 64)
+	if err != nil {
+		return true, fmt.Errorf("failed to parse remote height: %w", err)
 	}
 
 	logger.Info("height comparison",
@@ -193,56 +261,24 @@ func shouldRestoreBasedOnHeight(ctx context.Context, config *RestoreConfig, logg
 		slog.Int64("remote_height", remoteHeight),
 		slog.Int64("threshold", config.HeightThreshold))
 
-	// check if remote height is significantly higher (by threshold amount)
-	shouldRestore := remoteHeight >= localHeight+config.HeightThreshold
-
-	if shouldRestore {
-		logger.Info("remote height is significantly higher, proceeding with restore")
-	} else {
-		logger.Info("remote height is not significantly higher, skipping restore")
-	}
-	return shouldRestore, nil
+	// check if remote height is higher than the threshold
+	return remoteHeight >= localHeight+config.HeightThreshold, nil
 }
 
-// downloadAndRestore downloads and restores the snapshot
-func downloadAndRestore(ctx context.Context, config *RestoreConfig, logger *slog.Logger, downloader storage.Downloader) error {
-	logger.Info("starting download and restore process")
-
-	// create download folder
-	if err := os.MkdirAll(config.DownloadFolder, 0755); err != nil {
-		return fmt.Errorf("failed to create download folder: %w", err)
+// downloadBytes downloads a file and returns its content as bytes
+func downloadBytes(ctx context.Context, url string, downloader storage.Downloader) ([]byte, error) {
+	// download remote height file
+	reader, err := downloader.Download(ctx, url)
+	if err != nil {
+		return nil, fmt.Errorf("failed to download %s: %w", url, err)
 	}
-	defer cleanup(config.DownloadFolder, logger)
-
-	// download snapshot
-	logger.Info("downloading snapshot", slog.String("url", config.SnapshotURL))
-	snapshotPath := filepath.Join(config.DownloadFolder, "snapshot.tar.gz")
-	if err := downloadFile(ctx, downloader, config.SnapshotURL, snapshotPath); err != nil {
-		return fmt.Errorf("failed to download snapshot: %w", err)
+	defer reader.Close()
+	// read content
+	content, err := io.ReadAll(reader)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read contents of %s: %w", url, err)
 	}
-
-	// download height file
-	logger.Info("downloading height file", slog.String("url", config.HeightFileURL))
-	heightPath := filepath.Join(config.DownloadFolder, config.HeightFile)
-	if err := downloadFile(ctx, downloader, config.HeightFileURL, heightPath); err != nil {
-		return fmt.Errorf("failed to download height file: %w", err)
-	}
-
-	// extract snapshot, is assumed to be compressed
-	logger.Info("extracting snapshot")
-	extractedPath := filepath.Join(config.DownloadFolder, "extracted")
-	if err := storage.DecompressCMD(ctx, snapshotPath, extractedPath); err != nil {
-		return fmt.Errorf("failed to extract snapshot: %w", err)
-	}
-
-	// replace files atomically
-	logger.Info("replacing files")
-	if err := replaceFiles(config, extractedPath, heightPath, logger); err != nil {
-		return fmt.Errorf("failed to replace files: %w", err)
-	}
-
-	logger.Info("restore completed successfully")
-	return nil
+	return content, nil
 }
 
 // downloadFile downloads a file from storage to local path
@@ -261,54 +297,6 @@ func downloadFile(ctx context.Context, downloader storage.Downloader, key, local
 
 	_, err = io.Copy(file, reader)
 	return err
-}
-
-// replaceFiles atomically replaces the database folder and height file
-func replaceFiles(config *RestoreConfig, extractedPath, newHeightPath string, logger *slog.Logger) error {
-	dbPath := filepath.Join(config.RootFolder, config.DbFolder)
-	heightPath := filepath.Join(config.RootFolder, config.HeightFile)
-	backupDbPath := dbPath + "_backup"
-	backupHeightPath := heightPath + "_backup"
-
-	// backup existing database folder by renaming with _backup suffix
-	if _, err := os.Stat(dbPath); err == nil {
-		logger.Info("backing up existing database folder", slog.String("backup_path", backupDbPath))
-		if err := os.Rename(dbPath, backupDbPath); err != nil {
-			return fmt.Errorf("failed to backup database folder: %w", err)
-		}
-		defer func() {
-			if err := os.RemoveAll(backupDbPath); err != nil {
-				logger.Warn("failed to cleanup backup database folder", slog.String("error", err.Error()))
-			}
-		}()
-	}
-
-	// backup existing height file by renaming with _backup suffix
-	if _, err := os.Stat(heightPath); err == nil {
-		logger.Info("backing up existing height file", slog.String("backup_path", backupHeightPath))
-		if err := os.Rename(heightPath, backupHeightPath); err != nil {
-			return fmt.Errorf("failed to backup height file: %w", err)
-		}
-		defer func() {
-			if err := os.Remove(backupHeightPath); err != nil {
-				logger.Warn("failed to cleanup backup height file", slog.String("error", err.Error()))
-			}
-		}()
-	}
-
-	// copy extracted database folder to final location (avoid cross-device link)
-	extractedDbPath := filepath.Join(extractedPath, config.DbFolder)
-	if err := copyDir(extractedDbPath, dbPath); err != nil {
-		return fmt.Errorf("failed to copy extracted database folder: %w", err)
-	}
-
-	// copy new height file to final location (avoid cross-device link)
-	if err := copyFile(newHeightPath, heightPath); err != nil {
-		return fmt.Errorf("failed to copy new height file: %w", err)
-	}
-
-	logger.Info("files replaced successfully")
-	return nil
 }
 
 // copyFile copies a single file from source to destination
@@ -355,13 +343,4 @@ func copyDir(src, dst string) error {
 			return copyFile(path, destPath)
 		}
 	})
-}
-
-// cleanup removes the download folder
-func cleanup(downloadFolder string, logger *slog.Logger) {
-	if err := os.RemoveAll(downloadFolder); err != nil {
-		logger.Warn("failed to cleanup download folder", slog.String("error", err.Error()))
-	} else {
-		logger.Info("cleaned up download folder")
-	}
 }

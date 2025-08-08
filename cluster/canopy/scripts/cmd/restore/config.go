@@ -12,9 +12,10 @@ type RestoreConfig struct {
 	GlobalTimeout   time.Duration
 	RootFolder      string
 	HeightFile      string
-	DbFolder        string
-	SnapshotURL     string
 	HeightFileURL   string
+	SnapshotFile    string
+	SnapshotFileURL string
+	DbFolder        string
 	DownloadFolder  string
 	HeightThreshold int64
 	S3              *config.S3Config
@@ -31,8 +32,11 @@ func (r RestoreConfig) Validate() error {
 	if r.DbFolder == "" {
 		return errors.New("DB_FOLDER is required")
 	}
-	if r.SnapshotURL == "" {
-		return errors.New("SNAPSHOT_URL is required")
+	if r.SnapshotFile == "" {
+		return errors.New("SNAPSHOT_FILE is required")
+	}
+	if r.SnapshotFileURL == "" {
+		return errors.New("SNAPSHOT_FILE_URL is required")
 	}
 	if r.HeightFileURL == "" {
 		return errors.New("HEIGHT_FILE_URL is required")
@@ -59,7 +63,8 @@ func LoadRestoreConfig() (*RestoreConfig, error) {
 		HeightThreshold: config.GetInt64("HEIGHT_THRESHOLD", 1000),
 		HeightFile:      config.GetEnvString("HEIGHT_FILE", ""),
 		HeightFileURL:   config.GetEnvString("HEIGHT_FILE_URL", ""),
-		SnapshotURL:     config.GetEnvString("SNAPSHOT_URL", ""),
+		SnapshotFile:    config.GetEnvString("SNAPSHOT_FILE", ""),
+		SnapshotFileURL: config.GetEnvString("SNAPSHOT_FILE_URL", ""),
 		S3: &config.S3Config{
 			AccessKey:       config.GetEnvString("S3_ACCESS_KEY", ""),
 			SecretAccessKey: config.GetEnvString("S3_SECRET_ACCESS_KEY", ""),

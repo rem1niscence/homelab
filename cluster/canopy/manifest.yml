@@ -59,3 +59,16 @@ parameters:
     "isGroup":true
     }
     ]'
+---
+apiVersion: longhorn.io/v1beta2
+kind: RecurringJob
+metadata:
+  name: canopy-trim-job
+  namespace: longhorn
+spec:
+  cron: "45 */12 * * *"
+  task: filesystem-trim
+  retain: 0
+  concurrency: 2
+  groups:
+    - canopy

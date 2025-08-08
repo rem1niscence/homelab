@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/reminiscence/homelab/cluster/canopy/scripts/internal/lifecycle"
-	"github.com/reminiscence/homelab/cluster/canopy/scripts/pkg/fsutils"
 	"github.com/reminiscence/homelab/cluster/canopy/scripts/pkg/storage"
 )
 
@@ -105,13 +104,18 @@ func PerformRestore(ctx context.Context, config *RestoreConfig, logger *slog.Log
 	}
 
 	// remove backup files regardless
-	defer fsutils.RemoveAll(configPath.BackupDbPath, configPath.BackupHeightPath)
+	defer os.Remove(configPath.BackupDbPath)
+	defer os.Remove(configPath.BackupHeightPath)
 
 	// check if files exist
-	exists := fsutils.ExistsAll(configPath.DbPath, configPath.HeightPath)
-	dbExists, heightExists := exists[0], exists[1]
+	exists := make([]bool, 2)
+	for i, path := range []string{configPath.DbPath, configPath.HeightPath} {
+		_, err := os.Stat(path)
+		exists[i] = err == nil
+	}
+
 	// decide whether to restore
-	restore, err := shouldRestore(ctx, heightExists, dbExists, logger, config, downloader)
+	restore, err := shouldRestore(ctx, exists[0], exists[1], logger, config, downloader)
 	if err != nil {
 		logger.Error("failed to decide whether to restore", slog.String("error", err.Error()))
 	}
@@ -125,7 +129,7 @@ func PerformRestore(ctx context.Context, config *RestoreConfig, logger *slog.Log
 	if err := os.MkdirAll(config.DownloadFolder, 0755); err != nil {
 		return fmt.Errorf("failed to create download folder: %w", err)
 	}
-	defer fsutils.RemoveAll(config.DownloadFolder)
+	defer os.Remove(config.DownloadFolder)
 
 	// download snapshot files
 	downloads := map[string]string{
@@ -153,7 +157,7 @@ func PerformRestore(ctx context.Context, config *RestoreConfig, logger *slog.Log
 		slog.String("took", time.Since(now).String()))
 
 	// confirm extracted DB exists
-	if !fsutils.ExistsAll(configPath.ExtractedSnapshotPath)[0] {
+	if _, err := os.Stat(configPath.ExtractedSnapshotPath); err != nil {
 		return fmt.Errorf("extracted DB does not exist")
 	}
 

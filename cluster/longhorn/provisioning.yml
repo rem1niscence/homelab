@@ -43,6 +43,19 @@ spec:
   retain: 2
   concurrency: 3
 ---
+apiVersion: longhorn.io/v1beta2
+kind: RecurringJob
+metadata:
+  name: trim-job
+  namespace: longhorn
+spec:
+  cron: "30 10 * * *"
+  task: filesystem-trim
+  retain: 0
+  concurrency: 3
+  groups:
+    - local
+---
 
 ---
 apiVersion: storage.k8s.io/v1
@@ -89,3 +102,16 @@ spec:
     - remote
   retain: 2
   concurrency: 3
+---
+apiVersion: longhorn.io/v1beta2
+kind: RecurringJob
+metadata:
+  name: remote-trim-job
+  namespace: longhorn
+spec:
+  cron: "45 14 * * *"
+  task: filesystem-trim
+  retain: 0
+  concurrency: 3
+  groups:
+    - remote

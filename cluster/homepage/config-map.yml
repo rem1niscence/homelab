@@ -507,22 +507,22 @@ data:
     - Canopy:
         - Wallet 1:
             icon: mdi-wallet
-            href: https://wallet-1.{{DOMAIN}}
+            href: https://observer-1-wallet-1.{{DOMAIN}}
             siteMonitor: http://node-1.canopy:50000
             description: Wallet for chain 1
         - Explorer 1:
             icon: mdi-web
-            href: https://explorer-1.{{DOMAIN}}
+            href: https://observer-1-explorer-1.{{DOMAIN}}
             siteMonitor: http://node-1.canopy:50001
             description: Explorer for chain 1
         - Wallet 2:
             icon: mdi-wallet
-            href: https://wallet-2.{{DOMAIN}}
+            href: https://observer-2-wallet-2.{{DOMAIN}}
             siteMonitor: http://node-2.canopy:40000
             description: Wallet for chain 2
         - Explorer 2:
             icon: mdi-web
-            href: https://explorer-2.{{DOMAIN}}
+            href: https://observer-2-explorer-2.{{DOMAIN}}
             siteMonitor: http://node-2.canopy:40001
             description: Explorer for chain 2
         - FRP Client:

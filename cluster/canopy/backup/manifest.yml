@@ -73,7 +73,7 @@ metadata:
     keel.sh/pollSchedule: "@every 1h"
     keel.sh/trigger: poll
 spec:
-  schedule: "0 */6 * * *"
+  schedule: "15 */6 * * *"
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 1
   jobTemplate:

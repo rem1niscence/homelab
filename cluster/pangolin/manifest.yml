@@ -1,0 +1,274 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pangolin
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pangolin
+  namespace: pangolin
+  labels:
+    app: pangolin
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pangolin
+  template:
+    metadata:
+      labels:
+        app: pangolin
+    spec:
+      nodeSelector:
+        type: vm
+      initContainers:
+        - name: substitute-credentials
+          image: bhgedigital/envsubst
+          command: ["/bin/sh", "-c", "envsubst < /config/config.yml > /app/config/config.yml"]
+          envFrom:
+            - secretRef:
+                name: pangolin
+          volumeMounts:
+            - name: data
+              mountPath: /app/config
+            - name: config
+              mountPath: /config
+      securityContext:
+        sysctls:
+          - name: net.ipv4.ping_group_range
+            value: "0 2147483647"
+      containers:
+        - name: pangolin
+          image: fosrl/pangolin:latest
+          ports:
+            - containerPort: 3000
+            - containerPort: 3001
+            - containerPort: 3002
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - "curl -f http://localhost:3001/api/v1/"
+            initialDelaySeconds: 60
+            timeoutSeconds: 3
+            periodSeconds: 10
+            failureThreshold: 3
+          envFrom:
+            - secretRef:
+                name: pangolin
+          volumeMounts:
+            - name: data
+              mountPath: /app/config
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data
+        - name: config
+          configMap:
+            name: config
+            items:
+              - key: config.yml
+                path: config.yml
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gerbil
+  namespace: pangolin
+  labels:
+    app: gerbil
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gerbil
+  template:
+    metadata:
+      labels:
+        app: gerbil
+    spec:
+      nodeSelector:
+        type: vm
+      initContainers:
+        - name: substitute-credentials
+          image: bhgedigital/envsubst
+          command: ["/bin/sh", "-c", "envsubst < /config/config.yml > /app/config/config.yml"]
+          envFrom:
+            - secretRef:
+                name: pangolin
+          volumeMounts:
+            - name: data
+              mountPath: /app/config
+            - name: config
+              mountPath: /config
+      containers:
+        - name: gerbil
+          image: fosrl/gerbil:latest
+          securityContext:
+            privileged: true
+            capabilities:
+              add:
+                - NET_ADMIN
+                - SYS_MODULE
+                - NET_RAW
+          ports:
+            - containerPort: 3003
+            - containerPort: 51820 # udp
+          env:
+            - name: SERVER_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: pangolin
+                  key: SERVER_SECRET
+                  optional: false
+            - name: LOG_LEVEL
+              value: DEBUG
+          args:
+            - "--reachableAt=http://0.0.0.0:3003"
+            - "--remoteConfig=http://pangolin:3001/api/v1/gerbil/get-config"
+            - "--reportBandwidthTo=http://pangolin:3001/api/v1/gerbil/receive-bandwidth"
+            - "--generateAndSaveKeyTo=/var/config/key"
+          volumeMounts:
+            - name: data
+              mountPath: /var/config
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data
+        - name: config
+          configMap:
+            name: config
+            items:
+              - key: config.yml
+                path: config.yml
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: pangolin
+  name: data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1G
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: pangolin
+  name: pangolin
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  selector:
+    app: pangolin
+  ports:
+    - name: api-server
+      port: 3000
+      targetPort: 3000
+    - name: internal
+      port: 3001
+      targetPort: 3001
+    - name: frontend
+      port: 3002
+      targetPort: 3002
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gerbil
+  namespace: pangolin
+spec:
+  selector:
+    app: gerbil
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  ports:
+    - name: entrypoint
+      protocol: TCP
+      port: 3003
+      targetPort: 3003
+    - name: dns-udp
+      protocol: UDP
+      port: 51820
+      targetPort: 51820
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: pangolin-frontend
+  namespace: pangolin
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`pangolin.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: pangolin
+          port: 3002
+    - match: Host(`pangolin.{{DOMAIN}}`) && !PathPrefix(`/api/v1`)
+      kind: Rule
+      services:
+        - name: pangolin
+          port: 3002
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: pangolin-api
+  namespace: pangolin
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`pangolin.{{DOMAIN}}`) && PathPrefix(`/api/v1`)
+      kind: Rule
+      services:
+        - name: pangolin
+          port: 3000
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: pangolin
+  name: config
+data:
+  config.yml: |
+    app:
+      dashboard_url: ${DASHBOARD_URL}
+      log_level: debug
+      save_logs: false
+
+    domains:
+      domain1:
+        base_domain: ${BASE_DOMAIN_1}
+        cert_resolver: "letsencrypt"
+
+    server:
+      secret: ${SERVER_SECRET}
+
+    gerbil:
+      start_port: 51820
+      base_endpoint: ${GERBIL_BASE_ENDPOINT}
+      subnet_group: 100.89.240.0/20
+      block_size: 24
+      site_block_size: 30
+
+    flags:
+      require_email_verification: false
+      disable_signup_without_invite: true
+      disable_user_create_org: true

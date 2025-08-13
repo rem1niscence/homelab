@@ -1,6 +1,6 @@
 services:
   frps:
-    image: ghcr.io/fatedier/frps:v0.63.0
+    image: ghcr.io/fatedier/frps:v0.64.0
     container_name: frps
     volumes:
       - ./frps.toml:/etc/frp/frps.toml
@@ -8,16 +8,13 @@ services:
     env_file:
       - .env
     ports:
-      - "7000:7000"
-      - "7000:7000/udp"
-      - "50001:50001"
-      - "40001:40001"
-      - "9001:9001"
-      - "9002:9002"
+      - "7000:7000" # FRP control port
+      - "7000:7000/udp" # FRP control port UDP
     command: ["-c", "/etc/frp/frps.toml"]
-
+    networks:
+      - frp-network
   frpc:
-    image: ghcr.io/fatedier/frpc:v0.63.0
+    image: ghcr.io/fatedier/frpc:v0.64.0
     container_name: frpc
     env_file:
       - .env
@@ -25,7 +22,35 @@ services:
       - ./frpc_server.toml:/etc/frp/frpc.toml
     restart: always
     ports:
-      - "7500:7500" # server_port
+      - "7500:7500" # server dashboard port
     command: ["-c", "/etc/frp/frpc.toml"]
+    networks:
+      - frp-network
+  caddy:
+    image: caddy:2
+    container_name: caddy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    env_file:
+      - .env
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - frp-network
+
+networks:
+  frp-network:
+    driver: bridge
+
+volumes:
+  caddy_data:
+  caddy_config:
 # if you get any weird connection errors, try this on the server
 # sudo iptables -I INPUT -p tcp --dport {PORT} -j ACCEPT
+
+# Hot Reload Caddy config
+# > docker container exec caddy caddy reload -c /etc/caddy/Caddyfile

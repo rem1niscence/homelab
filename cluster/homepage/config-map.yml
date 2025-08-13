@@ -503,7 +503,7 @@ data:
         - VM:
             icon: mdi-cpu-64-bit
             href: ${DASHDOT_VM_URL}
-            siteMonitor: ${DASHDOT_VM_PING}
+            # siteMonitor: ${DASHDOT_VM_PING}
     - Canopy:
         - Wallet 1:
             icon: mdi-wallet

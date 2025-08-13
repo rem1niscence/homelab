@@ -247,7 +247,7 @@ metadata:
   name: observer-1
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
       storage: 8G
@@ -260,7 +260,7 @@ metadata:
   name: observer-2
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
       storage: 6G

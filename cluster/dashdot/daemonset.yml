@@ -20,13 +20,6 @@ spec:
       labels:
         app: dashdot
     spec:
-      tolerations:
-        - key: node-role.kubernetes.io/control-plane
-          operator: Exists
-          effect: NoSchedule
-        - key: node-role.kubernetes.io/master
-          operator: Exists
-          effect: NoSchedule
       restartPolicy: Always
       containers:
         - name: dashdot
@@ -34,10 +27,12 @@ spec:
           securityContext:
             privileged: true
           ports:
-            - containerPort: 3001
+            - containerPort: 3123
               # TODO: figure out a way to add an individual service per pod
-              hostPort: 3001
+              hostPort: 3123
           env:
+            - name: DASHDOT_PORT
+              value: "3123"
             - name: DASHDOT_SHOW_HOST
               value: "true"
             - name: DASHDOT_SHOW_DASH_VERSION

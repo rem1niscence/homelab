@@ -100,6 +100,8 @@ data:
       service: http://microbin.microbin:80
     - hostname: jellyfin.{{DOMAIN}}
       service: http://jellyfin.jellyfin:8096
+    - hostname: jellyseerr.{{DOMAIN}}
+      service: http://jellyseerr.jellyfin:5055
     # - hostname: hemmelig.{{DOMAIN}}
     #   service: http://hemmelig.hemmelig:80
     # - hostname: cloud.{{DOMAIN}}

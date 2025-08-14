@@ -29,6 +29,12 @@ tailscale-unexpose:
 	@kubectl annotate service -n $(NAMESPACE) $(SERVICE) tailscale.com/hostname-
 	@kubectl annotate service -n $(NAMESPACE) $(SERVICE) tailscale.com/expose-
 
+.PHONY: tailscale-k3s-auth
+tailscale-k3s-auth:
+	$(call check_vars, SERVER)
+	@./tailscale/tailscale-k3s-auth.sh $${SERVER}
+
+
 .PHONY: traefik
 traefik:
 	$(call check_vars, DOMAIN)

@@ -12,4 +12,5 @@ helm upgrade \
   --create-namespace \
   --set-string oauth.clientId=$OAUTH_CLIENT_ID \
   --set-string oauth.clientSecret=$OAUTH_CLIENT_SECRET \
+  --set-string apiServerProxyConfig.mode="noauth" \
   --wait

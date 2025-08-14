@@ -1,0 +1,17 @@
+apiVersion: v1
+  kind: Config
+  clusters:
+  - cluster:
+      server: {{SERVER_URL}}
+    name: tailscale-cluster
+  contexts:
+  - context:
+      cluster: tailscale-cluster
+      user: tailscale-user
+    name: tailscale-context
+  current-context: tailscale-context
+  preferences: {}
+  users:
+  - name: tailscale-user
+    user:
+      token: {{TOKEN}}

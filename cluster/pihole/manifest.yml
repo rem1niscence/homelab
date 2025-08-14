@@ -46,11 +46,15 @@ spec:
           volumeMounts:
             - name: config
               mountPath: /etc/pihole
-              subPath: pihole-config
+            - name: tailscale-dns-config
+              mountPath: /etc/dnsmasq.d
       volumes:
         - name: config
           persistentVolumeClaim:
             claimName: config-pvc
+        - name: tailscale-dns-config
+          configMap:
+            name: pihole-tailscale-dns
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -101,3 +105,23 @@ spec:
       services:
         - name: pihole
           port: 80
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pihole-tailscale-dns
+  namespace: pihole
+data:
+  02-tailscale.conf: |
+    # Forward .ts.net domains to Tailscale MagicDNS
+    server=/ts.net/100.100.100.100
+
+    # Forward your specific tailnet domain
+    # TODO: Automatically inject the tailnet ID
+    server=/{{TAILNET_ID}}.ts.net/100.100.100.100
+
+    # Optional: Forward reverse DNS for Tailscale IP range
+    server=/100.in-addr.arpa/100.100.100.100
+
+    # Optional: Enable strict order for these domains
+    strict-order

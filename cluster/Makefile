@@ -114,3 +114,8 @@ add-coredns-record:
 	$(call check_vars, REGISTRY_IP REGISTRY_DOMAIN)
 	@./scripts/add_core_dns_record.sh $${REGISTRY_IP} $${REGISTRY_DOMAIN}
 	@echo "CoreDNS record added. Remember to also add $${REGISTRY_IP} $${REGISTRY_DOMAIN} to your hosts file ✅"
+
+.PHONY: argocd
+argocd:
+	kubectl create namespace argocd
+	kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml

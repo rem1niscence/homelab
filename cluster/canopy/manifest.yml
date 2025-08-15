@@ -30,7 +30,7 @@ data:
       exit 1
     fi
 
-    echo "Querying height from http://localhost:$PORT/v1/query/height"
+    # echo "Querying height from http://localhost:$PORT/v1/query/height"
     HEIGHT=$(curl -X POST "http://localhost:$PORT/v1/query/height" 2>/dev/null)
 
     if [ $? -eq 0 ] && [ ! -z "$HEIGHT" ]; then

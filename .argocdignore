@@ -1,0 +1,3 @@
+# ArgoCD ignore file - ignore everything except explicitly allowed apps
+*
+!memos/

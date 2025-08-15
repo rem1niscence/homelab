@@ -20,7 +20,7 @@ spec:
         app: node-1
     spec:
       nodeSelector:
-        type: secondary
+        type: vm
       initContainers:
         - name: keystore-init
           image: busybox:1.36
@@ -33,6 +33,25 @@ spec:
               mountPath: /tmp/keystore
             - name: scripts
               mountPath: /scripts
+        - name: snapshot-check
+          image: registry.local/canopy-restore:latest
+          imagePullPolicy: Always # TODO: Remove once image is stable
+          envFrom:
+            - secretRef:
+                name: restore
+          env:
+            - name: HEIGHT_FILE
+              value: height_1.txt
+            - name: HEIGHT_FILE_URL
+              value: height_1.txt
+            - name: SNAPSHOT_FILE
+              value: canopy_backup_1.tar.gz
+            - name: SNAPSHOT_FILE_URL
+              value: canopy_backup_1.tar.gz
+          volumeMounts:
+            - name: data
+              mountPath: /root/.canopy
+              subPath: node-1
       containers:
         - name: canopy
           image: canopynetwork/canopy:latest
@@ -126,7 +145,7 @@ spec:
         app: node-2
     spec:
       nodeSelector:
-        type: secondary
+        type: vm
       initContainers:
         - name: keystore-init
           image: busybox:1.36
@@ -139,6 +158,25 @@ spec:
               mountPath: /tmp/keystore
             - name: scripts
               mountPath: /scripts
+        - name: snapshot-check
+          image: registry.local/canopy-restore:latest
+          imagePullPolicy: Always # TODO: Remove once image is stable
+          envFrom:
+            - secretRef:
+                name: restore
+          env:
+            - name: HEIGHT_FILE
+              value: height_2.txt
+            - name: HEIGHT_FILE_URL
+              value: height_2.txt
+            - name: SNAPSHOT_FILE
+              value: canopy_backup_2.tar.gz
+            - name: SNAPSHOT_FILE_URL
+              value: canopy_backup_2.tar.gz
+          volumeMounts:
+            - name: data
+              mountPath: /root/.canopy
+              subPath: node-2
       containers:
         - name: canopy
           image: canopynetwork/canopy:latest
@@ -273,25 +311,8 @@ spec:
     - ReadWriteMany
   resources:
     requests:
-      storage: 3T
-  volumeName: canopy-node-1-pv
-  storageClassName: local-path
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: canopy-node-2-pv
-spec:
-  capacity:
-    storage: 3T
-  accessModes:
-    - ReadWriteMany
-  nfs:
-    server: 192.168.0.95
-    path: /mnt/ssd_2tb/canopy
-  storageClassName: local-path
-  mountOptions:
-    - vers=4.0
+      storage: 8G
+  storageClassName: longhorn-canopy
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -303,9 +324,8 @@ spec:
     - ReadWriteMany
   resources:
     requests:
-      storage: 3T
-  volumeName: canopy-node-2-pv
-  storageClassName: local-path
+      storage: 8G
+  storageClassName: longhorn-canopy
 ---
 apiVersion: v1
 kind: Service

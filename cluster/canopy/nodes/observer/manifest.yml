@@ -141,7 +141,7 @@ spec:
         app: observer-2
     spec:
       nodeSelector:
-        type: vm
+        type: secondary
       initContainers:
         - name: keystore-init
           image: busybox:1.36
@@ -178,11 +178,11 @@ spec:
           image: canopynetwork/canopy:latest
           args: ["start"]
           ports:
-            - containerPort: 50000
-            - containerPort: 50001
-            - containerPort: 50002
-            - containerPort: 50003
-            - containerPort: 50004
+            - containerPort: 40000
+            - containerPort: 40001
+            - containerPort: 40002
+            - containerPort: 40003
+            - containerPort: 40004
             - containerPort: 9002
             - containerPort: 9090
           volumeMounts:

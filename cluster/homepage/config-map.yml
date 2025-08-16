@@ -211,16 +211,6 @@ data:
         #       type: mylar
         #       url: http://mylar3.mylar3:8090
         #       key: ${MYLAR3_API_KEY}
-        - Homebox:
-            icon: homebox
-            href: https://homebox.{{DOMAIN}}
-            siteMonitor: http://homebox.homebox
-            description: Home inventory & organization
-            widget:
-              type: homebox
-              url: http://homebox.homebox
-              username: ${HOMEBOX_USERNAME}
-              password: ${HOMEBOX_PASSWORD}
         - Fileflows:
             icon: fileflows.svg
             href: https://fileflows.{{DOMAIN}}
@@ -249,6 +239,15 @@ data:
               url: http://prometheus-grafana.monitoring
               username: ${GRAFANA_URSERNAME}
               password: ${GRAFANA_PASSWORD}
+        - ArgoCD:
+            icon: sh-argo-cd
+            href: https://argocd.{{DOMAIN}}
+            siteMonitor: http://argocd-server.argocd
+            description: Continuous Delivery tool for K8s
+            widget:
+              type: argocd
+              url: http://argocd-server.argocd
+              key: ${ARGOCD_API_KEY}
     - Apps:
         - Tailscale:
             icon: tailscale.svg
@@ -370,6 +369,11 @@ data:
             href: https://vaultwarden.{{DOMAIN}}
             siteMonitor: http://vaultwarden.vaultwarden
             description: Self-hosted password management
+        - Homebox:
+            icon: homebox
+            href: https://homebox.{{DOMAIN}}
+            siteMonitor: http://homebox.homebox
+            description: Home inventory & organization
         # - FileRun:
         #     icon: filerun.svg
         #     href: https://cloud.{{DOMAIN}}

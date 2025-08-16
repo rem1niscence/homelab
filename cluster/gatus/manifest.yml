@@ -278,6 +278,12 @@ data:
           - "[STATUS] == 200"
         alerts:
               - type: discord
+      - name: ArgoCD
+        url: "http://argocd-server.argocd"
+        conditions:
+          - "[STATUS] == 200"
+        alerts:
+              - type: discord
       # - name: TrueNAS SCALE
       #   url: "http://truenas.truenas"
       #   conditions:

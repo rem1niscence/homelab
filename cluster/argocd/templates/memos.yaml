@@ -12,7 +12,7 @@ spec:
     targetRevision: stable
     path: cluster/memos
   destination:
-    server: https://kubernetes.default.svc
+    server: {{ .Values.spec.destination.server }}
     namespace: memos
   ignoreDifferences:
     - group: traefik.io
@@ -21,6 +21,12 @@ spec:
       namespace: memos
       jsonPointers:
         - /spec
+    # - group: traefik.io
+    #   kind: IngressRoute
+    #   name: memos
+    #   namespace: memos
+    #   jsonPointers:
+    #     - /spec
   syncPolicy:
     automated:
       prune: true

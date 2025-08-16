@@ -9,11 +9,18 @@ spec:
   project: default
   source:
     repoURL: https://github.com/rem1niscence/homelab.git
-    targetRevision: HEAD
+    targetRevision: stable
     path: cluster/memos
   destination:
     server: https://kubernetes.default.svc
     namespace: memos
+  ignoreDifferences:
+    - group: traefik.io
+      kind: IngressRoute
+      name: memos
+      namespace: memos
+      jsonPointers:
+        - /spec
   syncPolicy:
     automated:
       prune: true

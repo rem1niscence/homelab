@@ -12,7 +12,7 @@ spec:
     targetRevision: stable
     path: cluster/memos
   destination:
-    server: https://kubernetes.default.svc
+    server: {{ .Values.spec.destination.server }}
     namespace: memos
   ignoreDifferences:
     - group: traefik.io

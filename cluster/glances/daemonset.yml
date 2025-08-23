@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: glances
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  namespace: glances
+  name: glances
+  labels:
+    app: glances
+spec:
+  selector:
+    matchLabels:
+      app: glances
+  template:
+    metadata:
+      labels:
+        app: glances
+    spec:
+      restartPolicy: Always
+      hostPID: true # Equivalent to --pid host
+      containers:
+        - name: glances
+          image: nicolargo/glances:ubuntu-dev
+          ports:
+            - containerPort: 61208
+              hostPort: 61208
+              protocol: TCP
+            - containerPort: 61209
+              hostPort: 61209
+              protocol: TCP
+          env:
+            - name: GLANCES_OPT
+              value: "-w"
+          volumeMounts:
+            - name: docker-sock
+              mountPath: /var/run/docker.sock
+              readOnly: true
+          securityContext:
+            privileged: true
+      volumes:
+        - name: docker-sock
+          hostPath:
+            path: /var/run/docker.sock
+            type: Socket

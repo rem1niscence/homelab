@@ -254,6 +254,11 @@ data:
             href: https://login.tailscale.com/admin/machines
             siteMonitor: https://login.tailscale.com/admin/machines
             description: Wireguard VPN as a service
+        - Hetzner:
+            icon: sh-hetzner
+            href: https://console.hetzner.com/
+            siteMonitor: https://console.hetzner.com/
+            description: Cloud VM provider
         - Longhorn:
             icon: longhorn.svg
             href: https://longhorn.{{DOMAIN}}
@@ -485,29 +490,59 @@ data:
             description: Open-source website analytics
     - System:
         - NUC:
-            icon: mdi-cpu-64-bit
-            href: ${DASHDOT_NUC_URL}
-            siteMonitor: ${DASHDOT_NUC_PING}
+            icon: mdi-server
+            href: ${GLANCES_NUC_URL}
+            siteMonitor: ${GLANCES_NUC_PING}
+            widget:
+              type: glances
+              url: ${GLANCES_NUC_PING}
+              version: 4
+              metric: info
         - AMD:
-            icon: mdi-cpu-64-bit
-            href: ${DASHDOT_AMD_URL}
-            siteMonitor: ${DASHDOT_AMD_PING}
+            icon: mdi-server
+            href: ${GLANCES_AMD_URL}
+            siteMonitor: ${GLANCES_AMD_PING}
+            widget:
+              type: glances
+              url: ${GLANCES_AMD_PING}
+              version: 4
+              metric: info
         - PI-2:
-            icon: mdi-cpu-64-bit
-            href: ${DASHDOT_PI_2_URL}
-            siteMonitor: ${DASHDOT_PI_2_PING}
+            icon: mdi-raspberry-pi
+            href: ${GLANCES_PI_2_URL}
+            siteMonitor: ${GLANCES_PI_2_PING}
+            widget:
+              type: glances
+              url: ${GLANCES_PI_2_PING}
+              version: 4
+              metric: info
         - PI-3:
-            icon: mdi-cpu-64-bit
-            href: ${DASHDOT_PI_3_URL}
-            siteMonitor: ${DASHDOT_PI_3_PING}
-        - NAS:
-            icon: mdi-cpu-64-bit
-            href: https://truenas-dashdot.{{DOMAIN}}
-            siteMonitor: http://truenas-dashdot.truenas:10044
+            icon: mdi-raspberry-pi
+            href: ${GLANCES_PI_3_URL}
+            siteMonitor: ${GLANCES_PI_3_PING}
+            widget:
+              type: glances
+              url: ${GLANCES_PI_3_PING}
+              version: 4
+              metric: info
         - VM:
-            icon: mdi-cpu-64-bit
-            href: ${DASHDOT_VM_URL}
-            siteMonitor: ${DASHDOT_VM_PING}
+            icon: mdi-cloud
+            href: ${GLANCES_VM_URL}
+            siteMonitor: ${GLANCES_VM_PING}
+            widget:
+              type: glances
+              url: ${GLANCES_VM_PING}
+              version: 4
+              metric: info
+        - NAS:
+            icon: mdi-nas
+            href: ${GLANCES_NAS_URL}
+            siteMonitor: ${GLANCES_NAS_PING}
+            widget:
+              type: glances
+              url: ${GLANCES_NAS_PING}
+              version: 4
+              metric: info
     - Canopy:
         - Wallet 1:
             icon: mdi-wallet

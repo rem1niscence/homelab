@@ -172,13 +172,27 @@ func PerformBackup(ctx context.Context, config *BackupConfig, logger *slog.Logge
 // prepareBackup handles the compression or file preparation logic for a backup item
 func prepareBackup(ctx context.Context, item BackupItem,
 	sourcePath string, backupDir string, logger *slog.Logger) (*BackupResult, error) {
+	sourceInfo, err := os.Stat(sourcePath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to stat source path: %w", err)
+	}
+
+	if item.BadgerFlatten {
+		logger.Info("flattening badger database")
+		now := time.Now()
+		if err := storage.FlattenBadgerDB(ctx, sourcePath); err != nil {
+			return nil, fmt.Errorf("failed to flatten badger database: %w", err)
+		}
+		logger.Info("finish flattening badger database",
+			slog.String("took", time.Since(now).String()))
+	}
+
 	if item.Compress {
 		logger.Info("started compressing backup",
 			slog.String("key", item.BackupKey),
 			slog.String("path", sourcePath))
 		fileName := fmt.Sprintf("%s.tar.gz", item.BackupKey)
 		backupFile := filepath.Join(backupDir, fileName)
-
 		now := time.Now()
 		if err := storage.CompressFolderCMD(ctx, sourcePath, backupFile); err != nil {
 			return nil, fmt.Errorf("compression failed: %w", err)
@@ -201,29 +215,17 @@ func prepareBackup(ctx context.Context, item BackupItem,
 			Skipped:  false,
 		}, nil
 	} else {
-		// for uncompressed backups, check if source is a single file
-		sourceInfo, err := os.Stat(sourcePath)
-		if err != nil {
-			return nil, fmt.Errorf("failed to stat source path: %w", err)
-		}
-
-		if sourceInfo.IsDir() {
-			logger.Error("compression is disabled but source is a directory, skipping item",
-				slog.String("key", item.BackupKey))
-			return &BackupResult{Skipped: true}, nil
-		}
-
 		logger.Info("using source file directly for uncompressed backup",
 			slog.String("key", item.BackupKey),
 			slog.String("path", sourcePath),
 			slog.Int64("size", sourceInfo.Size()))
-
-		return &BackupResult{
-			FilePath: sourcePath,
-			Size:     sourceInfo.Size(),
-			Skipped:  false,
-		}, nil
 	}
+
+	return &BackupResult{
+		FilePath: sourcePath,
+		Size:     sourceInfo.Size(),
+		Skipped:  false,
+	}, nil
 }
 
 // uploadBackup handles the upload logic for a prepared backup file

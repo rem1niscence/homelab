@@ -11,9 +11,10 @@ import (
 
 // BackupItem represents a single backup item configuration.
 type BackupItem struct {
-	BackupKey  string `json:"key"`
-	SourcePath string `json:"path"`
-	Compress   bool   `json:"compress"`
+	BackupKey     string `json:"key"`
+	SourcePath    string `json:"path"`
+	Compress      bool   `json:"compress"`
+	BadgerFlatten bool   `json:"badgerFlatten"`
 }
 
 // BackupConfig represents the configuration for the backup process.

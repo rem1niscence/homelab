@@ -180,3 +180,32 @@ func DecompressCMD(ctx context.Context, sourceFile, targetDir string) error {
 
 	return nil
 }
+
+// BadgerFlatten runs `badger flatten --dir {directory}` to rewrite value log files
+// and reclaim space. Requires the `badger` CLI to be installed and on PATH.
+func FlattenBadgerDB(ctx context.Context, dir string) error {
+	absDir, err := filepath.Abs(dir)
+	if err != nil {
+		return fmt.Errorf("failed to get absolute directory path: %w", err)
+	}
+
+	info, err := os.Stat(absDir)
+	if err != nil {
+		return fmt.Errorf("failed to stat directory: %w", err)
+	}
+	if !info.IsDir() {
+		return fmt.Errorf("path %s is not a directory", absDir)
+	}
+
+	cmd := exec.CommandContext(ctx, "badger", "flatten", "--dir", absDir)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	if err := cmd.Start(); err != nil {
+		return fmt.Errorf("failed to start badger flatten: %w", err)
+	}
+	if err := cmd.Wait(); err != nil {
+		return fmt.Errorf("badger flatten failed: %w", err)
+	}
+	return nil
+}

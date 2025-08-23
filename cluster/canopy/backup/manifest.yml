@@ -41,7 +41,8 @@ spec:
                       {
                         "key": "canopy_backup_1.tar.gz",
                         "path": "/root/.canopy/canopy",
-                        "compress": true
+                        "compress": true,
+                        "badgerFlatten": true
                       },
                       {
                         "key": "height_1.txt",

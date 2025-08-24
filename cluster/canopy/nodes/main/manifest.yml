@@ -33,28 +33,28 @@ spec:
               mountPath: /tmp/keystore
             - name: scripts
               mountPath: /scripts
-        - name: snapshot-check
-          image: registry.local/canopy-restore:latest
-          imagePullPolicy: Always # TODO: Remove once image is stable
-          envFrom:
-            - secretRef:
-                name: restore
-          env:
-            - name: HEIGHT_FILE
-              value: height_1.txt
-            - name: HEIGHT_FILE_URL
-              value: height_1.txt
-            - name: SNAPSHOT_FILE
-              value: canopy_backup_1.tar.gz
-            - name: SNAPSHOT_FILE_URL
-              value: canopy_backup_1.tar.gz
-          volumeMounts:
-            - name: data
-              mountPath: /root/.canopy
-              subPath: node-1
+        # - name: snapshot-check
+        #   image: registry.local/canopy-restore:latest
+        #   imagePullPolicy: Always # TODO: Remove once image is stable
+        #   envFrom:
+        #     - secretRef:
+        #         name: restore
+        #   env:
+        #     - name: HEIGHT_FILE
+        #       value: height_1.txt
+        #     - name: HEIGHT_FILE_URL
+        #       value: height_1.txt
+        #     - name: SNAPSHOT_FILE
+        #       value: canopy_backup_1.tar.gz
+        #     - name: SNAPSHOT_FILE_URL
+        #       value: canopy_backup_1.tar.gz
+        #   volumeMounts:
+        #     - name: data
+        #       mountPath: /root/.canopy
+        #       subPath: node-1
       containers:
         - name: canopy
-          image: canopynetwork/canopy:latest
+          image: registry.local/canopy:latest
           args: ["start"]
           ports:
             - containerPort: 50000
@@ -135,7 +135,7 @@ metadata:
     keel.sh/pollSchedule: "@every 30m"
     keel.sh/trigger: poll
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app: node-2
@@ -460,3 +460,5 @@ spec:
       services:
         - name: frp
           port: 7501
+---
+

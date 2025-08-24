@@ -23,7 +23,7 @@ data:
         columns: 2
       System:
         style: row
-        columns: 6
+        columns: 4
       Media:
         style: row
         columns: 2
@@ -345,7 +345,7 @@ data:
             siteMonitor: http://morphos.morphos
             description: Self-hosted file converter
         - ByteStash:
-            icon: si-codecrafters
+            icon: sh-bytestash
             href: https://bytestash.{{DOMAIN}}
             siteMonitor: http://bytestash.bytestash
             description: Code Snippet Manager
@@ -355,7 +355,7 @@ data:
             siteMonitor: http://pdfding.pdfding
             description: Online PDF viewer
         - Beaver Habits:
-            icon: mdi-radar
+            icon: sh-beaver-habit-tracker
             href: https://beaverhabits.{{DOMAIN}}
             siteMonitor: http://beaverhabits.beaverhabits
             description: Habit tracker
@@ -364,11 +364,6 @@ data:
             href: https://kapowarr.{{DOMAIN}}
             siteMonitor: http://kapowarr.kapowarr
             description: Comic management tool
-        # - Kubevirt UI:
-        #     icon: vmware-workstation
-        #     href: https://kubevirt.{{DOMAIN}}
-        #     siteMonitor: http://kubevirt-manager.kubevirt-manager:8080
-        #     description: Virtual machine manager
         - Vaultwarden:
             icon: vaultwarden.svg
             href: https://vaultwarden.{{DOMAIN}}
@@ -379,6 +374,16 @@ data:
             href: https://homebox.{{DOMAIN}}
             siteMonitor: http://homebox.homebox
             description: Home inventory & organization
+        - An Otter Wiki:
+            icon: sh-an-otter-wiki
+            href: https://wiki.{{DOMAIN}}
+            siteMonitor: http://wiki.wiki
+            description: Personal wiki
+        # - Kubevirt UI:
+        #     icon: vmware-workstation
+        #     href: https://kubevirt.{{DOMAIN}}
+        #     siteMonitor: http://kubevirt-manager.kubevirt-manager:8080
+        #     description: Virtual machine manager
         # - FileRun:
         #     icon: filerun.svg
         #     href: https://cloud.{{DOMAIN}}
@@ -547,22 +552,22 @@ data:
         - Wallet 1:
             icon: mdi-wallet
             href: https://observer-1-wallet-1.{{DOMAIN}}
-            siteMonitor: http://node-1.canopy:50000
+            siteMonitor: http://observer-1.canopy:50000
             description: Wallet for chain 1
         - Explorer 1:
             icon: mdi-web
             href: https://observer-1-explorer-1.{{DOMAIN}}
-            siteMonitor: http://node-1.canopy:50001
+            siteMonitor: http://observer-1.canopy:50001
             description: Explorer for chain 1
         - Wallet 2:
             icon: mdi-wallet
             href: https://observer-2-wallet-2.{{DOMAIN}}
-            siteMonitor: http://node-2.canopy:40000
+            siteMonitor: http://observer-2.canopy:40000
             description: Wallet for chain 2
         - Explorer 2:
             icon: mdi-web
             href: https://observer-2-explorer-2.{{DOMAIN}}
-            siteMonitor: http://node-2.canopy:40001
+            siteMonitor: http://observer-2.canopy:40001
             description: Explorer for chain 2
         - FRP Client:
             icon: sh-haproxy

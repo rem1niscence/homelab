@@ -284,6 +284,12 @@ data:
           - "[STATUS] == 200"
         alerts:
               - type: discord
+      - name: Wiki
+        url: "http://wiki.wiki"
+        conditions:
+          - "[STATUS] == 200"
+        alerts:
+              - type: discord
       # - name: TrueNAS SCALE
       #   url: "http://truenas.truenas"
       #   conditions:

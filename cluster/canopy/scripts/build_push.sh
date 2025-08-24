@@ -18,6 +18,10 @@ fi
 REGISTRY="registry.local"
 IMAGE_TAG="latest"
 PLATFORM="linux/amd64"
+DOCKERFILE="Dockerfile.backup"
 
-podman build --platform $PLATFORM --build-arg BINARY_PATH=$BINARY_PATH -t $REGISTRY/$IMAGE_NAME:$IMAGE_TAG .
+podman build --platform $PLATFORM --build-arg BINARY_PATH=$BINARY_PATH -t $REGISTRY/$IMAGE_NAME:$IMAGE_TAG -f $DOCKERFILE .
 podman push --tls-verify=false  $REGISTRY/$IMAGE_NAME:$IMAGE_TAG
+
+# podman build --platform linux/amd64 -t registry.local/canopy:latest -f .docker/Dockerfile .
+# podman push --tls-verify=false registry.local/canopy:latest

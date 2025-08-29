@@ -379,6 +379,11 @@ data:
             href: https://wiki.{{DOMAIN}}
             siteMonitor: http://wiki.wiki
             description: Personal wiki
+        - AirTrail:
+            icon: sh-airtrail
+            href: https://airtrail.{{DOMAIN}}
+            siteMonitor: http://airtrail.airtrail
+            description: Private Flight Tracker
         # - Kubevirt UI:
         #     icon: vmware-workstation
         #     href: https://kubevirt.{{DOMAIN}}

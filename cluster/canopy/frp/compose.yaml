@@ -10,6 +10,8 @@ services:
     ports:
       - "7000:7000" # FRP control port
       - "7000:7000/udp" # FRP control port UDP
+      - "9001:9001" # node-1.{$DOMAIN}:9001
+      - "9002:9002" # node-2.{$DOMAIN}:9002
     command: ["-c", "/etc/frp/frps.toml"]
     networks:
       - frp-network

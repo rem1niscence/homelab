@@ -33,25 +33,25 @@ spec:
               mountPath: /tmp/keystore
             - name: scripts
               mountPath: /scripts
-        # - name: snapshot-check
-        #   image: registry.local/canopy-restore:latest
-        #   imagePullPolicy: Always # TODO: Remove once image is stable
-        #   envFrom:
-        #     - secretRef:
-        #         name: restore
-        #   env:
-        #     - name: HEIGHT_FILE
-        #       value: height_1.txt
-        #     - name: HEIGHT_FILE_URL
-        #       value: height_1.txt
-        #     - name: SNAPSHOT_FILE
-        #       value: canopy_backup_1.tar.gz
-        #     - name: SNAPSHOT_FILE_URL
-        #       value: canopy_backup_1.tar.gz
-        #   volumeMounts:
-        #     - name: data
-        #       mountPath: /root/.canopy
-        #       subPath: node-1
+        - name: snapshot-check
+          image: registry.local/canopy-restore:latest
+          imagePullPolicy: Always # TODO: Remove once image is stable
+          envFrom:
+            - secretRef:
+                name: restore
+          env:
+            - name: HEIGHT_FILE
+              value: height_1.txt
+            - name: HEIGHT_FILE_URL
+              value: height_1.txt
+            - name: SNAPSHOT_FILE
+              value: canopy_backup_1.tar.gz
+            - name: SNAPSHOT_FILE_URL
+              value: canopy_backup_1.tar.gz
+          volumeMounts:
+            - name: data
+              mountPath: /root/.canopy
+              subPath: node-1
       containers:
         - name: canopy
           image: registry.local/canopy:latest
@@ -135,7 +135,7 @@ metadata:
     keel.sh/pollSchedule: "@every 30m"
     keel.sh/trigger: poll
 spec:
-  replicas: 0
+  replicas: 1
   selector:
     matchLabels:
       app: node-2
@@ -286,29 +286,13 @@ spec:
                 path: frpc.toml
 ---
 apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: canopy-node-1-pv
-spec:
-  capacity:
-    storage: 3T
-  accessModes:
-    - ReadWriteMany
-  nfs:
-    server: 192.168.0.95
-    path: /mnt/ssd_2tb/canopy
-  storageClassName: local-path
-  mountOptions:
-    - vers=4.0
----
-apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   namespace: canopy
   name: node-1
 spec:
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
       storage: 8G
@@ -321,7 +305,7 @@ metadata:
   name: node-2
 spec:
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
       storage: 8G

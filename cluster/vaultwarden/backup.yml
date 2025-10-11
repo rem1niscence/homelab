@@ -33,6 +33,8 @@ spec:
             - secretRef:
                 name: backup
           env:
+            - name: CRON_SCHEDULE
+              value: "30 0 * * *"
             - name: TIMEZONE
               value: "Europe/Madrid"
           volumeMounts:

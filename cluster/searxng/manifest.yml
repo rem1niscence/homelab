@@ -184,3 +184,8 @@ data:
         engine: wikidata
         shortcut: wd
         disabled: true
+      - name: mullvadleta
+        engine: mullvad_leta
+        leta_engine: google
+        shortcut: ml
+        disabled: false

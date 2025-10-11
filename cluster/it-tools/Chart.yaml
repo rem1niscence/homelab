@@ -1,0 +1,10 @@
+apiVersion: v2
+name: it-tools
+description: Chart for the IT Tools application
+type: application
+version: 0.1.0
+
+dependencies:
+  - name: common
+    version: 0.1.0
+    repository: file://../common

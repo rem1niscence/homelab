@@ -1,0 +1,29 @@
+# global configuration
+appName: it-tools
+ports:
+  - 80
+domain: it-tools
+
+# deployment configuration
+deployment:
+  name: it-tools
+  nodeSelector:
+    type: pi
+  containers:
+    - name: it-tools
+      image: corentinth/it-tools
+      ports:
+        - 80
+
+# service configuration
+svc:
+  ports:
+    - port: 80
+      targetPort: 80
+
+# ingress configuration
+ingress:
+  routes:
+    - services:
+        - name: "it-tools"
+          port: 80

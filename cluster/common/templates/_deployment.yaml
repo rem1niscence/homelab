@@ -1,0 +1,44 @@
+{{/*
+Common deployment template
+Usage: {{ include "common.deployment" . }}
+*/}}
+{{- define "common.deployment" -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: {{ .Values.deployment.name }}
+  labels:
+    app: {{ .Values.deployment.name }}
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
+spec:
+  {{- with .Values.deployment }}
+  replicas: {{ .replicas | default 1 }}
+  selector:
+    matchLabels:
+      app: {{ .name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .name }}
+    spec:
+      {{- if .nodeSelector }}
+      nodeSelector:
+        {{- toYaml .nodeSelector | nindent 8 }}
+      {{- end }}
+      containers:
+        {{- range .containers }}
+        - name: {{ .name }}
+          image: {{ .image }}
+          {{- if .ports }}
+          ports:
+            {{- range .ports }}
+            - containerPort: {{ . }}
+            {{- end }}
+          {{- end }}
+        {{- end }}
+  {{- end }}
+{{- end }}

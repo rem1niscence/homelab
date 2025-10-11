@@ -1,0 +1,23 @@
+{{/*
+Common service template
+Usage: {{ include "common.service" . }}
+*/}}
+{{- define "common.service" -}}
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: {{ .Values.svc.name | default .Values.appName }}
+spec:
+  selector:
+    app: {{ .Values.svc.selector | default .Values.appName }}
+  ports:
+    {{- range .Values.svc.ports }}
+    - protocol: {{ .protocol | default "TCP" }}
+      port: {{ .port }}
+      targetPort: {{ .targetPort }}
+      {{- if .name }}
+      name: {{ .name }}
+      {{- end }}
+    {{- end }}
+{{- end }}

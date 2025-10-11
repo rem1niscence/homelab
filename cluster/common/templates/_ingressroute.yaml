@@ -1,0 +1,26 @@
+{{/*
+Common ingress route template
+Usage: {{ include "common.ingressroute" . }}
+*/}}
+{{- define "common.ingressroute" -}}
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: {{ .Values.ingress.name | default .Values.appName }}
+spec:
+  entryPoints:
+    {{- range .Values.ingress.entryPoints | default (list "websecure") }}
+    - {{ . }}
+    {{- end }}
+  routes:
+    {{- range .Values.ingress.routes }}
+    - match: Host(`{{ .subdomain | default $.Values.appName }}.{{ .domain | default $.Values.domain }}`)
+      kind: Rule
+      services:
+        {{- range .services }}
+        - name: {{ .name  }}
+          port: {{ .port  }}
+        {{- end }}
+    {{- end }}
+{{- end }}

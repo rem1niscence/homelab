@@ -296,6 +296,18 @@ data:
           - "[STATUS] == 200"
         alerts:
               - type: discord
+      - name: Suwayomi
+        url: "http://suwayomi.suwayomi"
+        conditions:
+          - "[STATUS] == 200"
+        alerts:
+              - type: discord
+      - name: Mantium
+        url: "http://mantium-api.mantium"
+        conditions:
+          - "[STATUS] == 404"
+        alerts:
+              - type: discord
       # - name: TrueNAS SCALE
       #   url: "http://truenas.truenas"
       #   conditions:

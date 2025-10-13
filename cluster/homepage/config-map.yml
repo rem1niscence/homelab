@@ -18,6 +18,9 @@ data:
       Apps:
         style: row
         columns: 4
+      "Comic/Manga":
+        style: row
+        columns: 2
       Blog:
         style: row
         columns: 2
@@ -192,16 +195,17 @@ data:
               accountid: ${CLOUDFLARE_ACCOUNT_ID}
               tunnelid: ${CLOUDFLARE_TUNNEL_ID}
               key: ${CLOUDFLARE_API_TOKEN}
-        - Komga:
-            icon: komga.svg
-            href: https://komga.{{DOMAIN}}
-            siteMonitor: http://komga.komga:25600
-            description: Online Comic/Manga reader
+        - Homebox:
+            icon: homebox
+            href: https://homebox.{{DOMAIN}}
+            siteMonitor: http://homebox.homebox
+            description: Home inventory & organization
             widget:
-              type: komga
-              url: http://komga.komga:25600
-              username: ${KOMGA_USERNAME}
-              password: ${KOMGA_PASSWORD}
+              type: homebox
+              url: http://homebox.homebox
+              username: ${HOMEBOX_USERNAME}
+              password: ${HOMEBOX_PASSWORD}
+              fields: ["items", "locations", "totalValue"]
         # - Mylar3:
         #     icon: sh-mylar3
         #     href: https://mylar3.{{DOMAIN}}
@@ -487,6 +491,30 @@ data:
         #       url: http://romm.romm
         #       username: ${ROMM_USERNAME}
         #       password: ${ROMM_PASSWORD}
+    - Comic/Manga:
+        - Suwayomi:
+            icon: sh-suwayomi-dark
+            href: https://suwayomi.{{DOMAIN}}
+            siteMonitor: http://suwayomi.suwayomi
+            description: Self-hosted manga server
+            widget:
+              type: suwayomi
+              url: http://suwayomi.suwayomi
+        - Komga:
+            icon: komga.svg
+            href: https://komga.{{DOMAIN}}
+            siteMonitor: http://komga.komga:25600
+            description: Online Comic/Manga reader
+            widget:
+              type: komga
+              url: http://komga.komga:25600
+              username: ${KOMGA_USERNAME}
+              password: ${KOMGA_PASSWORD}
+        - Mantium:
+            icon: mdi-radar
+            href: https://mantium.{{DOMAIN}}
+            siteMonitor: http://mantium-ui.mantium
+            description: Online Manga Tracker
     - Blog:
         - remini.dev:
             icon: mdi-post-outline

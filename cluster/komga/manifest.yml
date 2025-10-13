@@ -34,12 +34,18 @@ spec:
             - name: data
               mountPath: /comics
               readOnly: false
+            - name: manga
+              mountPath: /manga
+              readOnly: false
             - name: config
               mountPath: /config
       volumes:
         - name: data
           persistentVolumeClaim:
             claimName: data
+        - name: manga
+          persistentVolumeClaim:
+            claimName: manga
         - name: config
           persistentVolumeClaim:
             claimName: config
@@ -72,6 +78,36 @@ spec:
     requests:
       storage: 3T
   volumeName: komga-pv
+  storageClassName: local-path
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: komga-pv-manga
+spec:
+  capacity:
+    storage: 3T
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 192.168.0.95
+    path: /mnt/main_drive/data/containers/suwayomi/manga
+  storageClassName: local-path
+  mountOptions:
+    - vers=4.0
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: komga
+  name: manga
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 3T
+  volumeName: komga-pv-manga
   storageClassName: local-path
 ---
 apiVersion: v1

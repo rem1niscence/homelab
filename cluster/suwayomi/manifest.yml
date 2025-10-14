@@ -49,9 +49,18 @@ spec:
               value: "true"
             - name: AUTO_DOWNLOAD_NEW_CHAPTERS_LIMIT
               value: "5"
-            - name: UPDATE_MANGA_INFO
-              value: "true"
             - name: DOWNLOAD_AS_CBZ
+              value: "true"
+
+            - name: UPDATE_EXCLUDE_UNREAD
+              value: "false"
+            - name: UPDATE_EXCLUDE_STARTED
+              value: "false"
+            - name: UPDATE_EXCLUDE_COMPLETED
+              value: "false"
+            - name: UPDATE_INTERVAL
+              value: "6"
+            - name: UPDATE_MANGA_INFO
               value: "true"
           volumeMounts:
             - name: config

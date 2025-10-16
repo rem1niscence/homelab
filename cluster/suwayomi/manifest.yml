@@ -25,8 +25,7 @@ spec:
         app: suwayomi
     spec:
       nodeSelector:
-        # type: pi
-        type: secondary
+        type: main
       securityContext:
         fsGroup: 1000
       containers:
@@ -59,7 +58,7 @@ spec:
             - name: UPDATE_EXCLUDE_COMPLETED
               value: "false"
             - name: UPDATE_INTERVAL
-              value: "6"
+              value: "4"
             - name: UPDATE_MANGA_INFO
               value: "true"
           volumeMounts:

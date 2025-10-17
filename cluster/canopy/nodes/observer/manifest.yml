@@ -250,7 +250,7 @@ spec:
     - ReadWriteMany
   resources:
     requests:
-      storage: 8G
+      storage: 18G
   storageClassName: longhorn-canopy
 ---
 apiVersion: v1
@@ -263,7 +263,7 @@ spec:
     - ReadWriteMany
   resources:
     requests:
-      storage: 6G
+      storage: 10G
   storageClassName: longhorn-canopy
 ---
 apiVersion: v1

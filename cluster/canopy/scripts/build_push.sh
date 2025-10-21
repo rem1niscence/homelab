@@ -18,7 +18,7 @@ fi
 REGISTRY="registry.local"
 IMAGE_TAG="latest"
 PLATFORM="linux/amd64"
-DOCKERFILE="Dockerfile.backup"
+DOCKERFILE="Dockerfile"
 
 podman build --platform $PLATFORM --build-arg BINARY_PATH=$BINARY_PATH -t $REGISTRY/$IMAGE_NAME:$IMAGE_TAG -f $DOCKERFILE .
 podman push --tls-verify=false  $REGISTRY/$IMAGE_NAME:$IMAGE_TAG

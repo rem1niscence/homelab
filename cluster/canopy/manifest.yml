@@ -35,7 +35,7 @@ data:
 
     if [ $? -eq 0 ] && [ ! -z "$HEIGHT" ]; then
       echo "$HEIGHT" > "$HEIGHT_FILE"
-      echo "Height $HEIGHT saved to $HEIGHT_FILE"
+      # echo "Height $HEIGHT saved to $HEIGHT_FILE"
     else
       echo "Failed to query height or empty response"
       exit 1

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log/slog"
@@ -245,10 +246,13 @@ func compareHeights(ctx context.Context, config *RestoreConfig,
 	if err != nil {
 		return true, fmt.Errorf("failed to read local height file: %w", err)
 	}
-	localHeight, err := strconv.ParseInt(strings.TrimSpace(string(rawLocalHeight)), 10, 64)
-	if err != nil {
-		return true, fmt.Errorf("failed to parse local height: %w", err)
+	var localHeightData struct {
+		Height int64 `json:"height"`
 	}
+	if err := json.Unmarshal(rawLocalHeight, &localHeightData); err != nil {
+		return true, fmt.Errorf("failed to parse local height JSON: %w", err)
+	}
+	localHeight := localHeightData.Height
 
 	// get remote height
 	rawRemoteHeight, err := downloadBytes(ctx, config.HeightFileURL, downloader)

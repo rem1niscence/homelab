@@ -33,6 +33,7 @@ spec:
           securityContext:
             runAsUser: 1000
           image: ghcr.io/suwayomi/suwayomi-server:preview
+          imagePullPolicy: Always
           ports:
             - containerPort: 4567
           env:
@@ -74,6 +75,22 @@ spec:
           env:
             - name: LOG_LEVEL
               value: "info"
+        # - name: gluetun
+        #   image: qmcgaw/gluetun:latest
+        #   securityContext:
+        #     capabilities:
+        #       add: ["NET_ADMIN"]
+        #     privileged: true
+        #   envFrom:
+        #     - secretRef:
+        #         name: gluetun
+        #   env:
+        #     - name: TZ
+        #       value: Etc/UTC
+        #     - name: VPN_TYPE
+        #       value: wireguard
+        #     - name: DNS_KEEP_NAMESERVER
+        #       value: "on"
       volumes:
         - name: config
           persistentVolumeClaim:

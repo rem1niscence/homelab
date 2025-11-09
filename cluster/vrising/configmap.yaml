@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: vrising
+  name: frpc
+data:
+  client: |
+    serverAddr = "{{ .Envs.FRP_SERVER_ADDR }}"
+    serverPort = {{ .Envs.FRP_SERVER_PORT }}
+
+    [auth]
+    method = "token"
+    token = "{{ .Envs.FRP_SERVER_TOKEN }}"
+
+    [[proxies]]
+    name = "vrising-1"
+    type = "udp"
+    localIP = "vrising"
+    localPort = 9876
+    remotePort = 9876
+
+    [[proxies]]
+    name = "vrising-2"
+    type = "udp"
+    localIP = "vrising"
+    localPort = 9877
+    remotePort = 9877

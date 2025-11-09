@@ -1,0 +1,21 @@
+services:
+  frps-vrising:
+    image: ghcr.io/fatedier/frps:v0.64.0
+    container_name: frps-vrising
+    volumes:
+      - ./frps.toml:/etc/frp/frps.toml
+    env_file:
+      - .env
+    ports:
+      - "5000:5000" # FRP control port
+      - "5001:5001" # dashboard port
+      - "5000:5000/udp" # FRP control port UDP
+      - "9876:9876/udp" # vrising
+      - "9877:9877/udp" # vrising
+    command: ["-c", "/etc/frp/frps.toml"]
+    networks:
+      - vrising-network
+
+networks:
+  vrising-network:
+    driver: bridge

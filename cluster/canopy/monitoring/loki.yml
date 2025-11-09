@@ -10,7 +10,7 @@ singleBinary:
     storageClass: "longhorn"
     accessModes:
       - ReadWriteOnce
-    size: 2Gi
+    size: 6Gi
 
 loki:
   commonConfig:

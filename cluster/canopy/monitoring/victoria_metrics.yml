@@ -70,7 +70,7 @@ server:
     enabled: true
     name: "victoria-metrics-canopy"
     storageClass: "longhorn"
-    size: 2Gi
+    size: 4Gi
     accessModes:
       - ReadWriteOnce
 # curl -g 'http://vm-canopy:8428/api/v1/query?query=probe_success{job="{job_name}"}'

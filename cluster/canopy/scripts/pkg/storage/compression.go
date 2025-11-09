@@ -73,12 +73,10 @@ func CompressFolderCMD(ctx context.Context, sourceDir, targetFile string) error 
 	if err != nil {
 		return fmt.Errorf("failed to get absolute target path: %w", err)
 	}
-	parentDir := filepath.Dir(absSource)
-	folderName := filepath.Base(absSource)
 
-	// construct the commands
-	cmd := exec.CommandContext(ctx, "tar", "-cv", folderName)
-	cmd.Dir = parentDir
+	// construct the command to tar the contents of sourceDir
+	// tar -C <sourceDir> -cvf - . | pigz > targetFile
+	cmd := exec.CommandContext(ctx, "tar", "-C", absSource, "-cvf", "-", ".")
 
 	pigzCmd := exec.CommandContext(ctx, "pigz")
 
@@ -97,7 +95,7 @@ func CompressFolderCMD(ctx context.Context, sourceDir, targetFile string) error 
 		outputFile.Close()
 		if err != nil {
 			// clean up on failure
-			os.Remove(absTarget)
+			_ = os.Remove(absTarget)
 		}
 	}()
 
@@ -118,7 +116,7 @@ func CompressFolderCMD(ctx context.Context, sourceDir, targetFile string) error 
 		return fmt.Errorf("tar command failed: %w", err)
 	}
 
-	pipe.Close()
+	_ = pipe.Close()
 
 	if err := pigzCmd.Wait(); err != nil {
 		return fmt.Errorf("pigz command failed: %w", err)

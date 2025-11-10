@@ -45,13 +45,13 @@ func NewCustomS3StorageManager(accessKey, secretKey, region, endpoint, bucket st
 	}, nil
 }
 
-func (s *S3StorageManager) Upload(ctx context.Context, reader io.Reader, key string) error {
+func (s *S3StorageManager) Upload(ctx context.Context, reader io.Reader, key string, contentLength int64) error {
 	_, err := s.s3Client.PutObject(ctx, &s3.PutObjectInput{
-		Bucket: aws.String(s.Bucket),
-		Key:    aws.String(key),
-		Body:   reader,
+		Bucket:        aws.String(s.Bucket),
+		Key:           aws.String(key),
+		Body:          reader,
+		ContentLength: aws.Int64(contentLength),
 	})
-
 	return err
 }
 
@@ -63,6 +63,5 @@ func (s *S3StorageManager) Download(ctx context.Context, location string) (io.Re
 	if err != nil {
 		return nil, err
 	}
-
 	return result.Body, nil
 }

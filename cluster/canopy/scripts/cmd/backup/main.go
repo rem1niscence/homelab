@@ -10,6 +10,7 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/dustin/go-humanize"
 	"github.com/reminiscence/homelab/cluster/canopy/scripts/internal/lifecycle"
 	"github.com/reminiscence/homelab/cluster/canopy/scripts/pkg/kubernetes"
 	"github.com/reminiscence/homelab/cluster/canopy/scripts/pkg/storage"
@@ -191,15 +192,14 @@ func prepareBackup(ctx context.Context, item BackupItem,
 		logger.Info("started compressing backup",
 			slog.String("key", item.BackupKey),
 			slog.String("path", sourcePath))
-		fileName := fmt.Sprintf("%s.tar.gz", item.BackupKey)
-		backupFile := filepath.Join(backupDir, fileName)
+		backupFile := filepath.Join(backupDir, item.BackupKey)
 		now := time.Now()
 		if err := storage.CompressFolderCMD(ctx, sourcePath, backupFile); err != nil {
 			return nil, fmt.Errorf("compression failed: %w", err)
 		}
 
 		// get backup file size for logging
-		fileInfo, err := os.Stat(backupFile)
+		stat, err := os.Stat(backupFile)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get backup file info: %w", err)
 		}
@@ -207,11 +207,11 @@ func prepareBackup(ctx context.Context, item BackupItem,
 		logger.Info("finished creating backup",
 			slog.String("key", item.BackupKey),
 			slog.String("took", time.Since(now).String()),
-			slog.Int64("size", fileInfo.Size()))
+			slog.String("size", humanize.Bytes(uint64(stat.Size()))))
 
 		return &BackupResult{
 			FilePath: backupFile,
-			Size:     fileInfo.Size(),
+			Size:     stat.Size(),
 			Skipped:  false,
 		}, nil
 	} else {
@@ -245,8 +245,19 @@ func uploadBackup(ctx context.Context, result *BackupResult, backupKey string,
 	}
 	defer file.Close()
 
+	// make a progress reader
+	stat, _ := file.Stat()
+	reader := storage.NewProgressReader(file, stat.Size(), 5*time.Second, func(read, total int64) {
+		percentage := float64(read) / float64(total) * 100
+		logger.Info("uploading", slog.String("name",
+			stat.Name()),
+			slog.String("percentage", fmt.Sprintf("%.2f%%", percentage)),
+			slog.String("read", humanize.Bytes(uint64(read))),
+			slog.String("total", humanize.Bytes(uint64(total))))
+	})
+
 	// upload backup file
-	if err := uploader.Upload(ctx, file, backupKey); err != nil {
+	if err := uploader.Upload(ctx, reader, backupKey, stat.Size()); err != nil {
 		return fmt.Errorf("upload failed: %w", err)
 	}
 

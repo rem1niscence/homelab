@@ -20,7 +20,7 @@ spec:
         app: observer-1
     spec:
       nodeSelector:
-        type: vm
+        type: secondary
       initContainers:
         - name: keystore-init
           image: busybox:1.36
@@ -35,7 +35,7 @@ spec:
               mountPath: /scripts
         - name: snapshot-check
           image: registry.local/canopy-restore:latest
-          imagePullPolicy: Always # TODO: Remove once image is stable
+          imagePullPolicy: Always
           envFrom:
             - secretRef:
                 name: restore
@@ -55,6 +55,7 @@ spec:
       containers:
         - name: canopy
           image: canopynetwork/canopy:latest
+          imagePullPolicy: Always
           args: ["start"]
           ports:
             - containerPort: 50000
@@ -176,6 +177,7 @@ spec:
       containers:
         - name: canopy
           image: canopynetwork/canopy:latest
+          imagePullPolicy: Always
           args: ["start"]
           ports:
             - containerPort: 40000

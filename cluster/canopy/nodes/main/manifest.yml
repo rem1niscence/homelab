@@ -35,7 +35,7 @@ spec:
               mountPath: /scripts
         - name: snapshot-check
           image: registry.local/canopy-restore:latest
-          imagePullPolicy: Always # TODO: Remove once image is stable
+          imagePullPolicy: Always
           envFrom:
             - secretRef:
                 name: restore
@@ -54,7 +54,7 @@ spec:
               subPath: node-1
       containers:
         - name: canopy
-          image: registry.local/canopy:latest
+          image: canopynetwork/canopy:latest
           args: ["start"]
           ports:
             - containerPort: 50000
@@ -160,7 +160,7 @@ spec:
               mountPath: /scripts
         - name: snapshot-check
           image: registry.local/canopy-restore:latest
-          imagePullPolicy: Always # TODO: Remove once image is stable
+          imagePullPolicy: Always
           envFrom:
             - secretRef:
                 name: restore
@@ -295,7 +295,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 8G
+      storage: 10G
   storageClassName: longhorn-canopy
 ---
 apiVersion: v1
@@ -444,5 +444,3 @@ spec:
       services:
         - name: frp
           port: 7501
----
-

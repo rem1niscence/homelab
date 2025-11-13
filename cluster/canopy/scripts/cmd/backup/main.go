@@ -252,7 +252,7 @@ func uploadBackup(ctx context.Context, result *BackupResult, backupKey string,
 		logger.Info("uploading", slog.String("name",
 			stat.Name()),
 			slog.String("percentage", fmt.Sprintf("%.2f%%", percentage)),
-			slog.String("read", humanize.Bytes(uint64(read))),
+			slog.String("uploaded", humanize.Bytes(uint64(read))),
 			slog.String("total", humanize.Bytes(uint64(total))))
 	})
 

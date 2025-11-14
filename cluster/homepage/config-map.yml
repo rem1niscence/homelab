@@ -318,10 +318,10 @@ data:
             href: https://cyberchef.{{DOMAIN}}
             siteMonitor: http://cyberchef.cyberchef
             description: Swiss army knife for data
-        - Stirling PDF:
-            icon: stirling-pdf.png
+        - Bento PDF:
+            icon: sh-bentopdf
             href: https://pdf.{{DOMAIN}}
-            siteMonitor: http://stirling-pdf.stirling-pdf
+            siteMonitor: http://bento-pdf.bento-pdf
             description: PDF Multitools
         - Omni Tools:
             icon: mdi-tools

@@ -188,8 +188,8 @@ data:
           - "[STATUS] == 200"
         alerts:
           - type: discord
-      - name: Stirling PDF
-        url: "http://stirling-pdf.stirling-pdf"
+      - name: Bento PDF
+        url: "http://bento-pdf.bento-pdf"
         conditions:
           - "[STATUS] == 200"
         alerts:

@@ -1,0 +1,184 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: booklore
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: booklore
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: booklore
+  name: booklore
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: booklore
+  template:
+    metadata:
+      labels:
+        app: booklore
+    spec:
+      nodeSelector:
+        type: pi
+      containers:
+        - name: booklore
+          image: ghcr.io/booklore-app/booklore:v1.10.0
+          ports:
+            - containerPort: 6060
+          env:
+            - name: USER_ID
+              value: "0"
+            - name: GROUP_ID
+              value: "0"
+            - name: TZ
+              value: "Europe/Madrid"
+            - name: DATABASE_URL
+              value: "jdbc:mariadb://mariadb:3306/booklore"
+            - name: DATABASE_USERNAME
+              value: "booklore"
+            - name: DATABASE_PASSWORD
+              value: "d2OmXakIrbQW203"
+            - name: BOOKLORE_PORT
+              value: "6060"
+          volumeMounts:
+            - name: config
+              mountPath: /app/data
+            - name: books
+              mountPath: /books
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: config
+        - name: books
+          persistentVolumeClaim:
+            claimName: books
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mariadb
+  namespace: booklore
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mariadb
+  template:
+    metadata:
+      labels:
+        app: mariadb
+    spec:
+      nodeSelector:
+        type: pi
+      containers:
+        - name: mariadb
+          image: linuxserver/mariadb
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_DATABASE
+              value: "booklore"
+            - name: MYSQL_USER
+              value: "booklore"
+            - name: MYSQL_ROOT_PASSWORD
+              value: d2OmXakIrbQW203
+            - name: MYSQL_PASSWORD
+              value: d2OmXakIrbQW203
+          volumeMounts:
+            - name: config
+              mountPath: /config
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: config
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: booklore-data-pv
+spec:
+  capacity:
+    storage: 3T
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 192.168.0.95
+    path: /mnt/main_drive/books
+  storageClassName: local-path
+  mountOptions:
+    - vers=4.0
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: booklore
+  name: books
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 3T
+  volumeName: booklore-data-pv
+  storageClassName: local-path
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: booklore
+  name: config
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 2G
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: booklore
+  name: booklore
+spec:
+  ports:
+    - port: 80
+      targetPort: 6060
+  selector:
+    app: booklore
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: booklore
+  name: mariadb
+spec:
+  ports:
+    - port: 3306
+      targetPort: 3306
+  selector:
+    app: mariadb
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: booklore
+  namespace: booklore
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`booklore.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: booklore
+          port: 80

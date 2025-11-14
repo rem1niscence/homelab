@@ -266,7 +266,7 @@ spec:
         app: frpc
     spec:
       nodeSelector:
-        pi: pi-2
+        type: vm
       containers:
         - name: frpc
           image: ghcr.io/fatedier/frpc:v0.63.0

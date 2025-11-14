@@ -388,6 +388,11 @@ data:
             href: https://airtrail.{{DOMAIN}}
             siteMonitor: http://airtrail.airtrail
             description: Private Flight Tracker
+        - Draw.io:
+            icon: sh-draw-io
+            href: https://drawio.{{DOMAIN}}
+            siteMonitor: http://drawio.drawio
+            description: Online diagramming tool
         # - Kubevirt UI:
         #     icon: vmware-workstation
         #     href: https://kubevirt.{{DOMAIN}}

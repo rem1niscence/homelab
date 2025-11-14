@@ -302,6 +302,12 @@ data:
           - "[STATUS] == 200"
         alerts:
               - type: discord
+      - name: Draw.io
+        url: "http://drawio.drawio"
+        conditions:
+          - "[STATUS] == 200"
+        alerts:
+              - type: discord
       - name: Mantium
         url: "http://mantium-api.mantium"
         conditions:

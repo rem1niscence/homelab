@@ -15,7 +15,6 @@ services:
     command: ["-c", "/etc/frp/frps.toml"]
     networks:
       - vrising-network
-
 networks:
   vrising-network:
     driver: bridge

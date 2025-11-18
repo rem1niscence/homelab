@@ -1,5 +1,4 @@
 deploymentMode: "SingleBinary"
-
 singleBinary:
   replicas: 1
   nodeSelector:
@@ -11,7 +10,6 @@ singleBinary:
     accessModes:
       - ReadWriteOnce
     size: 6Gi
-
 loki:
   commonConfig:
     replication_factor: 1
@@ -30,7 +28,6 @@ loki:
   tableManager:
     retention_deletes_enabled: true
     retention_period: 48h
-
 memcached:
   enabled: false # explicitly disable caching services
 memcachedChunks:
@@ -39,17 +36,14 @@ memcachedFrontend:
   enabled: false
 memcachedIndexQueries:
   enabled: false
-
 # disable gateway
 gateway:
   enabled: false
-
 # disable canary
 lokiCanary:
   enabled: true
   nodeSelector:
     type: none
-
 # zero out replica counts of other deployment modes
 backend:
   replicas: 0

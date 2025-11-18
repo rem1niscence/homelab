@@ -10,12 +10,7 @@ parameters:
   fromBackup: ""
   diskSelector: "local"
   nodeSelector: "local"
-  recurringJobSelector: '[
-    {
-    "name":"local",
-    "isGroup":true
-    }
-    ]'
+  recurringJobSelector: '[ { "name":"local", "isGroup":true } ]'
 ---
 apiVersion: longhorn.io/v1beta2
 kind: RecurringJob
@@ -56,8 +51,6 @@ spec:
   groups:
     - local
 ---
-
----
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
@@ -70,12 +63,7 @@ parameters:
   fromBackup: ""
   diskSelector: "remote"
   nodeSelector: "remote"
-  recurringJobSelector: '[
-    {
-    "name":"remote",
-    "isGroup":true
-    }
-    ]'
+  recurringJobSelector: '[ { "name":"remote", "isGroup":true } ]'
 ---
 apiVersion: longhorn.io/v1beta2
 kind: RecurringJob

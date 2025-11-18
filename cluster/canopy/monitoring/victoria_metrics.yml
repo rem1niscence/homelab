@@ -3,7 +3,6 @@ server:
   fullnameOverride: vm-canopy
   nodeSelector:
     pi: pi-3
-
   scrape:
     enabled: true
     configMap: ""
@@ -24,7 +23,6 @@ server:
           static_configs:
             - targets:
                 - blackbox:9115
-
         - job_name: "blackbox_explorer_wallet_check"
           metrics_path: /probe
           params:
@@ -46,7 +44,6 @@ server:
               replacement: "blackbox:9115"
             - target_label: region
               replacement: "local"
-
         - job_name: "blackbox_rpc_height"
           metrics_path: /probe
           params:
@@ -57,7 +54,6 @@ server:
             - targets:
                 - http://node-1:50002/v1/query/height
                 - http://node-2:40002/v1/query/height
-              # targets here
           relabel_configs:
             - source_labels: [__address__]
               target_label: __param_target
@@ -65,7 +61,6 @@ server:
               target_label: instance
             - target_label: __address__
               replacement: "blackbox:9115"
-
   persistentVolume:
     enabled: true
     name: "victoria-metrics-canopy"

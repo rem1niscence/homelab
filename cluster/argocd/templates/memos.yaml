@@ -12,7 +12,7 @@ spec:
     targetRevision: stable
     path: cluster/memos
   destination:
-    server: {{ .Values.spec.destination.server }}
+    server: { { .Values.spec.destination.server } }
     namespace: memos
   ignoreDifferences:
     - group: traefik.io

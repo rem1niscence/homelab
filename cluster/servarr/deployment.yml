@@ -166,9 +166,9 @@ spec:
               value: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
             - name: FIREWALL_VPN_INPUT_PORTS
               value: "9696,8191"
-          # volumeMounts:
-          #   - name: gluetun-config
-          #     mountPath: /gluetun
+              # volumeMounts:
+              #   - name: gluetun-config
+              #     mountPath: /gluetun
       volumes:
         - name: data
           persistentVolumeClaim:

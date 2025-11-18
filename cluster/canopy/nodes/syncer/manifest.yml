@@ -315,7 +315,6 @@ spec:
       services:
         - name: syncer-1
           port: 50003
-
     - match: Host("syncer-2-wallet-2.{{DOMAIN}}")
       kind: Rule
       services:

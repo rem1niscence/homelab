@@ -43,11 +43,9 @@ services:
       - caddy_config:/config
     networks:
       - frp-network
-
 networks:
   frp-network:
     driver: bridge
-
 volumes:
   caddy_data:
   caddy_config:

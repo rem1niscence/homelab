@@ -53,12 +53,7 @@ parameters:
   fromBackup: ""
   diskSelector: "remote"
   nodeSelector: "remote"
-  recurringJobSelector: '[
-    {
-    "name":"canopy",
-    "isGroup":true
-    }
-    ]'
+  recurringJobSelector: '[ { "name":"canopy", "isGroup":true } ]'
 ---
 apiVersion: longhorn.io/v1beta2
 kind: RecurringJob

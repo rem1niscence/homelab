@@ -108,7 +108,6 @@ spec:
 # 6. Start the vm
 # $ virtctl start mint-vm
 
-
 # Deployments disabled
 # sudo kubectl scale deployment virt-api virt-controller virt-operator --replicas=0
 

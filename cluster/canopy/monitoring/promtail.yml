@@ -1,13 +1,10 @@
 daemonset:
   enabled: true
-
 nodeSelector:
   canopy: "promtail"
-
 # deployment:
 #   enabled: true
 #   replicas: 1
-
 config:
   logLevel: info
   serverPort: 3101

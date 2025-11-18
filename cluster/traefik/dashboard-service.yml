@@ -11,6 +11,8 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 8080
----
+
 # For now you need to manually add --api.insecure=true to the traefik deployment with
 # kubectl edit deployment traefik -n kube-system
+---
+

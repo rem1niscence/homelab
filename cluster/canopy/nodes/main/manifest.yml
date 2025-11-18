@@ -412,7 +412,6 @@ spec:
       services:
         - name: node-1
           port: 50003
-
     - match: Host("wallet-2.{{DOMAIN}}")
       kind: Rule
       services:
@@ -433,7 +432,6 @@ spec:
       services:
         - name: node-2
           port: 40003
-
     - match: Host("frpc.{{DOMAIN}}")
       kind: Rule
       services:

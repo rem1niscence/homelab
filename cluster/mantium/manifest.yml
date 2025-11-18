@@ -34,7 +34,6 @@ spec:
           env:
             - name: TZ
               value: "Europe/Madrid"
-
             - name: POSTGRES_HOST
               value: "postgres"
             - name: POSTGRES_PORT
@@ -45,19 +44,16 @@ spec:
               value: "mantium"
             - name: POSTGRES_PASSWORD
               value: "mantium1234"
-
             # - name: NTFY_ADDRESS
             #   value: "https://ntfy.sh"
             # - name: NTFY_TOPIC
             #   value: "your_ntfy_topic"
             # - name: NTFY_TOKEN
             #   value: "your_ntfy_token"
-
             - name: LOG_LEVEL
               value: "info"
             - name: API_PORT
               value: "80"
-
             - name: UPDATE_MANGAS_PERIODICALLY
               value: "true"
             - name: UPDATE_MANGAS_PERIODICALLY_NOTIFY

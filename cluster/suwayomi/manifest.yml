@@ -39,19 +39,16 @@ spec:
           env:
             - name: TZ
               value: "Europe/Madrid"
-
             - name: FLARESOLVERR_ENABLED
               value: "true"
             - name: FLARESOLVERR_URL
               value: "http://localhost:8191"
-
             - name: AUTO_DOWNLOAD_CHAPTERS
               value: "true"
             - name: AUTO_DOWNLOAD_NEW_CHAPTERS_LIMIT
               value: "5"
             - name: DOWNLOAD_AS_CBZ
               value: "true"
-
             - name: UPDATE_EXCLUDE_UNREAD
               value: "false"
             - name: UPDATE_EXCLUDE_STARTED
@@ -75,22 +72,22 @@ spec:
           env:
             - name: LOG_LEVEL
               value: "info"
-        # - name: gluetun
-        #   image: qmcgaw/gluetun:latest
-        #   securityContext:
-        #     capabilities:
-        #       add: ["NET_ADMIN"]
-        #     privileged: true
-        #   envFrom:
-        #     - secretRef:
-        #         name: gluetun
-        #   env:
-        #     - name: TZ
-        #       value: Etc/UTC
-        #     - name: VPN_TYPE
-        #       value: wireguard
-        #     - name: DNS_KEEP_NAMESERVER
-        #       value: "on"
+              # - name: gluetun
+              #   image: qmcgaw/gluetun:latest
+              #   securityContext:
+              #     capabilities:
+              #       add: ["NET_ADMIN"]
+              #     privileged: true
+              #   envFrom:
+              #     - secretRef:
+              #         name: gluetun
+              #   env:
+              #     - name: TZ
+              #       value: Etc/UTC
+              #     - name: VPN_TYPE
+              #       value: wireguard
+              #     - name: DNS_KEEP_NAMESERVER
+              #       value: "on"
       volumes:
         - name: config
           persistentVolumeClaim:

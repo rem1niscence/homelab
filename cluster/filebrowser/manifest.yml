@@ -146,6 +146,8 @@ spec:
   selector:
     app: filebrowser
 ---
+
+
 # apiVersion: v1
 # kind: Service
 # metadata:

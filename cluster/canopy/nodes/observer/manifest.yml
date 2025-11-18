@@ -353,7 +353,6 @@ spec:
       services:
         - name: observer-1
           port: 50003
-
     - match: Host("observer-2-wallet-2.{{DOMAIN}}")
       kind: Rule
       services:

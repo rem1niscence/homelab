@@ -1,244 +1,129 @@
-# CloudNativePG Database Recovery from Longhorn Backup
-
-This guide covers restoring a CloudNativePG PostgreSQL cluster from Longhorn volume backups.
+# PostgreSQL CNPG Cluster Restoration Guide (Longhorn + Option A)
 
 ## Prerequisites
+- Longhorn backup of the PostgreSQL PVC exists
+- Secrets are backed up (see step 1 below)
 
-- Longhorn backup of your PostgreSQL volume
-- Backed up secrets (username/password credentials)
-- Original cluster YAML configuration
+## Restoration Steps
 
-## Recovery Steps
+### 1. Backup Secrets (Do this NOW, before disaster strikes)
+```bash
+# Export critical secrets
+kubectl get secret -n umami postgres-superuser -o yaml > postgres-superuser-backup.yaml
+kubectl get secret -n umami postgres-app -o yaml > postgres-app-backup.yaml
+```
 
-### Step 1: Restore the Longhorn Volume
+**Store these files securely** (encrypted git repo, password manager, etc.)
 
-**Via Longhorn UI:**
-1. Navigate to **Backup** section in Longhorn UI
-2. Find your database volume backup (e.g., `postgres-1`)
+### 2. When Disaster Strikes - Save Current Secrets
+```bash
+# If cluster still exists, export current secrets
+kubectl get secret -n umami postgres-superuser -o yaml > /tmp/postgres-superuser.yaml
+kubectl get secret -n umami postgres-app -o yaml > /tmp/postgres-app.yaml
+```
+
+### 3. Delete the CNPG Cluster (Keeps PVC)
+```bash
+kubectl delete cluster postgres -n umami
+```
+
+**Verify PVC still exists:**
+```bash
+kubectl get pvc -n umami
+```
+
+### 4. Restore Longhorn Backup to Original PVC
+
+Using Longhorn UI:
+1. Navigate to **Backup** section
+2. Find your PostgreSQL backup
 3. Click **Restore**
-4. Name the restored volume (typically same as original, e.g., `postgres-1`)
-5. Wait for restoration to complete
+4. Set PVC name to: `postgres-1`
+5. Set namespace to: `umami`
+6. Click **OK**
 
-### Step 2: Create PVC for the Restored Volume
+Or using kubectl (if using VolumeSnapshot):
+```bash
+# Delete the old PVC first
+kubectl delete pvc postgres-1 -n umami
 
-Once the Longhorn volume is restored, create a PersistentVolumeClaim to make it available:
-```yaml
+# Create PVC from snapshot
+kubectl apply -f - <<EOF
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: <cluster-name>-1  # Must match CloudNativePG naming: <cluster-name>-<instance-number>
-  namespace: <namespace>
+  name: postgres-1
+  namespace: umami
 spec:
   accessModes:
     - ReadWriteOnce
   storageClassName: longhorn-pg
+  dataSource:
+    name: <your-snapshot-name>
+    kind: VolumeSnapshot
+    apiGroup: snapshot.storage.k8s.io
   resources:
     requests:
-      storage: <size>  # Must match volume size
+      storage: 2Gi
+EOF
 ```
 
-Apply the PVC:
+### 5. Restore Secrets BEFORE Recreating Cluster
 ```bash
-kubectl apply -f pvc.yaml
+kubectl apply -f /tmp/postgres-superuser.yaml
+kubectl apply -f /tmp/postgres-app.yaml
 ```
 
-Verify the PVC is bound:
+Or from your backed-up files:
 ```bash
-kubectl get pvc -n <namespace>
+kubectl apply -f postgres-superuser-backup.yaml
+kubectl apply -f postgres-app-backup.yaml
 ```
 
-### Step 3: Restore Secrets
-
-CloudNativePG requires two main secrets to manage and access the database:
-
-#### Superuser Secret (Required)
-
-This secret contains the PostgreSQL superuser credentials that CloudNativePG uses to manage the cluster.
-```yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: <cluster-name>  # Typically same as cluster name
-  namespace: <namespace>
-type: kubernetes.io/basic-auth
-stringData:
-  username: postgres
-  password: "<backed-up-postgres-password>"
-```
-
-#### Application User Secret (For Applications)
-
-This secret contains credentials for your application database user.
-```yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: <cluster-name>-app
-  namespace: <namespace>
-type: kubernetes.io/basic-auth
-stringData:
-  username: <app-user>
-  password: "<backed-up-app-password>"
-  dbname: <database-name>
-  host: <cluster-name>-rw.<namespace>.svc.cluster.local
-  port: "5432"
-  uri: "postgresql://<app-user>:<backed-up-app-password>@<cluster-name>-rw.<namespace>.svc.cluster.local:5432/<database-name>"
-```
-
-Apply the secrets:
+### 6. Recreate the CNPG Cluster
 ```bash
-kubectl apply -f superuser-secret.yaml
-kubectl apply -f app-secret.yaml
+kubectl apply -f postgres-cluster.yaml
 ```
 
-### Step 4: Recreate the CloudNativePG Cluster
+The cluster will:
+- Reuse the existing `postgres-1` PVC with restored data
+- Reuse the existing secrets with correct credentials
+- Start PostgreSQL with recovered data
 
-Apply your original cluster configuration:
-```yaml
-apiVersion: postgresql.cnpg.io/v1
-kind: Cluster
-metadata:
-  name: <cluster-name>
-  namespace: <namespace>
-spec:
-  instances: 1
-  imageName: ghcr.io/cloudnative-pg/postgresql:<version>
-  
-  storage:
-    storageClass: <your-storage-class>
-    size: <size>
-  
-  bootstrap:
-    initdb:
-      database: <database-name>
-      owner: <app-user>
-      secret:
-        name: <cluster-name>
-  
-  # Your other configurations...
-  postgresql:
-    parameters:
-      max_connections: "100"
-      shared_buffers: "256MB"
-```
-
-Apply the cluster:
+### 7. Verify Restoration
 ```bash
-kubectl apply -f cluster.yaml
+# Check cluster status
+kubectl get cluster -n umami
+
+# Check pod is running
+kubectl get pods -n umami
+
+# Verify database connectivity
+kubectl exec -it postgres-1 -n umami -- psql -U postgres -d umami -c "SELECT version();"
+
+# Check your data exists
+kubectl exec -it postgres-1 -n umami -- psql -U umami -d umami -c "SELECT COUNT(*) FROM <your-table>;"
 ```
 
-**Important:** CloudNativePG will detect existing data in the volume and use it instead of initializing a new database.
+## Recovery Without Secret Backups (Emergency Option)
 
-### Step 5: Verify Recovery
+If you lost the secret backups, you'll need to update PostgreSQL passwords manually:
 
-Check cluster status:
+1. Complete steps 3-4 above
+2. Skip step 5 (let CNPG generate new secrets)
+3. Recreate cluster (step 6)
+4. Update passwords in PostgreSQL to match new secrets:
 ```bash
-kubectl get cluster -n <namespace>
+# Get new passwords from generated secrets
+NEW_SUPERUSER_PASS=$(kubectl get secret postgres-superuser -n umami -o jsonpath='{.data.password}' | base64 -d)
+NEW_APP_PASS=$(kubectl get secret postgres-app -n umami -o jsonpath='{.data.password}' | base64 -d)
+
+# Update PostgreSQL passwords
+kubectl exec -it postgres-1 -n umami -- psql -U postgres -c "ALTER USER postgres PASSWORD '$NEW_SUPERUSER_PASS';"
+kubectl exec -it postgres-1 -n umami -- psql -U postgres -c "ALTER USER umami PASSWORD '$NEW_APP_PASS';"
 ```
 
-Check if pods are running:
-```bash
-kubectl get pods -n <namespace>
-```
+## Notes
 
-Verify data integrity:
-```bash
-kubectl exec -it <cluster-name>-1 -n <namespace> -- psql -U <app-user> -d <database-name> -c "\dt"
-```
-
-Connect and verify your data:
-```bash
-kubectl exec -it <cluster-name>-1 -n <namespace> -- psql -U <app-user> -d <database-name> -c "SELECT count(*) FROM <your-table>;"
-```
-
-## Important Notes
-
-1. **PVC Naming Convention:** The PVC must be named `<cluster-name>-<instance-number>` (e.g., `postgres-1`) for CloudNativePG to recognize it.
-
-2. **Password Consistency:** The passwords in the secrets must match the passwords stored in the restored PostgreSQL database.
-
-3. **Secret Names:** 
-   - Superuser secret is typically named same as the cluster
-   - App secret is typically named `<cluster-name>-app`
-
-4. **Node Affinity:** If using `dataLocality: "strict-local"` in your StorageClass, ensure the PVC can bind to the correct node where the data resides.
-
-5. **Timing:** Create resources in this order:
-   - Longhorn volume restoration
-   - PVC creation and binding
-   - Secrets
-   - CloudNativePG cluster
-
-## Backup Best Practices
-
-### Regular Secret Backups
-
-Export secrets regularly and store them securely:
-```bash
-# Backup all secrets in namespace
-kubectl get secrets -n <namespace> <cluster-name> <cluster-name>-app -o yaml > db-secrets-$(date +%Y%m%d).yaml
-
-# Clean up dynamic metadata
-sed -i '/resourceVersion:/d' db-secrets-$(date +%Y%m%d).yaml
-sed -i '/uid:/d' db-secrets-$(date +%Y%m%d).yaml
-sed -i '/creationTimestamp:/d' db-secrets-$(date +%Y%m%d).yaml
-```
-
-### What to Back Up
-
-For each database cluster, ensure you have:
-- ✅ Longhorn volume backups (automated via recurring jobs)
-- ✅ Secrets YAML (or at minimum: usernames and passwords)
-- ✅ Cluster YAML configuration file
-- ✅ Any custom ConfigMaps or additional resources
-
-### Testing Recovery
-
-Periodically test your recovery procedure in a non-production namespace to ensure:
-- Backups are valid and restorable
-- Secrets are correctly formatted
-- Recovery documentation is up to date
-- Recovery time objectives (RTO) are met
-
-## Troubleshooting
-
-### PVC Not Binding
-
-If the PVC remains in `Pending` state:
-```bash
-kubectl describe pvc <pvc-name> -n <namespace>
-```
-
-Common issues:
-- StorageClass doesn't match
-- Volume size doesn't match
-- Node affinity constraints preventing binding
-- Restored Longhorn volume not available
-
-### Pod Not Starting
-
-If the CloudNativePG pod won't start:
-```bash
-kubectl describe pod <cluster-name>-1 -n <namespace>
-kubectl logs <cluster-name>-1 -n <namespace>
-```
-
-Common issues:
-- Secrets missing or incorrectly formatted
-- PVC not bound
-- Password mismatch between secret and database
-- Insufficient resources
-
-### Database Connection Issues
-
-If you can connect to PostgreSQL but authentication fails:
-- Verify the passwords in secrets match the database
-- Check that the superuser secret is correctly named
-- Ensure the app user exists in the restored database
-
-### Data Missing After Recovery
-
-If the pod starts but data is missing:
-- Verify you restored the correct Longhorn backup
-- Check that the PVC is bound to the correct restored volume
-- Ensure the volume restoration completed successfully
+- Longhorn backups are crash-consistent; PostgreSQL will recover using WAL files
+- The cluster name must match for PVC binding (`postgres` in this case)

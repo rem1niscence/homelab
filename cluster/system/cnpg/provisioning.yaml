@@ -11,7 +11,6 @@ parameters:
   numberOfReplicas: "1"
   staleReplicaTimeout: "2880" # 2 days
   diskSelector: "pg"
-  dataLocality: "best-effort"
   recurringJobSelector: '[ { "name":"pg", "isGroup":true } ]'
 ---
 apiVersion: longhorn.io/v1beta2

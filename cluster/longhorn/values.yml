@@ -3,7 +3,13 @@ defaultSettings:
   backupTarget: nfs://192.168.0.95:/mnt/main_drive/longhorn-backup
   upgradeChecker: true
   defaultReplicaCount: 2
-ingress:
+  # do not allow longhorn to automatically delete orphaned replicas
+  orphanAutoDeletion: false
+  # enable auto-delete pod when volume detached unexpectedly
+  autoDeletePodWhenVolumeDetachedUnexpectedly: true
+  # delete pods and statefulsets when a node is down
+  nodeDownPodDeletionPolicy: delete-both-statefulset-and-deployment-pod
+  ingress:
   enabled: true
   host: longhorn.local
 # Apply with:

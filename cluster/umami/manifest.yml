@@ -26,76 +26,49 @@ spec:
     spec:
       containers:
         - name: umami
-          image: ghcr.io/umami-software/umami:mysql-latest
+          image: ghcr.io/umami-software/umami:latest
           ports:
             - containerPort: 3000
-          envFrom:
-            - secretRef:
-                name: umami
+          env:
+            - name: APP_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: umami
+                  key: APP_SECRET
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-app
+                  key: uri
 ---
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
 metadata:
-  name: db
+  name: postgres
   namespace: umami
-  labels:
-    app: db
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: db
-  template:
-    metadata:
-      labels:
-        app: db
-    spec:
-      nodeSelector:
-        pi: pi-2
-      containers:
-        - name: db
-          image: linuxserver/mariadb
-          ports:
-            - containerPort: 3306
-          envFrom:
-            - secretRef:
-                name: umami
-          volumeMounts:
-            - name: config
-              mountPath: /config
-      volumes:
-        - name: config
-          persistentVolumeClaim:
-            claimName: config-pvc
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  namespace: umami
-  name: config-pvc
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 2G
-  storageClassName: longhorn
----
-apiVersion: v1
-kind: Service
-metadata:
-  namespace: umami
-  name: db
-spec:
-  ports:
-    - port: 3306
-      targetPort: 3306
-  selector:
-    app: db
+  instances: 1
+  imageName: ghcr.io/cloudnative-pg/postgresql:15
+  storage:
+    storageClass: longhorn-pg
+    size: 2Gi
+  postgresql:
+    parameters:
+      max_connections: "100"
+      shared_buffers: "256MB"
+      # useful additions for a small analytics workload:
+      work_mem: "4MB"
+      maintenance_work_mem: "64MB"
+      effective_cache_size: "512MB"
+  monitoring:
+    enablePodMonitor: false
+  bootstrap:
+    initdb:
+      database: umami
+      owner: umami
+  affinity:
+    nodeSelector:
+      pi: "pi-2"
 ---
 apiVersion: v1
 kind: Service

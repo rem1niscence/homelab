@@ -1,0 +1,54 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: longhorn-pg
+provisioner: driver.longhorn.io
+allowVolumeExpansion: true
+# WaitForFirstConsumer mode will delay the binding and provisioning of
+# a PersistentVolume until a Pod using the PersistentVolumeClaim is created.
+volumeBindingMode: WaitForFirstConsumer
+parameters:
+  numberOfReplicas: "1"
+  staleReplicaTimeout: "2880" # 2 days
+  diskSelector: "pg"
+  dataLocality: "best-effort"
+  recurringJobSelector: '[ { "name":"pg", "isGroup":true } ]'
+---
+apiVersion: longhorn.io/v1beta2
+kind: RecurringJob
+metadata:
+  name: pg-snapshot-job
+  namespace: longhorn
+spec:
+  cron: "30 */2 * * *"
+  task: "snapshot"
+  groups:
+    - pg
+  retain: 2
+  concurrency: 3
+---
+apiVersion: longhorn.io/v1beta2
+kind: RecurringJob
+metadata:
+  name: pg-backup-job
+  namespace: longhorn
+spec:
+  cron: "0 */6 * * *"
+  task: "backup"
+  groups:
+    - pg
+  retain: 2
+  concurrency: 3
+---
+apiVersion: longhorn.io/v1beta2
+kind: RecurringJob
+metadata:
+  name: pg-trim-job
+  namespace: longhorn
+spec:
+  cron: "30 8 * * *"
+  task: filesystem-trim
+  retain: 0
+  concurrency: 3
+  groups:
+    - pg

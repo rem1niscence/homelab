@@ -14,7 +14,7 @@ endef
 tailscale:
 	$(call check_vars, OAUTH_CLIENT_ID OAUTH_CLIENT_SECRET)
 	@echo "setting up tailscale"
-	@./tailscale/setup.sh $(OAUTH_CLIENT_ID) $(OAUTH_CLIENT_SECRET)
+	@./system/tailscale/setup.sh $(OAUTH_CLIENT_ID) $(OAUTH_CLIENT_SECRET)
 	@echo "done ✅"
 
 .PHONY: tailscale-expose
@@ -32,16 +32,16 @@ tailscale-unexpose:
 .PHONY: tailscale-k3s-auth
 tailscale-k3s-auth:
 	$(call check_vars, SERVER)
-	@./tailscale/tailscale-k3s-auth.sh $${SERVER}
+	@./system/tailscale/tailscale-k3s-auth.sh $${SERVER}
 
 
 .PHONY: traefik
 traefik:
 	$(call check_vars, DOMAIN)
 	@echo "setting up traefik"
-	@kubectl apply -f ./traefik/dashboard-service.yml
-	@sed -e "s;{{DOMAIN}};$${DOMAIN};g" ./traefik/ingress-routes.yml | kubectl apply -f -
-	@echo "done ✅, remember to enable insecure api on the traefik deployment, check ./traefik/dashboard-service.yaml"
+	@kubectl apply -f ./system/traefik/dashboard-service.yml
+	@sed -e "s;{{DOMAIN}};$${DOMAIN};g" ./system/traefik/ingress-routes.yml | kubectl apply -f -
+	@echo "done ✅, remember to enable insecure api on the traefik deployment, check ./system/traefik/dashboard-service.yaml"
 
 .PHONY: change-domain
 change-domain:
@@ -54,7 +54,7 @@ tls:
 	@kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.18.2/cert-manager.yaml
 	@echo "wait 10 seconds for cert-manager to be installed"
 	@ sleep 10
-	@sed -e "s;{{CLOUDFLARE_TOKEN}};$(CLOUDFLARE_TOKEN);g" ./tls/tls.yml | \
+	@sed -e "s;{{CLOUDFLARE_TOKEN}};$(CLOUDFLARE_TOKEN);g" ./system/tls/tls.yml | \
 		sed -e "s;{{EMAIL}};$(EMAIL);g" | \
 		sed -e "s;{{DOMAIN}};$(DOMAIN);g" | kubectl apply -f -
 	@echo "done ✅. Bear in mind that the certificate validation may take several minutes, after that, restart the pods behind traefik's reverse proxy in order for this to take effect"
@@ -64,7 +64,7 @@ dashboard:
 	@echo "setting up the kubernetes dashboard"
 	$(call check_vars, DOMAIN)
 	@kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml
-	./scripts/setup_application.sh dashboard $${DOMAIN}
+	./scripts/setup_application.sh service/dashboard $${DOMAIN}
 	@k3s kubectl -n kubernetes-dashboard create token admin-user --duration=1000h
 	@echo "done ✅. Use the token to log in into the dashboard"
 
@@ -84,7 +84,7 @@ rm-app:
 .PHONY: rancher
 rancher:
 	$(call check_vars, HOSTNAME)
-	./rancher/setup.sh $${HOSTNAME}
+	./system/rancher/setup.sh $${HOSTNAME}
 
 .PHONY: iptables
 iptables:

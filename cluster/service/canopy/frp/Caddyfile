@@ -1,12 +1,12 @@
 # HTTP Explorer endpoints - web interfaces
 explorer.node-1.{$DOMAIN} {
 	encode gzip
-	reverse_proxy frps:50001
+	reverse_proxy frps-canopy:50001
 }
 
 explorer.node-2.{$DOMAIN} {
 	encode gzip
-	reverse_proxy frps:40001
+	reverse_proxy frps-canopy:40001
 }
 
 # Catch-all for main domain

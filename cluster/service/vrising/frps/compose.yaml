@@ -1,6 +1,6 @@
 services:
   frps-vrising:
-    image: ghcr.io/fatedier/frps:v0.64.0
+    image: ghcr.io/fatedier/frps:v0.65.0
     container_name: frps-vrising
     volumes:
       - ./frps.toml:/etc/frp/frps.toml
@@ -14,7 +14,8 @@ services:
       - "9877:9877/udp" # vrising
     command: ["-c", "/etc/frp/frps.toml"]
     networks:
-      - vrising-network
+      - vrising
 networks:
-  vrising-network:
+  vrising:
+    name: vrising
     driver: bridge

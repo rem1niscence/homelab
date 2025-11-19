@@ -1,7 +1,7 @@
 services:
-  frps:
-    image: ghcr.io/fatedier/frps:v0.64.0
-    container_name: frps
+  frps-canopy:
+    image: ghcr.io/fatedier/frps:v0.65.0
+    container_name: frps-canopy
     volumes:
       - ./frps.toml:/etc/frp/frps.toml
     restart: always
@@ -14,10 +14,10 @@ services:
       - "9002:9002" # node-2.{$DOMAIN}:9002
     command: ["-c", "/etc/frp/frps.toml"]
     networks:
-      - frp-network
-  frpc:
-    image: ghcr.io/fatedier/frpc:v0.64.0
-    container_name: frpc
+      - canopy
+  frpc-canopy:
+    image: ghcr.io/fatedier/frpc:v0.65.0
+    container_name: frpc-canopy
     env_file:
       - .env
     volumes:
@@ -27,30 +27,8 @@ services:
       - "7500:7500" # server dashboard port
     command: ["-c", "/etc/frp/frpc.toml"]
     networks:
-      - frp-network
-  caddy:
-    image: caddy:2
-    container_name: caddy
-    restart: always
-    ports:
-      - "80:80"
-      - "443:443"
-    env_file:
-      - .env
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
-      - caddy_data:/data
-      - caddy_config:/config
-    networks:
-      - frp-network
+      - canopy
 networks:
-  frp-network:
+  canopy:
+    name: canopy
     driver: bridge
-volumes:
-  caddy_data:
-  caddy_config:
-# if you get any weird connection errors, try this on the server
-# sudo iptables -I INPUT -p tcp --dport {PORT} -j ACCEPT
-
-# Hot Reload Caddy config
-# > docker container exec caddy caddy reload -c /etc/caddy/Caddyfile

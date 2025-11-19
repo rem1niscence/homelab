@@ -1,0 +1,4 @@
+proxy.netbird.{$NETBIRD_DOMAIN} {
+	encode gzip
+	reverse_proxy frps-netbird:4001
+}

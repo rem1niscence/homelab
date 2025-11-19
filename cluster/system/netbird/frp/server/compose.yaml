@@ -1,0 +1,19 @@
+services:
+  frps-netbird:
+    image: ghcr.io/fatedier/frps:v0.65.0
+    container_name: frps-netbird
+    volumes:
+      - ./server.toml:/etc/frp/server.toml
+    env_file:
+      - .env
+    ports:
+      - "4000:4000" # FRP control
+      - "4001:4001" # FRPS dashboard
+      - "4000:4000/udp" # FRP control UDP
+    command: ["-c", "/etc/frp/server.toml"]
+    networks:
+      - netbird
+networks:
+  netbird:
+    name: netbird
+    driver: bridge

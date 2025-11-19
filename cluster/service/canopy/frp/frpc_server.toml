@@ -1,4 +1,4 @@
-serverAddr = "frps"
+serverAddr = "frps-canopy"
 serverPort = 7000
 
 [auth]
@@ -10,5 +10,5 @@ name = "frps-dashboard-stcp"
 type = "stcp"
 secretKey = "{{ .Envs.SERVER_DASHBOARD_SECRET_KEY }}"
 
-localIP = "frps"
+localIP = "frps-canopy"
 localPort = 7500

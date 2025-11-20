@@ -1,0 +1,28 @@
+serverAddr = "{{ .Envs.SERVER_ADDR }}"
+serverPort = {{ .Envs.SERVER_PORT }}
+
+[auth]
+method = "token"
+token = "{{ .Envs.SERVER_TOKEN }}"
+
+# TODO: Might need to change the remote ports to something else
+[[proxies]]
+name = "caddy-http"
+type = "tcp"
+localIP = "caddy"
+localPort = 80
+remotePort = 80
+
+[[proxies]]
+name = "caddy-https"
+type = "tcp"
+localIP = "caddy"
+localPort = 443
+remotePort = 443
+
+[[proxies]]
+name = "caddy-https-udp"
+type = "udp"
+localIP = "caddy"
+localPort = 443
+remotePort = 443

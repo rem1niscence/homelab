@@ -1,0 +1,11 @@
+bindPort = 4002
+
+[auth]
+method = "token"
+token = "{{ .Envs.SERVER_TOKEN }}"
+
+[webServer]
+port = 4003
+addr = "0.0.0.0"
+user = "{{ .Envs.SERVER_DASHBOARD_USERNAME }}"
+password = "{{ .Envs.SERVER_DASHBOARD_PASSWORD }}"

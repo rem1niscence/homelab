@@ -6,13 +6,36 @@ services:
       - ./server.toml:/etc/frp/server.toml
     env_file:
       - .env
+    restart: always
     ports:
       - "4000:4000" # FRP control
       - "4001:4001" # FRPS dashboard
       - "4000:4000/udp" # FRP control UDP
+      # TODO: Change this to not use the http and https ports but instead setup behind a reverse proxy
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
     command: ["-c", "/etc/frp/server.toml"]
     networks:
       - netbird
+  frps-netbird-host:
+    image: ghcr.io/fatedier/frps:v0.65.0
+    container_name: frps-netbird-host
+    volumes:
+      - ./server_host.toml:/etc/frp/server_host.toml
+    env_file:
+      - .env
+    restart: always
+    # This uses network mode host so the ports here are just for reference on what
+    # is actually meant to be used
+    # ports:
+    #   - "4002:4002" # FRP control
+    #   - "4003:4003" # FRPS dashboard
+    #   - "4002:4002/udp" # FRP control UDP
+    #   - "3478:3478/udp" # Netbird's coturn TURN/STUN
+    #   - "49152-65535:49152-65535/udp" # Netbird's coturn TURN
+    command: ["-c", "/etc/frp/server_host.toml"]
+    network_mode: host
 networks:
   netbird:
     name: netbird

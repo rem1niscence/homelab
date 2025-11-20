@@ -1,23 +1,35 @@
 services:
   caddy:
-    image: caddy:2
+    # TODO: Might deprecate the caddy-layer4 plugin
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: caddy
     restart: always
     ports:
       - "80:80"
       - "443:443"
+      - "443:443/udp"
     env_file:
       - .env
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
       - caddy_config:/config
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - canopy
       - netbird
 volumes:
   caddy_data:
   caddy_config:
+
+networks:
+  canopy:
+    external: true
+  netbird:
+    external: true
 # if you get any weird connection errors, try this on the server
 # sudo iptables -I INPUT -p tcp --dport {PORT} -j ACCEPT
 
@@ -26,9 +38,3 @@ volumes:
 
 # There's no Caddyfile here which is expected, multiple services produce their own Caddyfiles
 # so it's responsbility of the maintainer to merge them into a single Caddyfile for deployment
-
-networks:
-  canopy:
-    external: true
-  netbird:
-    external: true

@@ -1,0 +1,25 @@
+services:
+  frp-netbird:
+    image: ghcr.io/fatedier/frpc:v0.65.0
+    container_name: frp-netbird
+    volumes:
+      - ./client.toml:/etc/frp/client.toml
+    restart: always
+    env_file:
+      - .env
+    command: ["-c", "/etc/frp/client.toml"]
+    networks:
+      - netbird_netbird
+  frp-netbird-host:
+    image: ghcr.io/fatedier/frpc:v0.65.0
+    container_name: frp-netbird-host
+    env_file:
+      - .env
+    volumes:
+      - ./client_host.toml:/etc/frp/client_host.toml
+    restart: always
+    command: ["-c", "/etc/frp/client_host.toml"]
+    network_mode: host
+networks:
+  netbird_netbird:
+    external: true

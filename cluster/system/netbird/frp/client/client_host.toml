@@ -1,0 +1,22 @@
+serverAddr = "{{ .Envs.SERVER_HOST_ADDR }}"
+serverPort = {{ .Envs.SERVER_HOST_PORT }}
+
+[auth]
+method = "token"
+token = "{{ .Envs.SERVER_TOKEN }}"
+
+[[proxies]]
+name = "coturn-turn-sturn"
+type = "udp"
+localIP = "127.0.0.1"
+localPort = 3478
+remotePort = 3478
+
+{{- range $_, $v := parseNumberRangePair "49152-65534,65535" "49152-65534,65535" }}
+[[proxies]]
+name = "turn-relay-{{ $v.First }}"
+type = "udp"
+localIP = "127.0.0.1"
+localPort = {{ $v.First }}
+remotePort = {{ $v.Second }}
+{{- end }}

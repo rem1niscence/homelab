@@ -6,6 +6,7 @@ services:
       - ./frps.toml:/etc/frp/frps.toml
     env_file:
       - .env
+    restart: always
     ports:
       - "5000:5000" # FRP control port
       - "5001:5001" # dashboard port

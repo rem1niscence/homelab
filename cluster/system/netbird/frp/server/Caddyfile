@@ -1,4 +1,48 @@
+# Not working, modify or delete
+# {
+# 	layer4 {
+# 		:443 {
+# 			@netbird tls sni {$NETBIRD_DOMAIN}
+# 			route @netbird {
+# 				proxy frps-netbird:10443
+# 			}
+# 			route {
+# 				tls
+# 			}
+# 		}
+
+# 		:80 {
+# 			@netbird http host {$NETBIRD_DOMAIN}
+# 			route @netbird {
+# 				proxy frps-netbird:10080
+# 			}
+# 		}
+# 	}
+# }
+
+# {
+# 	layer4 {
+# 		:443 {
+# 			@netbird-secure tls sni netbird.{$NETBIRD_DOMAIN}
+# 			route @netbird-secure {
+# 				proxy frps-netbird:10443
+# 			}
+# 		}
+# 		:80 {
+# 			@netbird-insecure http host netbird.{$NETBIRD_DOMAIN}
+# 			route @netbird-insecure {
+# 				proxy frps-netbird:10080
+# 			}
+# 		}
+# 	}
+# }
+
 proxy.netbird.{$NETBIRD_DOMAIN} {
 	encode gzip
 	reverse_proxy frps-netbird:4001
+}
+
+proxy-host.netbird.{$NETBIRD_DOMAIN} {
+	encode gzip
+	reverse_proxy host.docker.internal:4003
 }

@@ -113,7 +113,7 @@ spec:
         pi: pi-2
       containers:
         - name: frpc
-          image: ghcr.io/fatedier/frpc:v0.63.0
+          image: ghcr.io/fatedier/frpc:v0.65.0
           args: ["-c", "/etc/frp/frpc.toml"]
           envFrom:
             - secretRef:
@@ -128,3 +128,6 @@ spec:
             items:
               - key: client
                 path: frpc.toml
+networks:
+  canopy:
+    external: true

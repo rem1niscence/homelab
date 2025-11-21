@@ -11,10 +11,6 @@ services:
       - "4000:4000" # FRP control
       - "4001:4001" # FRPS dashboard
       - "4000:4000/udp" # FRP control UDP
-      # TODO: Change this to not use the http and https ports but instead setup behind a reverse proxy
-      - "80:80"
-      - "443:443"
-      - "443:443/udp"
     command: ["-c", "/etc/frp/server.toml"]
     networks:
       - netbird

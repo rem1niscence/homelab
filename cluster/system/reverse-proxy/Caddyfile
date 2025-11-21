@@ -1,0 +1,88 @@
+# The contents of this file is intentionally aggregated from all the other CaddyFiles of
+# different services meant to be proxied by this Caddy instance. The Layer 7 part is modified
+# in order to accomodate the proxy passthrough to the layer 4 services.
+{
+	# The `layer4` app below must be provided by the layer‑4 (caddy-l4 / layer4) plugin.
+	# - It MUST be the only thing binding the real external ports (80 and 443).
+	# - All other HTTP/HTTPS site blocks must bind to loopback (127.0.0.1) ports so they
+	#   don't conflict with layer4. See the layer4 block below for details.
+	#
+	# Notes:
+	# - layer4 will inspect the initial bytes of a TCP connection (HTTP Host header
+	#   for :80, TLS ClientHello SNI for :443) and forward the raw TCP stream.
+	# - For netbird.{$NETBIRD_DOMAIN} the raw TCP stream is forwarded to frps-netbird,
+	#   allowing the backend (behind FRP) to terminate TLS and perform ACME as needed.
+	# - For all other hosts it is forwarded to a local HTTP/HTTPS app bound to loopback
+	#   ports (127.0.0.1:8080 and 127.0.0.1:8443) so front Caddy still handles L7
+	#   traffic and certificate management for those sites.
+	#
+	# Make sure your binary includes the module: run `caddy list-modules | grep layer4`
+	# and that no other process binds :80 or :443 on the host/container.
+	layer4 {
+		:80 {
+			# If Host header is netbird.<NETBIRD_DOMAIN>, forward raw HTTP traffic to FRP.
+			@netbird http host netbird.{$NETBIRD_DOMAIN}
+			route @netbird {
+				proxy frps-netbird:80
+			}
+			# fallback -> local HTTP app (L7 handling for other hostnames)
+			route {
+				proxy 127.0.0.1:8080
+			}
+		}
+
+		:443 {
+			# If TLS SNI is netbird.<NETBIRD_DOMAIN>, forward raw TLS to FRP (passthrough).
+			@netbird tls sni netbird.{$NETBIRD_DOMAIN}
+			route @netbird {
+				proxy frps-netbird:443
+			}
+			# fallback -> local HTTPS app (this Caddy process's HTTP app handles TLS for others)
+			route {
+				proxy 127.0.0.1:8443
+			}
+		}
+	}
+}
+
+# ========================================================================
+# Local HTTP/HTTPS app(s) bound to loopback (127.0.0.1) — DO NOT bind 0.0.0.0:80/443
+# These site blocks will be used for all non-netbird hosts. The layer4 app above
+# forwards traffic to these loopback ports so the HTTP/HTTPS server can perform
+# normal L7 behavior (terminate TLS, run ACME, reverse_proxy, etc).
+# ========================================================================
+
+# explorer.node-1: handled by local HTTP app on loopback ports
+explorer.node-1.{$DOMAIN}:8080, explorer.node-1.{$DOMAIN}:8443 {
+	bind 127.0.0.1
+	encode gzip
+	reverse_proxy frps-canopy:50001
+}
+
+# explorer.node-2: handled by local HTTP app on loopback ports
+explorer.node-2.{$DOMAIN}:8080, explorer.node-2.{$DOMAIN}:8443 {
+	bind 127.0.0.1
+	encode gzip
+	reverse_proxy frps-canopy:40001
+}
+
+# proxy.netbird: this is an L7 frontend handled locally (not the passthrough netbird host)
+# Note: netbird.{$NETBIRD_DOMAIN} (the passthrough host) is handled by layer4 -> frps-netbird.
+proxy.netbird.{$NETBIRD_DOMAIN}:8080, proxy.netbird.{$NETBIRD_DOMAIN}:8443 {
+	bind 127.0.0.1
+	encode gzip
+	reverse_proxy frps-netbird:4001
+}
+
+# proxy-host.netbird: local L7 frontend for host.docker.internal:4003
+proxy-host.netbird.{$NETBIRD_DOMAIN}:8080, proxy-host.netbird.{$NETBIRD_DOMAIN}:8443 {
+	bind 127.0.0.1
+	encode gzip
+	reverse_proxy host.docker.internal:4003
+}
+
+# Catch-all for main domain (on loopback ports). layer4 will forward unknown hosts here.
+*.{$DOMAIN}:8080, *.{$DOMAIN}:8443 {
+	bind 127.0.0.1
+	respond "404 - Not Found" 404
+}

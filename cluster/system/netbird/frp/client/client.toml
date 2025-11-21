@@ -5,7 +5,6 @@ serverPort = {{ .Envs.SERVER_PORT }}
 method = "token"
 token = "{{ .Envs.SERVER_TOKEN }}"
 
-# TODO: Might need to change the remote ports to something else
 [[proxies]]
 name = "caddy-http"
 type = "tcp"

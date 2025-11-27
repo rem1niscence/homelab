@@ -1,4 +1,5 @@
 bindPort = 4000
+transport.tcpMux = false
 
 [auth]
 method = "token"

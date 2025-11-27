@@ -8,15 +8,22 @@ token = "{{ .Envs.SERVER_TOKEN }}"
 [[proxies]]
 name = "coturn-turn-sturn"
 type = "udp"
-localIP = "127.0.0.1"
+localIP = "{{ .Envs.LOCAL_IP }}"
 localPort = 3478
 remotePort = 3478
 
-{{- range $_, $v := parseNumberRangePair "49152-65534,65535" "49152-65534,65535" }}
+[[proxies]]
+name = "coturn-tls"
+type = "tcp"
+localIp = "{{ .Envs.LOCAL_IP }}"
+localPort = 5349
+remotePort = 5349
+
+{{- range $_, $v := parseNumberRangePair "49152-49249,49250" "49152-49249,49250" }}
 [[proxies]]
 name = "turn-relay-{{ $v.First }}"
 type = "udp"
-localIP = "127.0.0.1"
+localIP = "{{ .Envs.LOCAL_IP }}"
 localPort = {{ $v.First }}
 remotePort = {{ $v.Second }}
 {{- end }}

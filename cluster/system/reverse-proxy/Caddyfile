@@ -42,6 +42,13 @@
 				proxy 127.0.0.1:8443
 			}
 		}
+
+		# not used atm, could potentially be used to send the packets of the relayer through here
+		# udp/:443 {
+		# 	route {
+		# 		proxy udp/frps-netbird:443
+		# 	}
+		# }
 	}
 }
 

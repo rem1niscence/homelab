@@ -1,6 +1,6 @@
 serverAddr = "{{ .Envs.SERVER_ADDR }}"
 serverPort = {{ .Envs.SERVER_PORT }}
-
+transport.tcpMux = false
 [auth]
 method = "token"
 token = "{{ .Envs.SERVER_TOKEN }}"

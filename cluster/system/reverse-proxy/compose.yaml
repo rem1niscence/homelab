@@ -9,21 +9,18 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      - "443:443/udp"
+      # - "443:443/udp"
     env_file:
       - .env
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
-      - caddy_data:/data
-      - caddy_config:/config
+      - ./data:/data
+      - ./config:/config
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
       - canopy
       - netbird
-volumes:
-  caddy_data:
-  caddy_config:
 
 networks:
   canopy:

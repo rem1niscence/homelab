@@ -25,7 +25,7 @@ spec:
         app: mantium-api
     spec:
       nodeSelector:
-        type: main
+        pi: pi-3
       containers:
         - name: mantium-api
           image: ghcr.io/diogovalentte/mantium-api:latest
@@ -114,6 +114,8 @@ spec:
       labels:
         app: postgres
     spec:
+      nodeSelector:
+        pi: pi-3
       containers:
         - name: postgres
           image: postgres:16-alpine

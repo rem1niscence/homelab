@@ -393,6 +393,11 @@ data:
             href: https://drawio.{{DOMAIN}}
             siteMonitor: http://drawio.drawio
             description: Online diagramming tool
+        - Monitarr:
+            icon: mdi-television
+            href: https://monitarr.{{DOMAIN}}
+            siteMonitor: http://monitarr.servarr
+            description: Monitor *arr downloads
         # - Kubevirt UI:
         #     icon: vmware-workstation
         #     href: https://kubevirt.{{DOMAIN}}

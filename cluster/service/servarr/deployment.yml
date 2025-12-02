@@ -121,7 +121,7 @@ spec:
         app: prowlarr
     spec:
       nodeSelector:
-        type: pi
+        type: secondary
       containers:
         - name: prowlarr
           image: lscr.io/linuxserver/prowlarr:latest
@@ -224,3 +224,49 @@ spec:
         - name: config
           persistentVolumeClaim:
             claimName: bazarr-config-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: servarr
+  name: monitarr
+  labels:
+    app: monitarr
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: monitarr
+  template:
+    metadata:
+      labels:
+        app: monitarr
+    spec:
+      nodeSelector:
+        type: main
+      containers:
+        - name: monitarr
+          image: ghcr.io/nickshanks347/monitarr:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: SONARR_URL
+              value: "http://sonarr:8989"
+            - name: SONARR_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: monitarr
+                  key: SONARR_API_KEY
+                  optional: false
+            - name: RADARR_URL
+              value: "http://radarr:7878"
+            - name: RADARR_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: monitarr
+                  key: RADARR_API_KEY
+                  optional: false

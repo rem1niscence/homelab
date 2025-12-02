@@ -38,37 +38,78 @@ spec:
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
-                  name: postgres-app
-                  key: uri
+                  name: umami
+                  key: DATABASE_URL
+                  optional: false
 ---
-apiVersion: postgresql.cnpg.io/v1
-kind: Cluster
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: postgres
   namespace: umami
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 30m"
+    keel.sh/trigger: poll
 spec:
-  instances: 1
-  imageName: ghcr.io/cloudnative-pg/postgresql:15
-  storage:
-    storageClass: longhorn-pg
-    size: 2Gi
-  postgresql:
-    parameters:
-      max_connections: "100"
-      shared_buffers: "256MB"
-      # useful additions for a small analytics workload:
-      work_mem: "4MB"
-      maintenance_work_mem: "64MB"
-      effective_cache_size: "512MB"
-  monitoring:
-    enablePodMonitor: false
-  bootstrap:
-    initdb:
-      database: umami
-      owner: umami
-  affinity:
-    nodeSelector:
-      pi: "pi-2"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - secretRef:
+                name: umami
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          volumeMounts:
+            - name: db
+              mountPath: /var/lib/postgresql/data
+              subPath: postgres
+      volumes:
+        - name: db
+          persistentVolumeClaim:
+            claimName: db
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: umami
+  name: db
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2G
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: umami
+  name: postgres
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: postgres
 ---
 apiVersion: v1
 kind: Service
@@ -81,3 +122,18 @@ spec:
       targetPort: 3000
   selector:
     app: umami
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: umami
+  namespace: umami
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`umami.rvserver.online`)
+      kind: Rule
+      services:
+        - name: umami
+          port: 80

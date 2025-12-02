@@ -77,7 +77,7 @@ spec:
         type: pi
       initContainers:
         - name: install-server
-          image: golang:1.21.0-alpine
+          image: golang:1.25-alpine3.22
           command:
             - sh
             - -c

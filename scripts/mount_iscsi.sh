@@ -50,16 +50,9 @@ fi
 umount /dev/$DEVICE || true  # We use "|| true" to prevent the script from exiting if the device is not mounted.
 
 if [ "$FORMAT" == "true" ]; then
-  # Create a new partition and format it
-  (
-    echo o
-    echo n
-    echo p
-    echo 1
-    echo
-    echo
-    echo w
-  ) | fdisk /dev/$DEVICE
+  # Use parted to create a partition table and partition
+  parted -s /dev/$DEVICE mklabel msdos
+  parted -s /dev/$DEVICE mkpart primary ext4 0% 100%
 
   # Wait for the kernel to recognize the new partition
   sleep 5

@@ -11,15 +11,15 @@ deployment:
     type: pi
   containers:
     - name: it-tools
-      image: corentinth/it-tools
+      image: ghcr.io/sharevb/it-tools:latest
       ports:
-        - 80
+        - 8080
 
 # service configuration
 svc:
   ports:
     - port: 80
-      targetPort: 80
+      targetPort: 8080
 
 # ingress configuration
 ingress:

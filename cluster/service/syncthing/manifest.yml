@@ -64,7 +64,7 @@ spec:
     - ReadWriteMany
   nfs:
     server: 192.168.0.95
-    path: /mnt/main_drive/data/syncthing
+    path: /mnt/ssd_2tb/sync
   storageClassName: local-path
   mountOptions:
     - vers=4.0

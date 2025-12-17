@@ -23,3 +23,6 @@ tmp
 charts
 Chart.Lock
 *.tgz
+
+# cloudflare tunnel credentials
+cluster/system/cloudflare-tunnel/*.json

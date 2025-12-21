@@ -55,13 +55,13 @@ func (s *S3StorageManager) Upload(ctx context.Context, reader io.Reader, key str
 	return err
 }
 
-func (s *S3StorageManager) Download(ctx context.Context, location string) (io.ReadCloser, error) {
+func (s *S3StorageManager) Download(ctx context.Context, location string) (io.ReadCloser, int64, error) {
 	result, err := s.s3Client.GetObject(ctx, &s3.GetObjectInput{
 		Bucket: aws.String(s.Bucket),
 		Key:    aws.String(location),
 	})
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	return result.Body, nil
+	return result.Body, *result.ContentLength, nil
 }

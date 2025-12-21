@@ -147,20 +147,22 @@ func PerformRestore(ctx context.Context, config *RestoreConfig, logger *slog.Log
 			slog.String("took", time.Since(now).String()))
 	}
 
+	// create extracted snapshot folder
+	if err := os.MkdirAll(configPath.ExtractedSnapshotPath, 0755); err != nil {
+		return fmt.Errorf("failed to create extracted snapshot folder: %w", err)
+	}
+	defer os.Remove(configPath.ExtractedSnapshotPath)
+
 	// extract snapshot, is assumed to be compressed
 	now := time.Now()
 	logger.Info("extracting snapshot")
-	if err := storage.DecompressCMD(ctx, configPath.DownloadSnapshotPath, config.DownloadFolder); err != nil {
+	if err := storage.DecompressCMD(ctx, configPath.DownloadSnapshotPath,
+		configPath.ExtractedSnapshotPath); err != nil {
 		return fmt.Errorf("failed to extract snapshot: %w", err)
 	}
 	logger.Info("extracted snapshot",
 		slog.String("path", configPath.DownloadFolder),
 		slog.String("took", time.Since(now).String()))
-
-	// confirm extracted DB exists
-	if _, err := os.Stat(configPath.ExtractedSnapshotPath); err != nil {
-		return fmt.Errorf("extracted DB does not exist")
-	}
 
 	// rename current files to backup
 	rename := map[string]string{

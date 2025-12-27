@@ -24,6 +24,5 @@ required libraries in nodes for nfs support:
 * nfs-common
 * libnfs-utils
 
-
 fixes many ipv6 issues
 `sudo modprobe ip6table_filter`

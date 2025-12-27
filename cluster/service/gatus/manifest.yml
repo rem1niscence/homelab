@@ -314,6 +314,12 @@ data:
           - "[STATUS] == 404"
         alerts:
               - type: discord
+      - name: Kitchen Owl
+        url: "http://front.kitchenowl"
+        conditions:
+          - "[STATUS] == 200"
+        alerts:
+              - type: discord
       # - name: TrueNAS SCALE
       #   url: "http://truenas.truenas"
       #   conditions:

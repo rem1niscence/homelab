@@ -398,6 +398,11 @@ data:
             href: https://monitarr.{{DOMAIN}}
             siteMonitor: http://monitarr.servarr
             description: Monitor *arr downloads
+        - Kitchen Owl:
+            icon: kitchenowl
+            href: https://kitchenowl.{{DOMAIN}}
+            siteMonitor: http://front.kitchenowl
+            description: Recipe management software
         # - Kubevirt UI:
         #     icon: vmware-workstation
         #     href: https://kubevirt.{{DOMAIN}}
@@ -478,11 +483,6 @@ data:
         #     href: https://true-command.{{DOMAIN}}
         #     siteMonitor: http://true-command.true-command
         #     description:  Management tool for TrueNAS systems.
-        # - Kitchen Owl:
-        #     icon: kitchenowl
-        #     href: https://kitchenowl.{{DOMAIN}}
-        #     siteMonitor: http://front.kitchenowl
-        #     description: Recipe management software
         # - NetAlertX:
         #     icon: mdi-router-network
         #     href: https://netalertx.{{DOMAIN}}

@@ -1,0 +1,27 @@
+# This playbook updates k3s cluster apt packages
+# And for the main server it installs python3 and pip
+# along with kubernetes python package system-wide
+# Note: It is recommended to run python code in a virtual
+# environment. It will be eventually updated to reflect that
+- name: Update k3s cluster packages
+  hosts: k3s_cluster
+  become: true
+  tasks:
+    - name: Upgrade package list
+      ansible.builtin.apt:
+        update_cache: yes
+        upgrade: dist
+    - name: install python3 and pip
+      ansible.builtin.apt:
+        name:
+          - python3
+          - python3-pip
+        state: present
+      when: inventory_hostname in groups['server']
+
+    - name: install kubernetes python package system-wide
+      ansible.builtin.apt:
+        name:
+          - python3-kubernetes
+        state: present
+      when: inventory_hostname in groups['server']

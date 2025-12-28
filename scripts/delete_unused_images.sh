@@ -4,10 +4,10 @@ K3S_CTR="/var/lib/rancher/k3s/data/current/bin/ctr"
 SOCKET_PATH="/run/k3s/containerd/containerd.sock"
 NAMESPACE="k8s.io"
 
-sudo ${K3S_CTR} -a ${SOCKET_PATH} -n ${NAMESPACE} image ls -q > all_images.txt
+${K3S_CTR} -a ${SOCKET_PATH} -n ${NAMESPACE} image ls -q > all_images.txt
 
-for container in $(sudo ${K3S_CTR} -a ${SOCKET_PATH} -n ${NAMESPACE} containers ls -q); do
-    sudo ${K3S_CTR} -a ${SOCKET_PATH} -n ${NAMESPACE} containers info ${container} | grep Image | awk '{print $2}' >> used_images.txt
+for container in $(${K3S_CTR} -a ${SOCKET_PATH} -n ${NAMESPACE} containers ls -q); do
+    ${K3S_CTR} -a ${SOCKET_PATH} -n ${NAMESPACE} containers info ${container} | grep Image | awk '{print $2}' >> used_images.txt
 done
 
 # Sort and deduplicate

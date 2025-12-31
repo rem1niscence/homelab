@@ -403,6 +403,11 @@ data:
             href: https://kitchenowl.{{DOMAIN}}
             siteMonitor: http://front.kitchenowl
             description: Recipe management software
+        - Termix:
+            icon: sh-termix
+            href: https://termix.{{DOMAIN}}
+            siteMonitor: http://termix.termix
+            description: Server management platform
         # - Kubevirt UI:
         #     icon: vmware-workstation
         #     href: https://kubevirt.{{DOMAIN}}

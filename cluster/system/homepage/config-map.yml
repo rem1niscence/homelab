@@ -195,17 +195,6 @@ data:
               accountid: ${CLOUDFLARE_ACCOUNT_ID}
               tunnelid: ${CLOUDFLARE_TUNNEL_ID}
               key: ${CLOUDFLARE_API_TOKEN}
-        - Homebox:
-            icon: homebox
-            href: https://homebox.{{DOMAIN}}
-            siteMonitor: http://homebox.homebox
-            description: Home inventory & organization
-            widget:
-              type: homebox
-              url: http://homebox.homebox
-              username: ${HOMEBOX_USERNAME}
-              password: ${HOMEBOX_PASSWORD}
-              fields: ["items", "locations", "totalValue"]
         # - Mylar3:
         #     icon: sh-mylar3
         #     href: https://mylar3.{{DOMAIN}}
@@ -227,12 +216,21 @@ data:
             icon: immich.svg
             href: https://immich.{{DOMAIN}}
             siteMonitor: http://immich.immich
-            description: Media management tool
+            description: Photo album storage
             widget:
               type: immich
               url: http://immich.immich
               key: ${IMMICH_API_KEY}
               version: 2
+        - ArgoCD:
+            icon: sh-argo-cd
+            href: https://argocd.{{DOMAIN}}
+            siteMonitor: http://argocd-server.argocd
+            description: Continuous Delivery tool for K8s
+            widget:
+              type: argocd
+              url: http://argocd-server.argocd
+              key: ${ARGOCD_API_KEY}
         - Grafana:
             icon: grafana.svg
             href: https://grafana.{{DOMAIN}}
@@ -243,15 +241,15 @@ data:
               url: http://prometheus-grafana.monitoring
               username: ${GRAFANA_URSERNAME}
               password: ${GRAFANA_PASSWORD}
-        - ArgoCD:
-            icon: sh-argo-cd
-            href: https://argocd.{{DOMAIN}}
-            siteMonitor: http://argocd-server.argocd
-            description: Continuous Delivery tool for K8s
+        - Wallos:
+            icon: wallos
+            href: https://wallos.{{DOMAIN}}
+            siteMonitor: http://wallos.wallos
+            description: Subscriptions tracker & analytics
             widget:
-              type: argocd
-              url: http://argocd-server.argocd
-              key: ${ARGOCD_API_KEY}
+              type: wallos
+              url: http://wallos.wallos
+              key: ${WALLOS_API_KEY}
     - Apps:
         - Tailscale:
             icon: tailscale.svg

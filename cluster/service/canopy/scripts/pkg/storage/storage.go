@@ -11,7 +11,7 @@ type Uploader interface {
 }
 
 type Downloader interface {
-	Download(ctx context.Context, location string) (io.ReadCloser, error)
+	Download(ctx context.Context, location string) (body io.ReadCloser, size int64, err error)
 }
 
 type StorageManager interface {
@@ -48,4 +48,11 @@ func (pr *ProgressReader) Read(p []byte) (int, error) {
 		pr.lastUpdate = time.Now()
 	}
 	return n, err
+}
+
+func (pr *ProgressReader) Close() error {
+	if closer, ok := pr.reader.(io.Closer); ok {
+		return closer.Close()
+	}
+	return nil
 }

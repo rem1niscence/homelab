@@ -40,7 +40,7 @@ spec:
               value: "Etc/UTC"
           volumeMounts:
             - name: data
-              mountPath: /data
+              mountPath: /data/media
             - name: config
               mountPath: /config
       volumes:
@@ -88,7 +88,7 @@ spec:
               value: "Etc/UTC"
           volumeMounts:
             - name: data
-              mountPath: /data
+              mountPath: /data/media
             - name: config
               mountPath: /config
       volumes:
@@ -136,7 +136,7 @@ spec:
               value: "Etc/UTC"
           volumeMounts:
             - name: data
-              mountPath: /data
+              mountPath: /data/media
             - name: config
               mountPath: /config
         - name: flaresolverr
@@ -214,7 +214,7 @@ spec:
               value: "Etc/UTC"
           volumeMounts:
             - name: data
-              mountPath: /data
+              mountPath: /data/media
             - name: config
               mountPath: /config
       volumes:

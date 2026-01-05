@@ -1,0 +1,83 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: termix
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: termix
+  namespace: termix
+  labels:
+    app: termix
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: termix
+  template:
+    metadata:
+      labels:
+        app: termix
+    spec:
+      nodeSelector:
+        type: main
+      containers:
+        - name: termix
+          image: ghcr.io/lukegus/termix:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SITE_NAME
+              value: "Homelabtermix"
+          volumeMounts:
+            - name: data
+              mountPath: /app/data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: termix-data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: termix
+  name: termix-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1G
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: termix
+  name: termix
+spec:
+  ports:
+    - port: 80
+      targetPort: 8080
+  selector:
+    app: termix
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: termix
+  namespace: termix
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`termix.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: termix
+          port: 80

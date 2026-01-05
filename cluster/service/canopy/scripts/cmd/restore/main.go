@@ -8,10 +8,9 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
-	"strconv"
-	"strings"
 	"time"
 
+	"github.com/dustin/go-humanize"
 	"github.com/reminiscence/homelab/cluster/canopy/scripts/internal/lifecycle"
 	"github.com/reminiscence/homelab/cluster/canopy/scripts/pkg/storage"
 )
@@ -105,8 +104,8 @@ func PerformRestore(ctx context.Context, config *RestoreConfig, logger *slog.Log
 	}
 
 	// remove backup files regardless
-	defer os.Remove(configPath.BackupDbPath)
-	defer os.Remove(configPath.BackupHeightPath)
+	defer os.RemoveAll(configPath.BackupDbPath)
+	defer os.RemoveAll(configPath.BackupHeightPath)
 
 	// check if files exist
 	exists := make([]bool, 2)
@@ -130,7 +129,7 @@ func PerformRestore(ctx context.Context, config *RestoreConfig, logger *slog.Log
 	if err := os.MkdirAll(config.DownloadFolder, 0755); err != nil {
 		return fmt.Errorf("failed to create download folder: %w", err)
 	}
-	defer os.Remove(config.DownloadFolder)
+	defer os.RemoveAll(config.DownloadFolder)
 
 	// download snapshot files
 	downloads := map[string]string{
@@ -140,27 +139,35 @@ func PerformRestore(ctx context.Context, config *RestoreConfig, logger *slog.Log
 	for path, url := range downloads {
 		now := time.Now()
 		logger.Info("downloading file", slog.String("path", path))
-		if err := downloadFile(ctx, downloader, url, path); err != nil {
+		reader, size, err := downloader.Download(ctx, url)
+		if err != nil {
+			return fmt.Errorf("failed to download file: %s: %w", path, err)
+		}
+		defer reader.Close()
+		progressReader := trackDownloadProgress(logger, reader, url, size)
+		if err := copyToFile(progressReader, path); err != nil {
 			return fmt.Errorf("failed to download file: %s: %w", path, err)
 		}
 		logger.Info("downloaded file", slog.String("path", path),
 			slog.String("took", time.Since(now).String()))
 	}
 
+	// create extracted snapshot folder
+	if err := os.MkdirAll(configPath.ExtractedSnapshotPath, 0755); err != nil {
+		return fmt.Errorf("failed to create extracted snapshot folder: %w", err)
+	}
+	defer os.RemoveAll(configPath.ExtractedSnapshotPath)
+
 	// extract snapshot, is assumed to be compressed
 	now := time.Now()
 	logger.Info("extracting snapshot")
-	if err := storage.DecompressCMD(ctx, configPath.DownloadSnapshotPath, config.DownloadFolder); err != nil {
+	if err := storage.DecompressCMD(ctx, configPath.DownloadSnapshotPath,
+		configPath.ExtractedSnapshotPath); err != nil {
 		return fmt.Errorf("failed to extract snapshot: %w", err)
 	}
 	logger.Info("extracted snapshot",
 		slog.String("path", configPath.DownloadFolder),
 		slog.String("took", time.Since(now).String()))
-
-	// confirm extracted DB exists
-	if _, err := os.Stat(configPath.ExtractedSnapshotPath); err != nil {
-		return fmt.Errorf("extracted DB does not exist")
-	}
 
 	// rename current files to backup
 	rename := map[string]string{
@@ -209,7 +216,7 @@ func PerformRestore(ctx context.Context, config *RestoreConfig, logger *slog.Log
 				return fmt.Errorf("failed to copy directory: %s: %w", src, err)
 			}
 		} else {
-			if err := copyFile(src, dst); err != nil {
+			if err := copyLocalFile(src, dst); err != nil {
 				return fmt.Errorf("failed to copy file: %s: %w", src, err)
 			}
 		}
@@ -255,48 +262,29 @@ func compareHeights(ctx context.Context, config *RestoreConfig,
 	localHeight := localHeightData.Height
 
 	// get remote height
-	rawRemoteHeight, err := downloadBytes(ctx, config.HeightFileURL, downloader)
+	rawRemoteHeight, _, err := downloader.Download(ctx, config.HeightFileURL)
 	if err != nil {
 		return true, fmt.Errorf("failed to download remote height: %w", err)
 	}
-	remoteHeight, err := strconv.ParseInt(strings.TrimSpace(string(rawRemoteHeight)), 10, 64)
-	if err != nil {
+	type HeightResp struct {
+		Height int64 `json:"height"`
+	}
+	var remoteHeight HeightResp
+	if err := json.NewDecoder(rawRemoteHeight).Decode(&remoteHeight); err != nil {
 		return true, fmt.Errorf("failed to parse remote height: %w", err)
 	}
 
 	logger.Info("height comparison",
 		slog.Int64("local_height", localHeight),
-		slog.Int64("remote_height", remoteHeight),
+		slog.Int64("remote_height", remoteHeight.Height),
 		slog.Int64("threshold", config.HeightThreshold))
 
 	// check if remote height is higher than the threshold
-	return remoteHeight >= localHeight+config.HeightThreshold, nil
+	return remoteHeight.Height >= localHeight+config.HeightThreshold, nil
 }
 
-// downloadBytes downloads a file and returns its content as bytes
-func downloadBytes(ctx context.Context, url string, downloader storage.Downloader) ([]byte, error) {
-	// download remote height file
-	reader, err := downloader.Download(ctx, url)
-	if err != nil {
-		return nil, fmt.Errorf("failed to download %s: %w", url, err)
-	}
-	defer reader.Close()
-	// read content
-	content, err := io.ReadAll(reader)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read contents of %s: %w", url, err)
-	}
-	return content, nil
-}
-
-// downloadFile downloads a file from storage to local path
-func downloadFile(ctx context.Context, downloader storage.Downloader, key, localPath string) error {
-	reader, err := downloader.Download(ctx, key)
-	if err != nil {
-		return err
-	}
-	defer reader.Close()
-
+// copyToFile copies a single file from source to destination
+func copyToFile(reader io.Reader, localPath string) error {
 	file, err := os.Create(localPath)
 	if err != nil {
 		return err
@@ -307,8 +295,20 @@ func downloadFile(ctx context.Context, downloader storage.Downloader, key, local
 	return err
 }
 
-// copyFile copies a single file from source to destination
-func copyFile(src, dst string) error {
+// trackDownloadProgress tracks the progress of a download and logs it
+func trackDownloadProgress(logger *slog.Logger, reader io.Reader, name string, size int64) io.Reader {
+	return storage.NewProgressReader(reader, size, 5*time.Second, func(read, total int64) {
+		percentage := float64(read) / float64(total) * 100
+		logger.Info("downloading", slog.String("name",
+			name),
+			slog.String("percentage", fmt.Sprintf("%.2f%%", percentage)),
+			slog.String("downloaded", humanize.Bytes(uint64(read))),
+			slog.String("total", humanize.Bytes(uint64(total))))
+	})
+}
+
+// copyLocalFile copies a single local file from source to destination
+func copyLocalFile(src, dst string) error {
 	sourceFile, err := os.Open(src)
 	if err != nil {
 		return fmt.Errorf("failed to open source file: %w", err)
@@ -348,7 +348,7 @@ func copyDir(src, dst string) error {
 			return os.MkdirAll(destPath, info.Mode())
 		} else {
 			// copy file
-			return copyFile(path, destPath)
+			return copyLocalFile(path, destPath)
 		}
 	})
 }

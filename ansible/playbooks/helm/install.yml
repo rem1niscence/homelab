@@ -1,0 +1,5 @@
+- name: Install Helm on the control plane node
+  hosts: server[0]
+  become: true
+  roles:
+    - helm

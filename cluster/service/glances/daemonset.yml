@@ -20,7 +20,7 @@ spec:
         app: glances
     spec:
       restartPolicy: Always
-      hostPID: true # Equivalent to --pid host
+      hostPID: true
       containers:
         - name: glances
           image: nicolargo/glances:ubuntu-dev

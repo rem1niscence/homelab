@@ -1,0 +1,5 @@
+- name: Install Cilium on the cluster
+  hosts: localhost
+  roles:
+    - role: cilium
+      tags: cilium-install-cli

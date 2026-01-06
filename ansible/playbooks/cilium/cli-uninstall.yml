@@ -1,0 +1,5 @@
+- name: Uninstall Cilium from the cluster
+  hosts: localhost
+  roles:
+    - role: cilium
+      tags: cilium-uninstall-cli

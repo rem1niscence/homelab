@@ -1,0 +1,4 @@
+extra_server_args: >-
+  --secrets-encryption
+  --flannel-backend=none
+  --disable-network-policy

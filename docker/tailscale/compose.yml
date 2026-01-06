@@ -10,7 +10,6 @@ services:
     volumes:
       - /dev/net/tun:/dev/net/tun
       - ./var/lib:/var/lib
-      - ./tailscale:/tmp
     environment:
       - TS_STATE_DIR=/var/lib/tailscale
       - TS_USERSPACE=false

@@ -4,6 +4,11 @@ k3s_cluster:
     server:
       hosts:
         10.0.0.1:
+          tailscale_server:
+            routes:
+              - 10.0.0.0/24
+            extra_args:
+              - --accept-routes
           ansible_user: debian
           ansible_become: true
           extra_server_args: >-

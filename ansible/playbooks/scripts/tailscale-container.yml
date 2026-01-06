@@ -1,0 +1,67 @@
+- name: Deploy Tailscale container with Docker Compose
+  hosts: k3s_cluster
+  become: false
+  vars:
+    discord_webhook_id: "{{ docker.watchtower.discord.webhook_id }}"
+    discord_token: "{{ docker.watchtower.discord.token }}"
+    compose_project_dir: "{{ playbook_dir }}/../../../docker/tailscale"
+    compose_dest_dir: "{{ ansible_facts.env.HOME }}/docker/tailscale"
+  tasks:
+    - name: Show tailscale routes for this host
+      ansible.builtin.debug:
+        var: tailscale
+    - name: Ensure required Tailscale vars are defined
+      ansible.builtin.assert:
+        that:
+          - tailscale.authkey is defined
+          - compose_project_dir is defined
+        fail_msg: >-
+          Missing required Tailscale vars. Ensure tailscale_authkey,
+          and compose_project_dir are defined for host {{ inventory_hostname }}.
+        success_msg: "All required Tailscale vars are defined for {{ inventory_hostname }}."
+
+    - name: Ensure project directory exists
+      ansible.builtin.file:
+        path: "{{ compose_dest_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Project directory ensured
+      ansible.builtin.debug:
+        msg: "Tailscale compose directory is {{ compose_dest_dir }}"
+
+    - name: Render Tailscale compose.yml.j2 from template
+      ansible.builtin.template:
+        src: "{{ compose_project_dir }}/compose.yml.j2"
+        dest: "{{ compose_dest_dir }}/compose.yml"
+        mode: "0644"
+
+    - name: Bring up Tailscale stack with Docker Compose
+      community.docker.docker_compose_v2:
+        project_src: "{{ compose_dest_dir }}"
+        files: compose.yml
+        state: present
+# ACL routes auto-approval format:
+# {
+#   "acls": [
+#     {
+#       "action": "accept",
+#       "src": ["tag:k3s-node"],
+#       "dst": ["*"]
+#     }
+#   ],
+
+#   "autoApprovers": {
+#     "routes": {
+#       "10.42.0.0/16": ["tag:k3s-node"]  // any device with tag:k3s-node auto-approves this route
+#     }
+#   },
+
+#   "tagOwners": {
+#     "tag:k3s-node": ["group:ops", "you@example.com"]
+#   },
+
+#   "groups": {
+#     "group:ops": ["you@example.com"]
+#   }
+# }

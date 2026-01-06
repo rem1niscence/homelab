@@ -1,0 +1,10 @@
+---
+- name: Install k3s cluster
+  ansible.builtin.import_playbook: site.yml
+- name: Install helm on the control plane node
+  hosts: server[0]
+  become: true
+  roles:
+    - helm
+- name: Install Cilium on the cluster
+  ansible.builtin.import_playbook: cilium/cli-install.yml

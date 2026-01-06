@@ -1,0 +1,4 @@
+- name: Uninstall Cilium from the cluster
+  ansible.builtin.import_playbook: cilium/cli-uninstall.yml
+- name: Reset k3s cluster
+  ansible.builtin.import_playbook: k3s.orchestration.reset

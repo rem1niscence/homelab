@@ -1,0 +1,4 @@
+- name: Install Traefik dashboard
+  ansible.builtin.import_tasks: traefik-dashboard.yml
+  tags:
+    - traefik-dashboard

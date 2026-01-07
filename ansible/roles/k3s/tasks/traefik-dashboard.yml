@@ -1,0 +1,13 @@
+- name: Apply Traefik dashboard resources
+  vars:
+    DOMAIN: "{{ domain }}"
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', playbook_dir ~ '/../../../cluster/system/traefik/dashboard.yml') | from_yaml_all }}"
+- name: Display manual steps message
+  ansible.builtin.debug:
+    msg:
+      - "Dashboard routes setup at https://traefik.{{ domain }}"
+      - "Note: Certificate validation may take several minutes"
+      - For now you need to manually add `--api.insecure=true` to the traefik deployment with
+      - "> kubectl edit deployment traefik -n kube-system"

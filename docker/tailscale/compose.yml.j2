@@ -5,10 +5,11 @@ services:
     # image: tailscale/tailscale:latest
     # need custom image to avoid scanning cilium interfaces
     # TODO: remove once https://github.com/tailscale/tailscale/issues/1552 is fixed
-    image: justaname94/tailscale:latest
+    image: ghcr.io/rem1niscence/tailscale:latest
     entrypoint: ["/usr/local/bin/containerboot"]
     network_mode: host
     restart: unless-stopped
+    # pull_policy: always
     cap_add:
       - NET_ADMIN
       - SYS_MODULE

@@ -1,0 +1,11 @@
+- name: Apply k8s manifests
+  hosts: localhost
+  gather_facts: true
+  tasks:
+    - name: Run apply k8s manifests tasks
+      include_role:
+        name: common
+        tasks_from: apply-manifests
+      vars:
+        apply_domain: "{{ domain }}"
+        render: true

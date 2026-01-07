@@ -28,9 +28,9 @@ spec:
         - name: homepage
           image: "ghcr.io/gethomepage/homepage:latest"
           imagePullPolicy: Always
-          env:
-            - name: HOMEPAGE_ALLOWED_HOSTS
-              value: "{{DOMAIN}}"
+          envFrom:
+            - secretRef:
+                name: homepage-deploy
           ports:
             - name: http
               containerPort: 3000

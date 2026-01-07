@@ -1,0 +1,8 @@
+- name: Set up TLS certificates with cert-manager
+  hosts: server[0]
+  roles:
+    - role: tls
+      vars:
+        email: "{{ tls.email }}"
+        domain: "{{ tls.domain }}"
+        cloudflare_token: "{{ tls.cloudflare_token }}"

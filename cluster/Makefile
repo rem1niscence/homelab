@@ -54,9 +54,9 @@ tls:
 	@kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.18.2/cert-manager.yaml
 	@echo "wait 10 seconds for cert-manager to be installed"
 	@ sleep 10
-	@sed -e "s;{{CLOUDFLARE_TOKEN}};$(CLOUDFLARE_TOKEN);g" ./system/tls/tls.yml | \
-		sed -e "s;{{EMAIL}};$(EMAIL);g" | \
-		sed -e "s;{{DOMAIN}};$(DOMAIN);g" | kubectl apply -f -
+	@sed -e "s;{{ CLOUDFLARE_TOKEN }};$(CLOUDFLARE_TOKEN);g" ./system/tls/tls.yml | \
+		sed -e "s;{{ EMAIL }};$(EMAIL);g" | \
+		sed -e "s;{{ DOMAIN }};$(DOMAIN);g" | kubectl apply -f -
 	@echo "done ✅. Bear in mind that the certificate validation may take several minutes, after that, restart the pods behind traefik's reverse proxy in order for this to take effect"
 
 .PHONY: dashboard

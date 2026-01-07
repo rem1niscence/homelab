@@ -5,7 +5,7 @@ metadata:
   namespace: cert-manager
 type: Opaque
 stringData:
-  api-token: "{{CLOUDFLARE_TOKEN}}"
+  api-token: "{{ CLOUDFLARE_TOKEN }}"
 ---
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
@@ -14,7 +14,7 @@ metadata:
   namespace: cert-manager
 spec:
   acme:
-    email: "{{EMAIL}}"
+    email: "{{ EMAIL }}"
     # server: https://acme-staging-v02.api.letsencrypt.org/directory
     server: https://acme-v02.api.letsencrypt.org/directory
     privateKeySecretRef:
@@ -25,18 +25,18 @@ spec:
             apiTokenSecretRef:
               key: api-token
               name: cloudflare-api-token
-            email: "{{EMAIL}}"
+            email: "{{ EMAIL }}"
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: wildcard-cert
-  namespace: kube-system
+  namespace: cert-manager
 spec:
   secretName: wildcard-secret
   dnsNames:
-    - "*.{{DOMAIN}}"
-    - "{{DOMAIN}}"
+    - "*.{{ DOMAIN }}"
+    - "{{ DOMAIN }}"
   issuerRef:
     kind: ClusterIssuer
     name: letsencrypt
@@ -45,7 +45,7 @@ apiVersion: traefik.io/v1alpha1
 kind: TLSStore
 metadata:
   name: default
-  namespace: kube-system
+  namespace: cert-manager
 spec:
   defaultCertificate:
     secretName: wildcard-secret

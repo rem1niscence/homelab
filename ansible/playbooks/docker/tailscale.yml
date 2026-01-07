@@ -1,10 +1,10 @@
 - name: Deploy Tailscale container with Docker Compose
   hosts: k3s_cluster
   become: false
-  vars:
-    discord_webhook_id: "{{ docker.watchtower.discord.webhook_id }}"
-    discord_token: "{{ docker.watchtower.discord.token }}"
-    compose_project_dir: "{{ playbook_dir }}/../../../docker/tailscale"
-    compose_dest_dir: "{{ ansible_facts.env.HOME }}/docker/tailscale"
   roles:
-    - tailscale
+    - role: tailscale
+      vars:
+        discord_webhook_id: "{{ docker.watchtower.discord.webhook_id }}"
+        discord_token: "{{ docker.watchtower.discord.token }}"
+        compose_project_dir: "{{ playbook_dir }}/../../../docker/tailscale"
+        compose_dest_dir: "{{ ansible_facts.env.HOME }}/docker/tailscale"

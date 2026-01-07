@@ -6,5 +6,9 @@
   become: true
   roles:
     - helm
-- name: Install Cilium on the cluster
+- name: Install Cilium
   ansible.builtin.import_playbook: ../cilium/cli-install.yml
+- name: Set up TLS certificates
+  ansible.builtin.import_playbook: ../tls/cloudflare.yml
+- name: Install Tailscale operator
+  ansible.builtin.import_playbook: ../tailscale/operator.yml

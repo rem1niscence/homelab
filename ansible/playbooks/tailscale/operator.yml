@@ -1,0 +1,11 @@
+- name: Install Tailscale operator in the cluster
+  hosts: server[0]
+  become: false
+  tasks:
+    - name: Run Tailscale operator tasks
+      include_role:
+        name: tailscale
+        tasks_from: operator
+      vars:
+        oauth_client_id: "{{ tailscale.oauth_client_id }}"
+        oauth_client_secret: "{{ tailscale.oauth_client_secret }}"

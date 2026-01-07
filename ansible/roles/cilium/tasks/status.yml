@@ -1,11 +1,7 @@
-- name: Print Cilium status
+- name: Wait for Cilium to be ready
   ansible.builtin.command:
     cmd: cilium status --wait
   register: cilium_status
   delegate_to: localhost
   run_once: true
   changed_when: false
-
-- name: Display Cilium status
-  ansible.builtin.debug:
-    var: cilium_status.stdout_lines

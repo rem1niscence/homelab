@@ -28,6 +28,7 @@
   community.docker.docker_compose_v2:
     project_src: "{{ compose_dest_dir }}"
     files: compose.yml
+    # state: stopped
     state: present
 # ACL routes auto-approval format:
 # {

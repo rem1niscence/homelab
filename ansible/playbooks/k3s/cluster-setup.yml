@@ -7,4 +7,4 @@
   roles:
     - helm
 - name: Install Cilium on the cluster
-  ansible.builtin.import_playbook: cilium/cli-install.yml
+  ansible.builtin.import_playbook: ../cilium/cli-install.yml

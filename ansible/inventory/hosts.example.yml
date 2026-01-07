@@ -32,4 +32,3 @@ all:
                     extra_args: "--accept-routes"
                   extra_agent_args: >-
                     --node-ip=100.100.100.100
-                    --flannel-iface=tailscale0

@@ -1,0 +1,5 @@
+---
+- name: Download CLI and run pre-installation requirements
+  ansible.builtin.import_tasks: pre-install.yml
+- name: Install Longhorn
+  ansible.builtin.import_tasks: install.yml

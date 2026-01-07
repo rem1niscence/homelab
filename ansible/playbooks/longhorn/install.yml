@@ -1,0 +1,5 @@
+- name: Install Longhorn
+  hosts: server[0]
+  gather_facts: true
+  roles:
+    - role: longhorn

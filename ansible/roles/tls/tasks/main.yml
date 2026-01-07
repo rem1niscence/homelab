@@ -28,7 +28,7 @@
   vars:
     CLOUDFLARE_TOKEN: "{{ tls.cloudflare_token }}"
     EMAIL: "{{ tls.email }}"
-    DOMAIN: "{{ tls.domain }}"
+    DOMAIN: "{{ domain }}"
   kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('template', playbook_dir ~ '/../../../cluster/system/tls/tls.yml') | from_yaml_all | list }}"

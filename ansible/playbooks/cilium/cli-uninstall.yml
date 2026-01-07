@@ -1,5 +1,7 @@
 - name: Uninstall Cilium from the cluster
   hosts: localhost
   roles:
-    - role: cilium
-      tags: cilium-uninstall-cli
+    - name: Run Cilium CLI uninstall tasks
+      include_role:
+        name: cilium
+        tasks_from: uninstall-cli

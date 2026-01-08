@@ -46,19 +46,19 @@ data:
               href: https://github.com/rem1niscence
         - Grafana Explore:
             - abbr: GF
-              href: https://grafana.{{DOMAIN}}/explore
+              href: https://grafana.{{HOMEPAGE_VAR_DOMAIN}}/explore
   services.yaml: |
     - Widgets:
         - Traefik:
             icon: traefik.svg
-            href: https://traefik.{{DOMAIN}}
+            href: https://traefik.{{HOMEPAGE_VAR_DOMAIN}}
             description: Reverse proxy
             widget:
               type: traefik
               url: http://traefik-api.kube-system
         - TrueNAS SCALE:
             icon: truenas-scale.png
-            href: https://truenas.{{DOMAIN}}/ui/
+            href: https://truenas.{{HOMEPAGE_VAR_DOMAIN}}/ui/
             siteMonitor: http://truenas.truenas
             description: Open-source storage operating system
             widget:
@@ -67,7 +67,7 @@ data:
                 key: ${TRUENAS_API_KEY}
         - Speedtest:
             icon: si-speedtest
-            href: https://speedtest.{{DOMAIN}}
+            href: https://speedtest.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://speedtest.speedtest
             description: Speed test tracker
             widget:
@@ -75,7 +75,7 @@ data:
               url: http://speedtest.speedtest
         - Pi-hole:
             icon: pi-hole.svg
-            href: https://pihole.{{DOMAIN}}/admin
+            href: https://pihole.{{HOMEPAGE_VAR_DOMAIN}}/admin
             siteMonitor: http://pihole.pihole
             description: Network-wide ad blocker
             widget:
@@ -85,7 +85,7 @@ data:
               key: ${PIHOLE_API_KEY}
         - Paperless:
             icon: paperless-ngx.svg
-            href: https://paperless.{{DOMAIN}}
+            href: https://paperless.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://paperless.paperless
             description: Digital document manager
             widget:
@@ -95,7 +95,7 @@ data:
                 password: ${PAPERLESS_PASSWORD}
         - qBittorrent:
             icon: qbittorrent.svg
-            href: https://torrent.{{DOMAIN}}
+            href: https://torrent.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://qbittorrent.qbittorrent:8080
             description: Open-source torrent software
             widget:
@@ -105,7 +105,7 @@ data:
               password: ${QBITTORRENT_PASSWORD}
         - Radarr:
             icon: radarr.svg
-            href: https://radarr.{{DOMAIN}}
+            href: https://radarr.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://radarr.servarr:7878
             description: Movie indexer engine
             widget:
@@ -114,7 +114,7 @@ data:
               key: ${RADARR_API_KEY}
         - Sonarr:
             icon: sonarr.svg
-            href: https://sonarr.{{DOMAIN}}
+            href: https://sonarr.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://sonarr.servarr:8989
             description: Anime/TV indexer engine
             widget:
@@ -123,7 +123,7 @@ data:
               key: ${SONARR_API_KEY}
         - Bazarr:
             icon: bazarr.svg
-            href: https://bazarr.{{DOMAIN}}
+            href: https://bazarr.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://bazarr.servarr:6767
             description: Subtitle management for media
             widget:
@@ -132,7 +132,7 @@ data:
               key: ${BAZARR_API_KEY}
         - Prowlarr:
             icon: prowlarr.svg
-            href: https://prowlarr.{{DOMAIN}}
+            href: https://prowlarr.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://prowlarr.servarr:9696
             description: Meta-search application for torrents
             widget:
@@ -141,7 +141,7 @@ data:
               key: ${PROWLARR_API_KEY}
         - Jellyfin:
             icon: jellyfin.svg
-            href: https://jellyfin.{{DOMAIN}}
+            href: https://jellyfin.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://jellyfin.jellyfin:8096
             description: Media server for movies & shows
             widget:
@@ -152,7 +152,7 @@ data:
               enableNowPlaying: false
         - Jellyseerr:
             icon: jellyseerr.svg
-            href: https://jellyseerr.{{DOMAIN}}
+            href: https://jellyseerr.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://jellyseerr.jellyfin:5055
             description: Media request management
             widget:
@@ -161,7 +161,7 @@ data:
               key: ${JELLYSEERR_API_KEY}
         - Gatus:
             icon: gatus.svg
-            href: https://gatus.{{DOMAIN}}
+            href: https://gatus.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://gatus.gatus
             description: Website/Service monitoring
             widget:
@@ -169,7 +169,7 @@ data:
               url: http://gatus.gatus
         # - Kavita:
         #     icon: kavita
-        #     href: https://kavita.{{DOMAIN}}
+        #     href: https://kavita.{{HOMEPAGE_VAR_DOMAIN}}
         #     siteMonitor: http://kavita.kavita
         #     description: Online book reader
         #     widget:
@@ -179,7 +179,7 @@ data:
         #         password: ${KAVITA_PASSWORD}
         - Prometheus:
             icon: prometheus.svg
-            href: https://prometheus.{{DOMAIN}}
+            href: https://prometheus.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://prometheus-operated.monitoring:9090
             description: Metrics monitoring and alerting toolkit
             widget:
@@ -197,7 +197,7 @@ data:
               key: ${CLOUDFLARE_API_TOKEN}
         # - Mylar3:
         #     icon: sh-mylar3
-        #     href: https://mylar3.{{DOMAIN}}
+        #     href: https://mylar3.{{HOMEPAGE_VAR_DOMAIN}}
         #     siteMonitor: http://mylar3.mylar3:8090
         #     description: Comic management tool
         #     widget:
@@ -206,7 +206,7 @@ data:
         #       key: ${MYLAR3_API_KEY}
         - Fileflows:
             icon: fileflows.svg
-            href: https://fileflows.{{DOMAIN}}
+            href: https://fileflows.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://fileflows.fileflows
             description: File processing tool
             widget:
@@ -214,7 +214,7 @@ data:
               url: http://fileflows.fileflows
         - Immich:
             icon: immich.svg
-            href: https://immich.{{DOMAIN}}
+            href: https://immich.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://immich.immich
             description: Photo album storage
             widget:
@@ -224,7 +224,7 @@ data:
               version: 2
         - ArgoCD:
             icon: sh-argo-cd
-            href: https://argocd.{{DOMAIN}}
+            href: https://argocd.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://argocd-server.argocd
             description: Continuous Delivery tool for K8s
             widget:
@@ -233,7 +233,7 @@ data:
               key: ${ARGOCD_API_KEY}
         - Grafana:
             icon: grafana.svg
-            href: https://grafana.{{DOMAIN}}
+            href: https://grafana.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://prometheus-grafana.monitoring
             description: Visualization platform for metrics
             widget:
@@ -243,7 +243,7 @@ data:
               password: ${GRAFANA_PASSWORD}
         - Wallos:
             icon: wallos
-            href: https://wallos.{{DOMAIN}}
+            href: https://wallos.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://wallos.wallos
             description: Subscriptions tracker & analytics
             widget:
@@ -263,37 +263,37 @@ data:
             description: Cloud VM provider
         - Longhorn:
             icon: longhorn.svg
-            href: https://longhorn.{{DOMAIN}}
+            href: https://longhorn.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://longhorn-frontend.longhorn
             description: Cloud-native distributed storage for K8S
         - Container Registry:
             icon: docker.svg
-            href: https://registry-ui.{{DOMAIN}}
+            href: https://registry-ui.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://registry.registry
             description: Private container registry
         - Kubernetes:
             icon: kubernetes-dashboard.png
-            href: https://dashboard.{{DOMAIN}}
-            siteMonitor: http://kubernetes-dashboard.kubernetes-dashboard:443
+            href: https://dashboard.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://kubernetes-dashboard-kong-proxy.kubernetes-dashboard:443
             description: Kubernete's dashboard
         - File Browser:
             icon: filebrowser
-            href: https://filebrowser.{{DOMAIN}}
+            href: https://filebrowser.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://filebrowser.filebrowser
             description: Online file browser
         - Syncthing:
             icon: syncthing.svg
-            href: https://syncthing.{{DOMAIN}}
+            href: https://syncthing.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://syncthing.syncthing
             description: File synchronization across devices
         - Keel.sh:
             icon: mdi-alpha-k-box-outline
-            href: https://keel.{{DOMAIN}}
-            siteMonitor: http://keel.kube-system:9300
+            href: https://keel.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://keel.keel:9300
             description: K8S image updater
         - Firefly III:
             icon: firefly
-            href: https://firefly.{{DOMAIN}}
+            href: https://firefly.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://firefly.firefly
             description: Personal finance manager
         - Microbin:
@@ -303,147 +303,147 @@ data:
             description: Personal pasta bin
         - SearNXG:
             icon: searxng.svg
-            href: https://searxng.{{DOMAIN}}
+            href: https://searxng.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://searxng.searxng
             description: Meta Search Engine
         - IT Tools:
             icon: it-tools.svg
-            href: https://it-tools.{{DOMAIN}}
+            href: https://it-tools.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://it-tools.it-tools
             description: Handy tools for developers
         - Cyberchef:
             icon: cyberchef
-            href: https://cyberchef.{{DOMAIN}}
+            href: https://cyberchef.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://cyberchef.cyberchef
             description: Swiss army knife for data
         - Bento PDF:
             icon: sh-bentopdf
-            href: https://pdf.{{DOMAIN}}
+            href: https://pdf.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://bento-pdf.bento-pdf
             description: PDF Multitools
         - Omni Tools:
             icon: mdi-tools
-            href: https://omnitools.{{DOMAIN}}
+            href: https://omnitools.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://omnitools.omnitools
             description: Handy miscellaneous tools
         - Memos:
             icon: google-keep
-            href: https://memos.{{DOMAIN}}
+            href: https://memos.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://memos-service.memos
             description: lightweight note taking
         - Commafeed:
             icon: commafeed
-            href: https://commafeed.{{DOMAIN}}
+            href: https://commafeed.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://commafeed.commafeed
             description: RSS reader
         # - Ente:
         #     icon: si-googlephotos
-        #     href: https://ente.{{DOMAIN}}
+        #     href: https://ente.{{HOMEPAGE_VAR_DOMAIN}}
         #     siteMonitor: http://web.ente
         #     description: Online photo backup / viewer
         - Morphos:
             icon: si-convertio
-            href: https://morphos.{{DOMAIN}}
+            href: https://morphos.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://morphos.morphos
             description: Self-hosted file converter
         - ByteStash:
             icon: sh-bytestash
-            href: https://bytestash.{{DOMAIN}}
+            href: https://bytestash.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://bytestash.bytestash
             description: Code Snippet Manager
         - PDFDing:
             icon: mdi-file-document
-            href: https://pdfding.{{DOMAIN}}
+            href: https://pdfding.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://pdfding.pdfding
             description: Online PDF viewer
         - Beaver Habits:
             icon: sh-beaver-habit-tracker
-            href: https://beaverhabits.{{DOMAIN}}
+            href: https://beaverhabits.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://beaverhabits.beaverhabits
             description: Habit tracker
         - Kapowarr:
             icon: kapowarr
-            href: https://kapowarr.{{DOMAIN}}
+            href: https://kapowarr.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://kapowarr.kapowarr
             description: Comic management tool
         - Vaultwarden:
             icon: vaultwarden.svg
-            href: https://vaultwarden.{{DOMAIN}}
+            href: https://vaultwarden.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://vaultwarden.vaultwarden
             description: Self-hosted password management
         - Homebox:
             icon: homebox
-            href: https://homebox.{{DOMAIN}}
+            href: https://homebox.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://homebox.homebox
             description: Home inventory & organization
         - An Otter Wiki:
             icon: sh-an-otter-wiki
-            href: https://wiki.{{DOMAIN}}
+            href: https://wiki.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://wiki.wiki
             description: Personal wiki
         - AirTrail:
             icon: sh-airtrail
-            href: https://airtrail.{{DOMAIN}}
+            href: https://airtrail.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://airtrail.airtrail
             description: Private Flight Tracker
         - Draw.io:
             icon: sh-draw-io
-            href: https://drawio.{{DOMAIN}}
+            href: https://drawio.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://drawio.drawio
             description: Online diagramming tool
         - Monitarr:
             icon: mdi-television
-            href: https://monitarr.{{DOMAIN}}
+            href: https://monitarr.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://monitarr.servarr
             description: Monitor *arr downloads
         - Kitchen Owl:
             icon: kitchenowl
-            href: https://kitchenowl.{{DOMAIN}}
+            href: https://kitchenowl.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://front.kitchenowl
             description: Recipe management software
         - Termix:
             icon: sh-termix
-            href: https://termix.{{DOMAIN}}
+            href: https://termix.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://termix.termix
             description: Server management platform
         # - Kubevirt UI:
         #     icon: vmware-workstation
-        #     href: https://kubevirt.{{DOMAIN}}
+        #     href: https://kubevirt.{{HOMEPAGE_VAR_DOMAIN}}
         #     siteMonitor: http://kubevirt-manager.kubevirt-manager:8080
         #     description: Virtual machine manager
         # - FileRun:
         #     icon: filerun.svg
-        #     href: https://cloud.{{DOMAIN}}
+        #     href: https://cloud.{{HOMEPAGE_VAR_DOMAIN}}
         #     siteMonitor: http://filerun.filerun
         #     description: Personal Cloud
         # - Dawarich:
         #     icon: dawarich.svg
-        #     href: https://dawarich.{{DOMAIN}}
+        #     href: https://dawarich.{{HOMEPAGE_VAR_DOMAIN}}
         #     siteMonitor: http://dawarich.dawarich
         #     description: Personal location tracker
         # - Mail Catcher:
         #     icon: zohomail
-        #     href: https://mail.{{DOMAIN}}
+        #     href: https://mail.{{HOMEPAGE_VAR_DOMAIN}}
         #     siteMonitor: http://mailcatcher.mailcatcher
         #     description: Simple local email server
         # - Hoppscotch:
         #     icon: hoppscotch.png
-        #     href: https://hoppscotch.{{DOMAIN}}
+        #     href: https://hoppscotch.{{HOMEPAGE_VAR_DOMAIN}}
         #     siteMonitor: http://hoppscotch.hoppscotch
         #     description: Web-based API testing tool
         # - Code Server:
         #     icon: terminal.svg
-        #     href: https://codeserver.{{DOMAIN}}
+        #     href: https://codeserver.{{HOMEPAGE_VAR_DOMAIN}}
         #     siteMonitor: http://codeserver.codeserver
         #     description: Online coding workspace
         # - Cloudbeaver:
         #     icon: mdi-database-cog
-        #     href: https://cloudbeaver.{{DOMAIN}}
+        #     href: https://cloudbeaver.{{HOMEPAGE_VAR_DOMAIN}}
         #     siteMonitor: http://cloudbeaver.cloudbeaver
         #     description: Database management system
         # - N8N:
         #     icon: n8n.svg
-        #     href: https://n8n.{{DOMAIN}}
+        #     href: https://n8n.{{HOMEPAGE_VAR_DOMAIN}}
         #     siteMonitor: http://n8n.n8n
         #     description: Workflow automation tool
         # - Hemmelig:
@@ -458,37 +458,37 @@ data:
         #     description: Graphic design tool
         # - Router:
         #     icon: router.svg
-        #     href: https://router.{{DOMAIN}}
+        #     href: https://router.{{HOMEPAGE_VAR_DOMAIN}}
         #     siteMonitor: http://router.truenas
         #     description: Home router
         # - Rancher:
         #     icon: rancher.svg
-        #     href: https://rancher.{{DOMAIN}}
+        #     href: https://rancher.{{HOMEPAGE_VAR_DOMAIN}}
         #     siteMonitor: http://rancher.cattle-system:443
         #     description: Kubernetes management platform
         # - Reactive Resume:
         #     icon: mdi-note-text
-        #     href: https://resume.{{DOMAIN}}
+        #     href: https://resume.{{HOMEPAGE_VAR_DOMAIN}}
         #     siteMonitor: http://resume-client.resume
         #     description: Online resume builder
         # - Koillection:
         #     icon: koillection
-        #     href: https://koillection.{{DOMAIN}}
+        #     href: https://koillection.{{HOMEPAGE_VAR_DOMAIN}}
         #     siteMonitor: http://koillection.koillection
         #     description: Collection manager
         # - Shiori:
         #     icon: shiori
-        #     href: https://shiori.{{DOMAIN}}
+        #     href: https://shiori.{{HOMEPAGE_VAR_DOMAIN}}
         #     siteMonitor: http://shiori.shiori
         #     description: Bookmarks manager
         # - True Command:
         #     icon: truenas.png
-        #     href: https://true-command.{{DOMAIN}}
+        #     href: https://true-command.{{HOMEPAGE_VAR_DOMAIN}}
         #     siteMonitor: http://true-command.true-command
         #     description:  Management tool for TrueNAS systems.
         # - NetAlertX:
         #     icon: mdi-router-network
-        #     href: https://netalertx.{{DOMAIN}}
+        #     href: https://netalertx.{{HOMEPAGE_VAR_DOMAIN}}
         #     siteMonitor: http://netalertx.netalertx
         #     description: Network device monitoring tool
         #     widget:
@@ -496,7 +496,7 @@ data:
         #         url: http://netalertx.netalertx
         # - Romm:
         #     icon: romm.svg
-        #     href: https://romm.{{DOMAIN}}
+        #     href: https://romm.{{HOMEPAGE_VAR_DOMAIN}}
         #     siteMonitor: http://romm.romm
         #     description: Online game library and emulator
         #     widget:
@@ -507,7 +507,7 @@ data:
     - Comic/Manga:
         - Suwayomi:
             icon: sh-suwayomi-dark
-            href: https://suwayomi.{{DOMAIN}}
+            href: https://suwayomi.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://suwayomi.suwayomi
             description: Self-hosted manga server
             widget:
@@ -515,7 +515,7 @@ data:
               url: http://suwayomi.suwayomi
         - Komga:
             icon: komga.svg
-            href: https://komga.{{DOMAIN}}
+            href: https://komga.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://komga.komga:25600
             description: Online Comic/Manga reader
             widget:
@@ -525,7 +525,7 @@ data:
               password: ${KOMGA_PASSWORD}
         - Mantium:
             icon: mdi-radar
-            href: https://mantium.{{DOMAIN}}
+            href: https://mantium.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://mantium-ui.mantium
             description: Online Manga Tracker
     - Blog:
@@ -597,32 +597,32 @@ data:
     - Canopy:
         - Wallet 1:
             icon: mdi-wallet
-            href: https://observer-1-wallet-1.{{DOMAIN}}
+            href: https://observer-1-wallet-1.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://observer-1.canopy:50000
             description: Wallet for chain 1
         - Explorer 1:
             icon: mdi-web
-            href: https://observer-1-explorer-1.{{DOMAIN}}
+            href: https://observer-1-explorer-1.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://observer-1.canopy:50001
             description: Explorer for chain 1
         - Wallet 2:
             icon: mdi-wallet
-            href: https://observer-2-wallet-2.{{DOMAIN}}
+            href: https://observer-2-wallet-2.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://observer-2.canopy:40000
             description: Wallet for chain 2
         - Explorer 2:
             icon: mdi-web
-            href: https://observer-2-explorer-2.{{DOMAIN}}
+            href: https://observer-2-explorer-2.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://observer-2.canopy:40001
             description: Explorer for chain 2
         - FRP Client:
             icon: sh-haproxy
-            href: https://frpc.{{DOMAIN}}
+            href: https://frpc.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://frp.canopy
             description: FRP Local Client
         - FRP Server:
             icon: sh-haproxy
-            href: https://frps.{{DOMAIN}}
+            href: https://frps.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://frp.canopy:7501
             description: FRP Remove Server
     - Calendar:
@@ -671,7 +671,7 @@ data:
         nodes: false
     - search:
         provider: custom
-        url: https://searxng.{{DOMAIN}}/search?q=
+        url: https://searxng.{{HOMEPAGE_VAR_DOMAIN}}/search?q=
         target: _self
         suggestionUrl: http://searxng.searxng/autocompleter?q=
         showSearchSuggestions: true

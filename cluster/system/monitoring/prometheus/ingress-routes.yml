@@ -7,7 +7,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`prometheus.{{DOMAIN}}`)
+    - match: Host(`prometheus.{{ DOMAIN }}`)
       kind: Rule
       services:
         - name: prometheus-ui
@@ -22,7 +22,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`grafana.{{DOMAIN}}`)
+    - match: Host(`grafana.{{ DOMAIN }}`)
       kind: Rule
       services:
         - name: prometheus-grafana

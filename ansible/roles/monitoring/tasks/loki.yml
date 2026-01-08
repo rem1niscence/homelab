@@ -1,0 +1,29 @@
+---
+- name: Copy loki values file to remote
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../../../cluster/system/monitoring/loki/values.yml"
+    dest: /tmp/loki-values.yml
+    mode: "0644"
+
+- name: Add grafana helm repository
+  kubernetes.core.helm_repository:
+    name: grafana
+    repo_url: https://grafana.github.io/helm-charts
+    state: present
+
+- name: Install loki
+  kubernetes.core.helm:
+    name: loki
+    chart_ref: grafana/loki
+    chart_version: 6.49.0
+    release_namespace: monitoring
+    create_namespace: true
+    values_files:
+      - /tmp/loki-values.yml
+    state: present
+    release_state: deployed
+
+- name: Remove values file
+  ansible.builtin.file:
+    path: /tmp/loki-values.yml
+    state: absent

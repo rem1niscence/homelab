@@ -1,0 +1,17 @@
+---
+- name: Install k3s cluster
+  ansible.builtin.import_playbook: site.yml
+- name: Install helm on the control plane node
+  ansible.builtin.import_playbook: install.yml
+- name: Install Cilium
+  ansible.builtin.import_playbook: ../cilium/cli-install.yml
+- name: Set up TLS certificates
+  ansible.builtin.import_playbook: ../tls/cloudflare.yml
+- name: Install Tailscale operator
+  ansible.builtin.import_playbook: ../tailscale/operator.yml
+- name: Install Longhorn
+  ansible.builtin.import_playbook: ../longhorn/install.yml
+- name: Install Monitoring Stack
+  ansible.builtin.import_playbook: ../monitoring/install.yml
+- name: Setup critical cluster services
+  ansible.builtin.import_playbook: ../k3s/system-services.yml

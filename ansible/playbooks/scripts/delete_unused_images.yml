@@ -1,0 +1,21 @@
+- name: Setup weekly cleanup of unused k3s images
+  hosts: k3s_cluster
+  become: true
+  tasks:
+    - name: copy script to remote hosts
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../../../scripts/delete_unused_images.sh"
+        dest: /usr/local/bin/delete_unused_images.sh
+        mode: 0755
+        owner: root
+        group: root
+
+    - name: create weekly cron job to delete unused images
+      ansible.builtin.cron:
+        name: "delete unused k3s images"
+        minute: "50"
+        hour: "2"
+        weekday: "0"
+        job: "/usr/local/bin/delete_unused_images.sh > /var/log/delete_unused_images.log 2>&1"
+        user: root
+        state: present

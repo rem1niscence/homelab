@@ -1,0 +1,33 @@
+- name: Copy keel values file to remote
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../../../cluster/system/keel/values.yml"
+    dest: /tmp/keel-values.yml
+    mode: "0644"
+
+- name: Add keel helm repository
+  kubernetes.core.helm_repository:
+    name: keel
+    repo_url: https://charts.keel.sh
+    state: present
+
+- name: Deploy keel helm release
+  kubernetes.core.helm:
+    name: keel
+    chart_ref: keel/keel
+    chart_version: 1.0.5
+    create_namespace: true
+    release_namespace: keel
+    values_files:
+      - /tmp/keel-values.yml
+
+- name: Remove values file
+  ansible.builtin.file:
+    path: /tmp/keel-values.yml
+    state: absent
+
+- name: Apply keel ingress routes
+  vars:
+    DOMAIN: "{{ domain }}"
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', playbook_dir ~ '/../../../cluster/system/keel/ingress-routes.yml') | from_yaml_all }}"

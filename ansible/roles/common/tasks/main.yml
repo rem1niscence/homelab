@@ -1,0 +1,4 @@
+- name: Apply k8s manifests
+  ansible.builtin.import_tasks: apply-manifests.yml
+  tags:
+    - apply-manifests

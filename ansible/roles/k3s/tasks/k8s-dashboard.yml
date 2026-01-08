@@ -1,0 +1,19 @@
+- name: Add kubernetes dashboard helm repository
+  kubernetes.core.helm_repository:
+    name: kubernetes-dashboard
+    repo_url: https://kubernetes.github.io/dashboard/
+    state: present
+
+- name: Deploy kubernetes dashboard helm release
+  kubernetes.core.helm:
+    name: kubernetes-dashboard
+    chart_ref: kubernetes-dashboard/kubernetes-dashboard
+    create_namespace: true
+    namespace: kubernetes-dashboard
+
+- name: Apply Kubernetes dashboard ingress
+  vars:
+    DOMAIN: "{{ domain }}"
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', playbook_dir ~ '/../../../cluster/system/k8s-dashboard/ingress.yml') | from_yaml_all }}"

@@ -1,0 +1,15 @@
+---
+- name: Install Cilium on the cluster using cillium-cli
+  ansible.builtin.import_tasks: install-cli.yml
+  tags:
+    - install-cli
+
+- name: Uninstall Cilium on the cluster using cillium-cli
+  ansible.builtin.import_tasks: uninstall-cli.yml
+  tags:
+    - uninstall-cli
+
+- name: Check Cilium status
+  ansible.builtin.import_tasks: status.yml
+  tags:
+    - install-cli

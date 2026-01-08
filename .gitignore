@@ -23,3 +23,11 @@ tmp
 charts
 Chart.Lock
 *.tgz
+
+# cloudflare tunnel credentials
+cluster/system/cloudflare-tunnel/*.json
+
+# ansible
+ansible/inventory.yml
+ansible/secrets.yml
+ansible/inventory/hosts.yml

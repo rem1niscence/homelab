@@ -5,6 +5,7 @@ metadata:
   namespace: homepage
   labels:
     app.kubernetes.io/name: homepage
+  annotations:
 spec:
   type: ClusterIP
   ports:

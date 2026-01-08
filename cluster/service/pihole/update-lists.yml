@@ -11,6 +11,8 @@ spec:
     spec:
       template:
         spec:
+          nodeSelector:
+            type: main
           containers:
             - name: pihole-update
               image: pihole/pihole:latest

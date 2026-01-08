@@ -1,0 +1,8 @@
+- name: Install Docker and Docker Compose
+  hosts: k3s_cluster
+  become: true
+  vars:
+    docker_users:
+      - "{{ ansible_user | default('ubuntu') }}"
+  roles:
+    - role: geerlingguy.docker

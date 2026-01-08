@@ -1,0 +1,10 @@
+---
+- name: Install Tailscale with Docker Compose
+  ansible.builtin.import_tasks: docker-setup.yml
+  tags:
+    - docker-install
+
+- name: Install Tailscale Operator in Kubernetes
+  ansible.builtin.import_tasks: operator.yml
+  tags:
+    - operator

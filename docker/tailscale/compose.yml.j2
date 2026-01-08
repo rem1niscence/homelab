@@ -1,0 +1,39 @@
+services:
+  tailscale:
+    # user: "10050:10050"
+    container_name: tailscale
+    # image: tailscale/tailscale:latest
+    # need custom image to avoid scanning cilium interfaces
+    # TODO: remove once https://github.com/tailscale/tailscale/issues/1552 is fixed
+    image: ghcr.io/rem1niscence/tailscale:latest
+    entrypoint: ["/usr/local/bin/containerboot"]
+    network_mode: host
+    restart: unless-stopped
+    # pull_policy: always
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    environment:
+      - TS_STATE_DIR=/var/lib/tailscale
+      - TS_USERSPACE=false
+      - TS_NO_LOGS_NO_SUPPORT=true
+      - TS_ACCEPT_DNS=false
+      - TS_EXTRA_ARGS={{ tailscale_server.extra_args | default('') }}
+      - TS_AUTHKEY={{ tailscale.authkey }}
+{% if tailscale_server.routes is defined and tailscale_server.routes|length > 0 %}
+      - TS_ROUTES={{ tailscale_server.routes | join(",") }}
+{% endif %}
+    volumes:
+      - /dev/net/tun:/dev/net/tun
+      - ./var/lib:/var/lib
+  watchtower:
+    image: nickfedor/watchtower
+    container_name: watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: always
+    command: --cleanup --schedule "0 4 * * *"
+    environment:
+      WATCHTOWER_NOTIFICATION_URL: "discord://{{ discord_webhook_id }}@{{ discord_token }}"
+      WATCHTOWER_NOTIFICATION_TEMPLATE: |-
+        {% raw %}{{range .}}{{.Time.Format "12-01-2020 15:04:05"}} ({{.Level}})':' {{.Message}}{{println}}{{end}}{% endraw %}

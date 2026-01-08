@@ -1,0 +1,6 @@
+- name: Set up tailscale on the host server
+  hosts: k3s_cluster
+  roles:
+    - role: artis3n.tailscale.machine
+      vars:
+        tailscale_authkey: "{{ tailscale.authkey }}"

@@ -1,0 +1,48 @@
+- name: Add tailscale helm repository
+  kubernetes.core.helm_repository:
+    name: tailscale
+    repo_url: https://pkgs.tailscale.com/helmcharts
+    state: present
+
+- name: Install tailscale-operator
+  kubernetes.core.helm:
+    name: tailscale-operator
+    chart_ref: tailscale/tailscale-operator
+    chart_version: 1.92.5
+    release_namespace: tailscale
+    create_namespace: true
+    values:
+      crds:
+        enabled: true
+    state: present
+    set_values:
+      - value: oauth.clientId={{ oauth_client_id }}
+        value_type: string
+      - value: oauth.clientSecret={{ oauth_client_secret }}
+        value_type: string
+      - value: apiServerProxyConfig.mode=noauth
+        value_type: string
+    release_state: deployed
+
+- name: Wait for tailscale-operator deployment to be ready
+  kubernetes.core.k8s_info:
+    kind: Deployment
+    name: operator
+    namespace: tailscale
+    wait: true
+    wait_condition:
+      type: Available
+      status: "True"
+    wait_timeout: 300
+
+- name: Annotate traefik service with tailscale hostname
+  kubernetes.core.k8s:
+    state: patched
+    kind: Service
+    name: traefik
+    namespace: kube-system
+    definition:
+      metadata:
+        annotations:
+          tailscale.com/hostname: "traefik"
+          tailscale.com/expose: "true"

@@ -26,7 +26,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`longhorn.{{DOMAIN}}`)
+    - match: Host(`longhorn.{{ DOMAIN }}`)
       kind: Rule
       services:
         - name: longhorn-frontend

@@ -125,8 +125,6 @@ spec:
       containers:
         - name: prowlarr
           image: lscr.io/linuxserver/prowlarr:latest
-          ports:
-            - containerPort: 9696
           env:
             - name: PUID
               value: "1000"
@@ -141,8 +139,6 @@ spec:
               mountPath: /config
         - name: flaresolverr
           image: ghcr.io/flaresolverr/flaresolverr:latest
-          ports:
-            - containerPort: 8191
           env:
             - name: LOG_LEVEL
               value: "info"
@@ -155,6 +151,11 @@ spec:
           envFrom:
             - secretRef:
                 name: gluetun
+          ports:
+            - containerPort: 8191
+              name: flaresolverr
+            - containerPort: 9696
+              name: prowlarr
           env:
             - name: TZ
               value: Etc/UTC
@@ -163,8 +164,10 @@ spec:
             - name: DNS_KEEP_NAMESERVER
               value: "on"
             - name: FIREWALL_OUTBOUND_SUBNETS
-              value: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
+              value: "10.42.0.0/15"
             - name: FIREWALL_VPN_INPUT_PORTS
+              value: "9696,8191"
+            - name: FIREWALL_INPUT_PORTS
               value: "9696,8191"
               # volumeMounts:
               #   - name: gluetun-config

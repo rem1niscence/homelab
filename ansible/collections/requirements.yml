@@ -1,0 +1,10 @@
+collections:
+  - name: https://github.com/k3s-io/k3s-ansible.git
+    type: git
+    version: "1.1.1"
+  - name: kubernetes.core
+    version: ">=6.2.0"
+  - name: community.docker
+    version: ">=5.0.4"
+  - name: artis3n.tailscale
+    version: 1.1.0

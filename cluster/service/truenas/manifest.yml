@@ -14,16 +14,22 @@ spec:
       port: 80
   clusterIP: None
 ---
-apiVersion: v1
-kind: Endpoints
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
 metadata:
   name: truenas
   namespace: truenas
-subsets:
+  labels:
+    kubernetes.io/service-name: truenas
+addressType: IPv4
+endpoints:
   - addresses:
-      - ip: 192.168.0.95
-    ports:
-      - port: 80
+      - "192.168.0.95"
+    conditions:
+      ready: true
+ports:
+  - port: 80
+    protocol: TCP
 ---
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
@@ -64,16 +70,22 @@ spec:
       port: 80
   clusterIP: None
 ---
-apiVersion: v1
-kind: Endpoints
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
 metadata:
   name: router
   namespace: truenas
-subsets:
+  labels:
+    kubernetes.io/service-name: router
+addressType: IPv4
+endpoints:
   - addresses:
-      - ip: 192.168.0.1
-    ports:
-      - port: 80
+      - "192.168.0.1"
+    conditions:
+      ready: true
+ports:
+  - port: 80
+    protocol: TCP
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute

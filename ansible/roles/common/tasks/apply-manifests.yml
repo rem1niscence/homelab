@@ -1,0 +1,14 @@
+- name: Find all YAML files in manifest path
+  ansible.builtin.find:
+    paths: "{{ manifest_path }}"
+    patterns: "*.yaml,*.yml"
+    recurse: false
+  register: manifest_files
+
+- name: Apply manifests
+  register: apply_result
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', item.path) | from_yaml_all | list }}"
+  loop: "{{ manifest_files.files }}"
+  when: manifest_files.files | length > 0

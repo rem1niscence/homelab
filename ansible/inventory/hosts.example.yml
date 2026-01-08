@@ -1,0 +1,34 @@
+all:
+  children:
+    k3s_cluster:
+      children:
+        server:
+          hosts:
+            control-plane-1:
+              ansible_host: 192.168.0.1
+              ansible_user: user
+              extra_server_args: >-
+                --secrets-encryption
+                --flannel-backend=none
+                --disable-network-policy
+              tailscale_server:
+                routes:
+                  - 192.168.0.10/32
+                  - 192.168.0.20/32
+        agent:
+          children:
+            k3s_agents_local:
+              hosts:
+                worker-2:
+                  ansible_host: 192.168.0.2
+                worker-3:
+                  ansible_host: 192.168.0.3
+            k3s_agents_remote:
+              hosts:
+                remote-1:
+                  ansible_host: 10.0.1.10
+                  ansible_user: remote
+                  tailscale_server:
+                    extra_args: "--accept-routes"
+                  extra_agent_args: >-
+                    --node-ip=100.100.100.100

@@ -1,0 +1,27 @@
+# Source - https://stackoverflow.com/questions/75343804/better-way-to-install-helm-with-ansible
+- name: Download Helm command line tool and utitilies
+  ansible.builtin.uri:
+    url: https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+    return_content: true
+  register: helm_installer
+
+- name: Install Helm
+  ansible.builtin.command:
+    cmd: bash
+    stdin: "{{ helm_installer.content }}"
+    creates: /usr/local/bin/helm
+  environment:
+    DESIRED_VERSION: "{{ helm_version | default('') }}"
+
+- name: install python3 and pip
+  ansible.builtin.apt:
+    name:
+      - python3
+      - python3-pip
+    state: present
+
+- name: install kubernetes python package system-wide
+  ansible.builtin.apt:
+    name:
+      - python3-kubernetes
+    state: present

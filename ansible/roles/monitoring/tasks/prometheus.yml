@@ -1,0 +1,73 @@
+- name: Copy prometheus values file to remote
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../../../cluster/system/monitoring/prometheus/values.yml"
+    dest: /tmp/prometheus-values.yml
+    mode: "0644"
+
+- name: Add Prometheus stack helm repository
+  kubernetes.core.helm_repository:
+    name: prometheus-community
+    repo_url: https://prometheus-community.github.io/helm-charts
+    state: present
+
+- name: Install prometheus-stack
+  kubernetes.core.helm:
+    name: prometheus
+    chart_ref: prometheus-community/kube-prometheus-stack
+    chart_version: 80.13.2
+    release_namespace: monitoring
+    create_namespace: true
+    values_files:
+      - /tmp/prometheus-values.yml
+    state: present
+
+- name: Remove values file
+  ansible.builtin.file:
+    path: /tmp/prometheus-values.yml
+    state: absent
+
+- name: Wait for prometheus operator to be ready
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Pod
+    namespace: monitoring
+    label_selectors:
+      - app.kubernetes.io/name=prometheus
+  register: prometheus_operator_pods
+  until: prometheus_operator_pods.resources | selectattr('status.phase', 'equalto', 'Running') | list | length > 0
+  retries: 30
+  delay: 5
+
+- name: Create ingress routes for prometheus and grafana
+  vars:
+    DOMAIN: "{{ domain }}"
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', playbook_dir ~ '/../../../cluster/system/monitoring/prometheus/ingress-routes.yml') | from_yaml_all }}"
+
+- name: retrieve grafana admin password
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Secret
+    namespace: monitoring
+    label_selectors:
+      - app.kubernetes.io/component=admin-secret
+  register: grafana_secret
+
+- name: decode grafana username
+  ansible.builtin.set_fact:
+    grafana_user: "{{ grafana_secret.resources[0].data['admin-user'] | b64decode }}"
+  when: grafana_secret.resources | length > 0
+
+- name: decode grafana password
+  ansible.builtin.set_fact:
+    grafana_password: "{{ grafana_secret.resources[0].data['admin-password'] | b64decode }}"
+  when: grafana_secret.resources | length > 0
+
+- name: display monitoring stack info
+  ansible.builtin.debug:
+    msg:
+      - "Monitoring stack setup complete"
+      - "Access Prometheus at: https://prometheus.{{ domain }}"
+      - "Access Grafana at: https://grafana.{{ domain }}"
+      - "Grafana credentials: {{ grafana_user }}/{{ grafana_password }}"

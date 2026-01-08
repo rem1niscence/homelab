@@ -34,6 +34,9 @@ spec:
             capabilities:
               add: ["NET_ADMIN"]
             privileged: true
+          ports:
+            - containerPort: 8080
+              name: qbittorrent
           envFrom:
             - secretRef:
                 name: gluetun
@@ -44,15 +47,14 @@ spec:
               value: wireguard
             - name: DNS_KEEP_NAMESERVER
               value: "on"
-              # volumeMounts:
-              #   - name: gluetun-config
-              #     mountPath: /gluetun
+            - name: FIREWALL_OUTBOUND_SUBNETS
+              value: "10.42.0.0/15"
+            - name: FIREWALL_INPUT_PORTS
+              value: "8080"
         - name: qbittorrent
           # qbittorrent with vuetorrent preinstalled
           image: ghcr.io/hotio/qbittorrent
           command: ["sh", "-c", "sleep 10 && /init"]
-          ports:
-            - containerPort: 8080
           env:
             - name: PUID
               value: "1000"
@@ -79,9 +81,6 @@ spec:
         - name: config
           persistentVolumeClaim:
             claimName: config-pvc
-            # - name: gluetun-config
-            #   persistentVolumeClaim:
-            #     claimName: gluetun-config-pvc
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -148,19 +147,6 @@ kind: PersistentVolumeClaim
 metadata:
   namespace: qbittorrent
   name: config-pvc
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1G
-  storageClassName: longhorn-local
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  namespace: qbittorrent
-  name: gluetun-config-pvc
 spec:
   accessModes:
     - ReadWriteOnce

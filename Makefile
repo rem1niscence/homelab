@@ -75,3 +75,15 @@ k3s/k-token:
 k3s/app:
 	$(call check_vars, AP DOMAIN)
 	./cluster/scripts/setup_application.sh $${AP} $${DOMAIN}
+
+.PHONY: tailscale/expose
+tailscale/expose:
+	$(call check_vars NAMESPACE SERVICE HOSTNAME)
+	@kubectl annotate service -n $(NAMESPACE) $(SERVICE) tailscale.com/hostname="$(HOSTNAME)"
+	@kubectl annotate service -n $(NAMESPACE) $(SERVICE) tailscale.com/expose="true"
+
+.PHONY: tailscale/unexpose
+tailscale/unexpose:
+	$(call check_vars NAMESPACE SERVICE)
+	@kubectl annotate service -n $(NAMESPACE) $(SERVICE) tailscale.com/hostname-
+	@kubectl annotate service -n $(NAMESPACE) $(SERVICE) tailscale.com/expose-

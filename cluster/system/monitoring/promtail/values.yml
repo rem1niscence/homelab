@@ -1,4 +1,45 @@
+daemonset:
+  enabled: true
 config:
   logLevel: info
   serverPort: 3101
   lokiAddress: http://loki:3100/loki/api/v1/push
+  clients:
+    - url: http://loki:3100/loki/api/v1/push
+  snippets:
+    scrapeConfigs: |
+      - job_name: monitoring
+        kubernetes_sd_configs:
+          - role: pod
+            # limit scraping to specific namespaces
+            # namespaces:
+            #     names: [""]
+        relabel_configs:
+          # set the log path (required for k3s)
+          - action: replace
+            replacement: /var/log/pods/*$1/*.log
+            separator: /
+            source_labels:
+              - __meta_kubernetes_pod_uid
+              - __meta_kubernetes_pod_container_name
+            target_label: __path__
+
+          # add pod and container labels
+          - action: replace
+            source_labels: [__meta_kubernetes_pod_name]
+            target_label: pod
+          - action: replace
+            source_labels: [__meta_kubernetes_pod_container_name]
+            target_label: container
+
+          # extract deployment name
+          - action: replace
+            source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+            target_label: deployment
+          - action: replace
+            source_labels: [__meta_kubernetes_pod_label_app]
+            target_label: deployment
+
+          # drop all other metadata labels
+          - action: labeldrop
+            regex: "__meta_.+"

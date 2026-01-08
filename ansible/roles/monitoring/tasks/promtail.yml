@@ -1,0 +1,28 @@
+- name: Copy promtail values file to remote
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../../../cluster/system/monitoring/promtail/values.yml"
+    dest: /tmp/promtail-values.yml
+    mode: "0644"
+
+- name: Add grafana helm repository
+  kubernetes.core.helm_repository:
+    name: grafana
+    repo_url: https://grafana.github.io/helm-charts
+    state: present
+
+- name: Install promtail
+  kubernetes.core.helm:
+    name: promtail
+    chart_ref: grafana/promtail
+    chart_version: 6.17.1
+    release_namespace: monitoring
+    create_namespace: true
+    values_files:
+      - /tmp/promtail-values.yml
+    state: present
+    release_state: deployed
+
+- name: Remove values file
+  ansible.builtin.file:
+    path: /tmp/promtail-values.yml
+    state: absent

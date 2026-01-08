@@ -1,9 +1,9 @@
-deploymentMode: 'SingleBinary<->SimpleScalable'
+deploymentMode: "SingleBinary<->SimpleScalable"
 loki:
   commonConfig:
     replication_factor: 1
   storage:
-    type: 'filesystem'
+    type: "filesystem"
   schemaConfig:
     configs:
       - from: "2024-01-01"
@@ -16,12 +16,31 @@ loki:
   auth_enabled: false
   tableManager:
     retention_deletes_enabled: true
-    retention_period: 48h
+    retention_period: 72h
 singleBinary:
   replicas: 1
+  nodeSelector:
+    node-role.kubernetes.io/control-plane: "true"
+  # TODO: Need to fully measure required resources
+  # resources:
+  #   requests:
+  #     cpu: 100m
+  #     memory: 256Mi
+  #   limits:
+  #     cpu: 1
+  #     memory: 512Mi
+gateway:
+  nodeSelector:
+    node-role.kubernetes.io/control-plane: "true"
+# disable caches in SingleBinary mode - the single process already caches in memory
+# and the workload is not big enough to justify the overhead of additional caches
+chunksCache:
+  enabled: false
+resultsCache:
+  enabled: false
 persistence:
   enabled: true
-  storageClassName: 'longhorn'
+  storageClassName: "longhorn-local"
   accessModes:
     - ReadWriteOnce
-  size: 10Gi
+  size: 5Gi

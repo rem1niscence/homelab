@@ -1,0 +1,6 @@
+- name: Install Promtail
+  ansible.builtin.import_tasks: promtail.yml
+- name: Install Loki
+  ansible.builtin.import_tasks: loki.yml
+- name: Install Prometheus & Grafana
+  ansible.builtin.import_tasks: prometheus.yml

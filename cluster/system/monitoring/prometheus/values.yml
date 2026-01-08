@@ -1,23 +1,29 @@
 prometheus:
   prometheusSpec:
+    nodeSelector:
+      node-role.kubernetes.io/control-plane: "true"
     storageSpec:
       volumeClaimTemplate:
         spec:
-          storageClassName: longhorn
+          storageClassName: longhorn-local
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
-              storage: 10Gi
+              storage: 8Gi
+
 grafana:
   enabled: true
   namespaceOverride: ""
-  # enable local-path persistence for grafana
+  nodeSelector:
+    node-role.kubernetes.io/control-plane: "true"
+  adminUser: testuser # should be overridden
+  adminPassword: testPassword123 # should be overridden
   persistence:
     enabled: true
-    storageClassName: longhorn
+    storageClassName: longhorn-local
     accessModes:
       - ReadWriteOnce
-    size: 2Gi
+    size: 1Gi
   sidecar:
     datasources:
       enabled: true
@@ -27,6 +33,10 @@ grafana:
       defaultFolderName: null
       provider:
         foldersFromFilesStructure: true
+    alerts:
+      enabled: true
+      label: grafana_alert
+      labelValue: "1"
   # follows the issue below in order to import the additional dashboards at installation
   # https://github.com/prometheus-community/helm-charts/issues/2477#issuecomment-1276224026
   dashboardProviders:
@@ -68,5 +78,29 @@ grafana:
           isDefault: false
           version: 1
           jsonData: {}
+  # alerting:
+  #   contactpoints.yml:
+  #     secret:
+  #       apiVersion: 1
+  #       contactPoints:
+  #         - orgId: 1
+  #           name: discord
+  #           receivers:
+  #             - uid: discord_alert
+  #               type: discord
+  #               settings:
+  #                 message: |
+  #                   {{ `{{ if eq .Status "firing" }}[FIRING:{{ len .Alerts.Firing }}]{{ else }}[RESOLVED]{{ end }} {{ .CommonLabels.alertname }} ({{ .CommonAnnotations.summary }})` }}
+  #                 url: ""
+  #                 use_discord_username: false
+  #               disableResolveMessage: false
 alertmanager:
   enabled: false
+
+# prometheusOperator:
+#   nodeSelector:
+#     node-role.kubernetes.io/control-plane: "true"
+
+kube-state-metrics:
+  nodeSelector:
+    node-role.kubernetes.io/control-plane: "true"

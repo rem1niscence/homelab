@@ -107,7 +107,7 @@ ipv6_reload:
 
 .PHONY: k-token
 k-token:
-	@k3s kubectl -n kubernetes-dashboard create token admin-user --duration=1000h
+	kubectl -n kubernetes-dashboard create token admin-user --duration=1000h
 
 .PHONY: add-coredns-record
 add-coredns-record:

@@ -63,3 +63,9 @@ cilium/cluster-install:
 	  --set l7Proxy=false \
 	  --set hubble.relay.enabled=false \
 	  --set hubble.ui.enabled=false
+
+## k3s/k-token: creates an access token for the kubernetes-dashboard
+.PHONY: k3s/k-token
+k3s/k-token:
+	@k3s kubectl -n kubernetes-dashboard create token admin-user --duration=1000h
+	kubectl -n kubernetes-dashboard create token admin-user --duration=1000h

@@ -11,5 +11,5 @@
   ansible.builtin.import_playbook: ../tailscale/operator.yml
 - name: Install Longhorn
   ansible.builtin.import_playbook: ../longhorn/install.yml
-- name: Setup Traefik dashboard routes
-  ansible.builtin.import_playbook: ../k3s/traefik-dashboard.yml
+- name: Setup Traefik and Kubernetes dashboards
+  ansible.builtin.import_playbook: ../k3s/server-dashboard.yml

@@ -274,7 +274,7 @@ data:
         - Kubernetes:
             icon: kubernetes-dashboard.png
             href: https://dashboard.{{HOMEPAGE_VAR_DOMAIN}}
-            siteMonitor: http://kubernetes-dashboard.kubernetes-dashboard:443
+            siteMonitor: http://kubernetes-dashboard-kong-proxy.kubernetes-dashboard:443
             description: Kubernete's dashboard
         - File Browser:
             icon: filebrowser

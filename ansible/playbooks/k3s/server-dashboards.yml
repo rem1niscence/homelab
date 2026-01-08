@@ -1,4 +1,4 @@
-- name: Setup Traefik dashboard routes
+- name: Setup Traefik and Kubernetes dashboard
   hosts: server[0]
   become: false
   gather_facts: false
@@ -7,3 +7,8 @@
       include_role:
         name: k3s
         tasks_from: traefik-dashboard
+
+    - name: Run Kubernetes dashboard tasks
+      include_role:
+        name: k3s
+        tasks_from: k8s-dashboard

@@ -1,4 +1,4 @@
-- name: Setup Traefik and Kubernetes dashboard
+- name: Setup Critical cluster services
   hosts: server[0]
   become: false
   gather_facts: false
@@ -12,3 +12,8 @@
       include_role:
         name: k3s
         tasks_from: k8s-dashboard
+
+    - name: Setup Keel dashboard tasks
+      include_role:
+        name: k3s
+        tasks_from: keel

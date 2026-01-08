@@ -289,7 +289,7 @@ data:
         - Keel.sh:
             icon: mdi-alpha-k-box-outline
             href: https://keel.{{HOMEPAGE_VAR_DOMAIN}}
-            siteMonitor: http://keel.kube-system:9300
+            siteMonitor: http://keel.keel:9300
             description: K8S image updater
         - Firefly III:
             icon: firefly

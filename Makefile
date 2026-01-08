@@ -69,3 +69,9 @@ cilium/cluster-install:
 k3s/k-token:
 	@k3s kubectl -n kubernetes-dashboard create token admin-user --duration=1000h
 	kubectl -n kubernetes-dashboard create token admin-user --duration=1000h
+
+## app: installs an application to the cluster
+.PHONY: k3s/app
+k3s/app:
+	$(call check_vars, AP DOMAIN)
+	./cluster/scripts/setup_application.sh $${AP} $${DOMAIN}

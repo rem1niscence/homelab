@@ -1,5 +1,5 @@
 - name: Apply k8s manifests
-  hosts: localhost
+  hosts: server[0]
   gather_facts: true
   tasks:
     - name: Run apply k8s manifests tasks

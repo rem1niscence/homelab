@@ -1,6 +1,3 @@
-# TODO: This is just a complex way of making `kubectl apply -f`, need to improve it to have
-# actual good templating so is actually useful
----
 - name: Find all YAML files in manifest path
   ansible.builtin.find:
     paths: "{{ manifest_path }}"
@@ -8,49 +5,10 @@
     recurse: false
   register: manifest_files
 
-- name: Create temporary directory for processed manifests
-  ansible.builtin.tempfile:
-    state: directory
-    suffix: manifests
-  register: temp_dir
-
-- name: Copy manifest files to temp directory
-  ansible.builtin.copy:
-    src: "{{ item.path }}"
-    dest: "{{ temp_dir.path }}/{{ item.path | basename }}"
-    mode: "0644"
+- name: Apply manifests
+  register: apply_result
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', item.path) | from_yaml_all | list }}"
   loop: "{{ manifest_files.files }}"
   when: manifest_files.files | length > 0
-
-- name: Apply processed Kubernetes manifests
-  ansible.builtin.command:
-    cmd: kubectl apply -f {{ temp_dir.path }}
-  register: apply_result
-  changed_when: "'configured' in apply_result.stdout or 'created' in apply_result.stdout"
-  failed_when: false
-  when: manifest_files.files | length > 0
-
-- name: Display apply errors if any
-  ansible.builtin.debug:
-    msg: "STDERR: {{ apply_result.stderr | default('') }}\nSTDOUT: {{ apply_result.stdout | default('') }}\nRC: {{ apply_result.rc | default('') }}"
-  when:
-    - manifest_files.files | length > 0
-    - apply_result.rc != 0
-
-- name: Fail if kubectl apply failed
-  ansible.builtin.fail:
-    msg: "kubectl apply failed"
-  when:
-    - manifest_files.files | length > 0
-    - apply_result.rc != 0
-
-- name: Display apply result
-  ansible.builtin.debug:
-    msg: "{{ apply_result.stdout_lines }}"
-  when: manifest_files.files | length > 0
-
-- name: Clean up temporary directory
-  ansible.builtin.file:
-    path: "{{ temp_dir.path }}"
-    state: absent
-  when: temp_dir.path is defined

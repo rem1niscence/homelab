@@ -182,3 +182,4 @@ kubectl run dns-test --image=busybox -it --rm -- nslookup registry.registry.svc.
 - **ImagePullBackOff**: Check registries.yaml configuration and restart k3s services
 - **DNS resolution failures**: Verify /etc/hosts entries and Rancher registry configuration
 - **Docker networking issues**: Use Podman instead for easier DNS resolution
+- **Podman cannot send images**: Modify /etc/hosts on the podman vm (`podman machine ssh`) to make sure it resolves `registry.local` correctly.

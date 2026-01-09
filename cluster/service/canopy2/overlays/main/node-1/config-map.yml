@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: canopy
+  name: config
+data:
+  config: |
+    {
+      "logStructured": false,
+      "logJSON": false,
+      "logLevel": "debug",
+      "chainId": 1,
+      "sleepUntil": 0,
+      "rootChain": [
+        {
+          "chainId": 1,
+          "url": "http://node-main-1:50002/"
+        }
+      ],
+      "runVDF": true,
+      "headless": false,
+      "autoUpdate": false,
+      "runningAutoUpdate": false,
+      "walletPort": "50000",
+      "explorerPort": "50001",
+      "rpcPort": "50002",
+      "adminPort": "50003",
+      "rpcURL": "https://rpc-node-main-1-canopy.rvserver.online",
+      "adminRPCUrl": "https://admin-rpc-node-main-1-canopy.rvserver.online",
+      "timeoutS": 3,
+      "dataDirPath": "/root/.canopy",
+      "dbName": "canopy",
+      "inMemory": false,
+      "networkID": 1,
+      "listenAddress": "0.0.0.0:9001",
+      "externalAddress": "tcp://canopy.valrocks.space",
+      "maxInbound": 21,
+      "maxOutbound": 7,
+      "trutedPeersIDs": null,
+      "dialPeers": [
+        "90703d453dfa70af3c85f3605e6cc8222d01d68d439ee5a9ade10be631572b330e1793206c8d417d9693be1d5af417fe@tcp://cnpy.network",
+        "b338f09135994130bee5da939513241b5d01ba5e73c409ed5ecea597b86a8b9c05fd27fb5e47a7296350fbae6262a484@tcp://cnpynetwork.com"
+      ],
+      "bannedPeerIDs": null,
+      "bannedIPs": null,
+      "minimumPeersToStart": 0,
+      "newHeightTimeoutMS": 4500,
+      "electionTimeoutMS": 1500,
+      "electionVoteTimeoutMS": 1500,
+      "proposeTimeoutMS": 2500,
+      "proposeVoteTimeoutMS": 4000,
+      "precommitTimeoutMS": 2000,
+      "precommitVoteTimeoutMS": 2000,
+      "commitTimeoutMS": 2000,
+      "roundInterruptTimeoutMS": 2000,
+      "maxTotalBytes": 1000000,
+      "maxTransactionCount": 5000,
+      "individualMaxTxSize": 4000,
+      "dropPercentage": 35,
+      "metricsEnabled": true,
+      "prometheusAddress": "0.0.0.0:9090"
+    }

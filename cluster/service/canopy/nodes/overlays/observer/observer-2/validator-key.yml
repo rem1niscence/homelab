@@ -1,0 +1,6 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: node
+stringData:
+  VALIDATOR_KEY: '"6c275055a4f6ae6bccf1e6552e172c7b8cc538a7b8d2dd645125df9e25c9ed2d"'

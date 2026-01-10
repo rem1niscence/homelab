@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: snapshot-check
+          env:
+            - name: HEIGHT_FILE
+              value: height_2.txt
+            - name: HEIGHT_FILE_URL
+              value: height_2.txt
+            - name: SNAPSHOT_FILE
+              value: canopy_backup_2.tar.gz
+            - name: SNAPSHOT_FILE_URL
+              value: canopy_backup_2.tar.gz
+      containers:
+        - name: height-monitor
+          env:
+            - name: PORT
+              value: "40002"
+            - name: FILE_NAME
+              value: "height_2.txt"

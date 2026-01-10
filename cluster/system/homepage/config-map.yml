@@ -598,22 +598,22 @@ data:
         - Wallet 1:
             icon: mdi-wallet
             href: https://observer-1-wallet-1.{{HOMEPAGE_VAR_DOMAIN}}
-            siteMonitor: http://observer-1.canopy:50000
+            siteMonitor: http://node-observer-1.canopy:50000
             description: Wallet for chain 1
         - Explorer 1:
             icon: mdi-web
             href: https://observer-1-explorer-1.{{HOMEPAGE_VAR_DOMAIN}}
-            siteMonitor: http://observer-1.canopy:50001
+            siteMonitor: http://node-observer-1.canopy:50001
             description: Explorer for chain 1
         - Wallet 2:
             icon: mdi-wallet
             href: https://observer-2-wallet-2.{{HOMEPAGE_VAR_DOMAIN}}
-            siteMonitor: http://observer-2.canopy:40000
+            siteMonitor: http://node-observer-2.canopy:40000
             description: Wallet for chain 2
         - Explorer 2:
             icon: mdi-web
             href: https://observer-2-explorer-2.{{HOMEPAGE_VAR_DOMAIN}}
-            siteMonitor: http://observer-2.canopy:40001
+            siteMonitor: http://node-observer-2.canopy:40001
             description: Explorer for chain 2
         - FRP Client:
             icon: sh-haproxy

@@ -1,0 +1,67 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: canopy
+
+resources:
+  - ../../../base
+
+components:
+  - ../../../components/chain-1
+  - ../../../components/shared
+
+nameSuffix: -observer-1
+
+labels:
+  - pairs:
+      app: node-observer-1
+    includeSelectors: true
+
+patches:
+  - path: config-map.yml
+    target:
+      kind: ConfigMap
+      name: node
+  - path: validator-key.yml
+    target:
+      kind: Secret
+      name: node
+  - patch: |-
+      - op: add
+        path: /spec/template/spec/nodeSelector
+        value:
+          type: secondary
+      - op: replace
+        path: /spec/template/spec/initContainers/0/volumeMounts/0/subPath
+        value: node-observer-1
+      - op: replace
+        path: /spec/template/spec/initContainers/1/image
+        value: registry.local/canopy-restore:amd64
+      - op: replace
+        path: /spec/template/spec/initContainers/1/volumeMounts/0/subPath
+        value: node-observer-1
+      - op: add
+        path: /spec/template/spec/containers/0/volumeMounts/0/subPath
+        value: node-observer-1
+      - op: replace
+        path: /spec/template/spec/containers/1/volumeMounts/0/subPath
+        value: node-observer-1
+    target:
+      kind: Deployment
+      name: node
+  - patch: |-
+      - op: replace
+        path: /spec/routes/0/match
+        value: Host("observer-1-wallet-1.{{DOMAIN}}")
+      - op: replace
+        path: /spec/routes/1/match
+        value: Host("observer-1-explorer-1.{{DOMAIN}}")
+      - op: replace
+        path: /spec/routes/2/match
+        value: Host("rpc-observer-1-canopy.{{DOMAIN}}")
+      - op: replace
+        path: /spec/routes/3/match
+        value: Host("admin-rpc-observer-1-canopy.{{DOMAIN}}")
+    target:
+      kind: IngressRoute
+      name: node

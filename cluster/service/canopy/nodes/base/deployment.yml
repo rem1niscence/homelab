@@ -1,0 +1,112 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node
+  labels:
+    app: node
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 30m"
+    keel.sh/trigger: poll
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: node
+  template:
+    metadata:
+      labels:
+        app: node
+    spec:
+      initContainers:
+        - name: keystore-init
+          image: busybox:1.36
+          command: ["sh", "/scripts/keystore-init.sh"]
+          volumeMounts:
+            - name: data
+              mountPath: /root/.canopy
+              subPath: node
+            - name: config
+              mountPath: /tmp/keystore
+            - name: scripts
+              mountPath: /scripts
+        - name: snapshot-check
+          image: registry.local/canopy-restore:latest
+          envFrom:
+            - secretRef:
+                name: restore
+          volumeMounts:
+            - name: data
+              mountPath: /root/.canopy
+              subPath: node
+      containers:
+        - name: canopy
+          image: canopynetwork/canopy:latest
+          imagePullPolicy: Always
+          args: ["start"]
+          ports:
+            - containerPort: 50000
+            - containerPort: 50001
+            - containerPort: 50002
+            - containerPort: 50003
+            - containerPort: 50004
+            - containerPort: 9001
+            - containerPort: 9090
+          volumeMounts:
+            - name: data
+              mountPath: /root/.canopy
+              subPath: node
+            - name: config
+              mountPath: /root/.canopy/config.json
+              subPath: config.json
+            - name: config
+              mountPath: /root/.canopy/genesis.json
+              subPath: genesis.json
+            - name: validator-key
+              mountPath: /root/.canopy/validator_key.json
+              subPath: validator_key.json
+        - name: height-monitor
+          image: alpine/curl:8.14.1
+          command: ["sh", "-c"]
+          args:
+            - |
+              apk add --no-cache curl
+              while true; do
+                /scripts/height.sh
+                sleep 10
+              done
+          # env:
+          #   - name: PORT
+          #     value: "50002"
+          #   - name: FILE_NAME
+          #     value: "height_1.txt"
+          volumeMounts:
+            - name: data
+              mountPath: /root/.canopy
+              subPath: node
+            - name: scripts
+              mountPath: /scripts
+      volumes:
+        - name: validator-key
+          secret:
+            secretName: node
+            items:
+              - key: VALIDATOR_KEY
+                path: validator_key.json
+        - name: config
+          configMap:
+            items:
+              - key: genesis
+                path: genesis.json
+              - key: keystore
+                path: keystore.json
+              - key: config
+                path: config.json
+            name: node
+        - name: scripts
+          configMap:
+            name: scripts
+            defaultMode: 0755
+        - name: data
+          persistentVolumeClaim:
+            claimName: node

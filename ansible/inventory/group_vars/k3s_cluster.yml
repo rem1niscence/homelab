@@ -2,3 +2,13 @@ ansible_port: 22
 k3s_version: v1.35.0+k3s1
 api_endpoint: "{{ hostvars[groups['server'][0]]['ansible_host'] | default(groups['server'][0]) }}"
 cluster_context: homelab-k3s-ansible
+registries_config_yaml: |
+  mirrors:
+    "registry.local":
+      endpoint:
+        - "http://10.43.100.44"
+
+  configs:
+    "registry.local":
+      tls:
+        insecure_skip_verify: true

@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: keystore-init
+          image: busybox:1.36
+        - name: snapshot-check
+          image: registry.local/canopy-restore:latest
+          env:
+            - name: HEIGHT_FILE
+              value: height_1.txt
+            - name: HEIGHT_FILE_URL
+              value: height_1.txt
+            - name: SNAPSHOT_FILE
+              value: canopy_backup_1.tar.gz
+            - name: SNAPSHOT_FILE_URL
+              value: canopy_backup_1.tar.gz

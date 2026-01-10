@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: node
+spec:
+  ports:
+    - port: 50000
+      targetPort: 50000
+      name: wallet
+    - port: 50001
+      targetPort: 50001
+      name: explorer
+    - port: 50002
+      targetPort: 50002
+      name: rpc
+    - port: 50003
+      targetPort: 50003
+      name: admin-rpc
+    - port: 9001
+      targetPort: 9001
+      name: external
+    - port: 9090
+      targetPort: 9090
+      name: metrics
+  selector:
+    app: node

@@ -30,21 +30,19 @@ spec:
               mountPath: /tmp/keystore
             - name: scripts
               mountPath: /scripts
-        # - name: snapshot-check
-        #   image: registry.local/canopy-restore:latest
-        #   imagePullPolicy: Always
-        #   envFrom:
-        #     - secretRef:
-        #         name: restore
-        #   volumeMounts:
-        #     - name: data
-        #       mountPath: /root/.canopy
-        #       subPath: node
+        - name: snapshot-check
+          image: registry.local/canopy-restore:latest
+          envFrom:
+            - secretRef:
+                name: restore
+          volumeMounts:
+            - name: data
+              mountPath: /root/.canopy
+              subPath: node
       containers:
         - name: canopy
-          # image: alpine:latest
-          # command: ["sleep", "infinity"]
-          image: registry.local/canopy:arm64
+          image: canopynetwork/canopy:latest
+          imagePullPolicy: Always
           args: ["start"]
           ports:
             - containerPort: 50000

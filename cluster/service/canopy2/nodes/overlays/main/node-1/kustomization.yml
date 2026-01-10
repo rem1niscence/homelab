@@ -23,12 +23,18 @@ patches:
       kind: ConfigMap
       name: node
   - patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/image
+        value: registry.local/canopy:arm64
       - op: add
         path: /spec/template/spec/nodeSelector
         value:
           type: vm
       - op: replace
         path: /spec/template/spec/initContainers/0/volumeMounts/0/subPath
+        value: node-main-1
+      - op: replace
+        path: /spec/template/spec/initContainers/1/volumeMounts/0/subPath
         value: node-main-1
       - op: add
         path: /spec/template/spec/containers/0/volumeMounts/0/subPath

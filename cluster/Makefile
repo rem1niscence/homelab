@@ -1,3 +1,8 @@
+######################################################################
+# WARNING: This Makefile is deprecated and may be removed in the future.
+# Please use the new Makefile located at the root of the repository.
+######################################################################
+
 define check_vars
 	$(foreach var,$1,$(if $(value $(var)),,$(error ERROR: $(var) is not set)))
 endef

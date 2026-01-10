@@ -1,3 +1,7 @@
+define check_vars
+	$(foreach var,$1,$(if $(value $(var)),,$(error ERROR: $(var) is not set)))
+endef
+
 ## help: print each command's help message
 .PHONY: help
 help:

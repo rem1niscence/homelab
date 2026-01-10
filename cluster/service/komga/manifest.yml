@@ -61,7 +61,7 @@ spec:
     - ReadWriteMany
   nfs:
     server: 192.168.0.95
-    path: /mnt/main_drive/data/containers/mylar3/comics
+    path: /mnt/main_drive/data/comics
   storageClassName: local-path
   mountOptions:
     - vers=4.0
@@ -91,7 +91,7 @@ spec:
     - ReadWriteMany
   nfs:
     server: 192.168.0.95
-    path: /mnt/main_drive/data/containers/suwayomi/manga
+    path: /mnt/main_drive/data/manga
   storageClassName: local-path
   mountOptions:
     - vers=4.0

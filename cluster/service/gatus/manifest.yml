@@ -129,13 +129,13 @@ data:
         alerts:
           - type: discord
       - name: Keel.sh
-        url: "http://keel.kube-system:9300"
+        url: "http://keel.keel:9300"
         conditions:
           - "[STATUS] == 200"
         alerts:
           - type: discord
       - name: Kubernetes dashboard
-        url: "http://kubernetes-dashboard.kubernetes-dashboard:443"
+        url: "http://kubernetes-dashboard-kong-proxy.kubernetes-dashboard:443"
         conditions:
           - "[STATUS] == 400"
         alerts:
@@ -278,12 +278,6 @@ data:
           - "[STATUS] == 200"
         alerts:
               - type: discord
-      - name: ArgoCD
-        url: "http://argocd-server.argocd"
-        conditions:
-          - "[STATUS] == 200"
-        alerts:
-              - type: discord
       - name: Wiki
         url: "http://wiki.wiki"
         conditions:
@@ -308,12 +302,6 @@ data:
           - "[STATUS] == 200"
         alerts:
               - type: discord
-      - name: Mantium
-        url: "http://mantium-api.mantium"
-        conditions:
-          - "[STATUS] == 404"
-        alerts:
-              - type: discord
       - name: Kitchen Owl
         url: "http://front.kitchenowl"
         conditions:
@@ -326,6 +314,18 @@ data:
           - "[STATUS] == 200"
         alerts:
               - type: discord
+      # - name: Mantium
+      #   url: "http://mantium-api.mantium"
+      #   conditions:
+      #     - "[STATUS] == 404"
+      #   alerts:
+      #         - type: discord
+      # - name: ArgoCD
+      #   url: "http://argocd-server.argocd"
+      #   conditions:
+      #     - "[STATUS] == 200"
+      #   alerts:
+      #         - type: discord
       # - name: TrueNAS SCALE
       #   url: "http://truenas.truenas"
       #   conditions:

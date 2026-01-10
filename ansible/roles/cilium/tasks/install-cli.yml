@@ -8,5 +8,6 @@
       --set l7Proxy=false
       --set hubble.relay.enabled=false
       --set hubble.ui.enabled=false
+      --set MTU=1450
   delegate_to: localhost
   run_once: true

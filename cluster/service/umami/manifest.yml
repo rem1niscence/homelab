@@ -132,7 +132,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`umami.rvserver.online`)
+    - match: Host(`analytics.{{DOMAIN}}`)
       kind: Rule
       services:
         - name: umami

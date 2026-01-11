@@ -1,0 +1,9 @@
+- name: Set up Cloudflare Tunnels
+  hosts: server[0]
+  become: false
+  gather_facts: false
+  tasks:
+    - name: Run Cloudflare Tunnels tasks
+      include_role:
+        name: k3s
+        tasks_from: cloudflare-tunnel

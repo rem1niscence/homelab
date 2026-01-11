@@ -536,7 +536,7 @@ data:
             description: Personal blog
         - Umami:
             icon: umami
-            href: https://analytics.remini.dev
+            href: https://analytics.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://umami.umami
             description: Open-source website analytics
     - System:

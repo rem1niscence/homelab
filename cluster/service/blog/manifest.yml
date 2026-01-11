@@ -148,7 +148,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`blog.{{DOMAIN}}`)
+    - match: Host(`blog.remini.dev}`)
       kind: Rule
       services:
         - name: blog

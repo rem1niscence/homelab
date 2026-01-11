@@ -1,0 +1,50 @@
+- name: Copy tunnel config files
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../../..{{ item.file }}"
+    dest: "/tmp/{{ item.namespace }}-tunnel.yml"
+    mode: "0644"
+  loop: "{{ cloudflare_tunnel }}"
+  loop_control:
+    label: "{{ item.namespace }}"
+
+- name: Create namespace
+  kubernetes.core.k8s:
+    api_version: v1
+    kind: Namespace
+    name: "{{ item.namespace }}"
+    state: present
+  loop: "{{ cloudflare_tunnel }}"
+  loop_control:
+    label: "{{ item.namespace }}"
+
+- name: Read tunnel credentials file
+  ansible.builtin.slurp:
+    src: "/tmp/{{ item.namespace }}-tunnel.yml"
+  register: tunnel_credentials
+  loop: "{{ cloudflare_tunnel }}"
+  loop_control:
+    label: "{{ item.namespace }}"
+
+- name: Create tunnel-credentials secret
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: tunnel-credentials
+        namespace: "{{ item.item.namespace }}"
+      type: Opaque
+      data:
+        credentials.json: "{{ item.content }}"
+  loop: "{{ tunnel_credentials.results }}"
+  loop_control:
+    label: "{{ item.item.namespace }}"
+
+- name: Delete tunnel config files
+  ansible.builtin.file:
+    path: "/tmp/{{ item.namespace }}-tunnel.yml"
+    state: absent
+  loop: "{{ cloudflare_tunnel }}"
+  loop_control:
+    label: "{{ item.namespace }}"

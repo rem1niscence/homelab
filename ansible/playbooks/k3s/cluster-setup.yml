@@ -15,3 +15,5 @@
   ansible.builtin.import_playbook: ../monitoring/install.yml
 - name: Setup critical cluster services
   ansible.builtin.import_playbook: ../k3s/system-services.yml
+- name: Setup Cloudflare Tunnels
+  ansible.builtin.import_playbook: ../k3s/cloudflare-tunnel.yml

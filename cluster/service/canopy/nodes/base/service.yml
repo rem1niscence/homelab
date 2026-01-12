@@ -18,7 +18,10 @@ spec:
       name: admin-rpc
     - port: 9001
       targetPort: 9001
-      name: external
+      name: external-1
+    - port: 9002
+      targetPort: 9002
+      name: external-2
     - port: 9090
       targetPort: 9090
       name: metrics

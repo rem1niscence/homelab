@@ -608,12 +608,12 @@ data:
         - Wallet 2:
             icon: mdi-wallet
             href: https://observer-2-wallet-2.{{HOMEPAGE_VAR_DOMAIN}}
-            siteMonitor: http://node-observer-2.canopy:40000
+            siteMonitor: http://node-observer-2.canopy:50000
             description: Wallet for chain 2
         - Explorer 2:
             icon: mdi-web
             href: https://observer-2-explorer-2.{{HOMEPAGE_VAR_DOMAIN}}
-            siteMonitor: http://node-observer-2.canopy:40001
+            siteMonitor: http://node-observer-2.canopy:50001
             description: Explorer for chain 2
         - FRP Client:
             icon: sh-haproxy

@@ -67,18 +67,27 @@ cilium/cluster-install:
 	  --set l7Proxy=false \
 	  --set hubble.relay.enabled=false \
 	  --set hubble.ui.enabled=false
+		--set MTU=1450
 
 ## k3s/k-token: creates an access token for the kubernetes-dashboard
 .PHONY: k3s/k-token
 k3s/k-token:
 	@k3s kubectl -n kubernetes-dashboard create token admin-user --duration=1000h
-	kubectl -n kubernetes-dashboard create token admin-user --duration=1000h
+	@kubectl -n kubernetes-dashboard create token admin-user --duration=1000h
 
-## app: installs an application to the cluster
+## k3s/app: installs an application to the cluster
 .PHONY: k3s/app
 k3s/app:
 	$(call check_vars, AP DOMAIN)
-	./cluster/scripts/setup_application.sh $${AP} $${DOMAIN}
+	@./cluster/scripts/setup_application.sh $${AP} $${DOMAIN}
+
+## k3s/k-app: installs an application to the cluster using kustomize
+.PHONY: k3s/k-app
+k3s/k-app:
+	$(call check_vars, AP DOMAIN)
+	@# expand J2 into -D KEY=VALUE flags inline
+	@kubectl kustomize ${AP} | jinja2 -S - \
+	$(foreach kv,$(J2),-D $(kv)) -D DOMAIN=${DOMAIN} | kubectl apply -f -
 
 .PHONY: tailscale/expose
 tailscale/expose:

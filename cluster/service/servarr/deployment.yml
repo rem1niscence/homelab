@@ -119,6 +119,10 @@ spec:
     metadata:
       labels:
         app: prowlarr
+      annotations:
+        # bypass Cilium's eBPF datapath for VPN traffic
+        io.cilium.no-track-port: "9696,8191"
+        io.cilium.proxy-visibility: "<Ingress/9696/TCP>,<Ingress/8191/TCP>"
     spec:
       nodeSelector:
         type: secondary

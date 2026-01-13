@@ -11,7 +11,7 @@ metadata:
     keel.sh/pollSchedule: "@every 1h"
     keel.sh/trigger: poll
 spec:
-  schedule: "0 */6 * * *"
+  schedule: "30 */6 * * *"
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 1
   jobTemplate:
@@ -28,7 +28,6 @@ spec:
           containers:
             - name: backup
               image: registry.local/canopy-backup:latest
-              imagePullPolicy: Always # TODO: Remove once image is stable
               env:
                 # Require by ORACLE S3 Compatibility layer
                 - name: AWS_REQUEST_CHECKSUM_CALCULATION
@@ -74,7 +73,7 @@ metadata:
     keel.sh/pollSchedule: "@every 1h"
     keel.sh/trigger: poll
 spec:
-  schedule: "15 */6 * * *"
+  schedule: "45 */6 * * *"
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 1
   jobTemplate:
@@ -91,7 +90,6 @@ spec:
           containers:
             - name: backup
               image: registry.local/canopy-backup:latest
-              imagePullPolicy: Always # TODO: Remove once image is stable
               env:
                 # Require by ORACLE S3 Compatibility layer
                 - name: AWS_REQUEST_CHECKSUM_CALCULATION

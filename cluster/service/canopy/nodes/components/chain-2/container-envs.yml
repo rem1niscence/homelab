@@ -20,6 +20,6 @@ spec:
         - name: height-monitor
           env:
             - name: PORT
-              value: "40002"
+              value: "50002"
             - name: FILE_NAME
               value: "height_2.txt"

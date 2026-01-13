@@ -15,28 +15,28 @@ data:
     [[proxies]]
     name = "node-1-explorer"
     type = "tcp"
-    localIP = "node-1"
+    localIP = "node-main-1"
     localPort = 50001
     remotePort = 50001
 
     [[proxies]]
     name = "node-2-explorer"
     type = "tcp"
-    localIP = "node-2"
-    localPort = 40001
+    localIP = "node-main-2"
+    localPort = 50001
     remotePort = 40001
 
     [[proxies]]
     name = "node-1-external-address"
     type = "tcp"
-    localIP = "node-1"
+    localIP = "node-main-1"
     localPort = 9001
     remotePort = 9001
 
     [[proxies]]
     name = "node-2-external-address"
     type = "tcp"
-    localIP = "node-2"
+    localIP = "node-main-2"
     localPort = 9002
     remotePort = 9002
 

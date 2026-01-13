@@ -122,28 +122,12 @@ spec:
     spec:
       nodeSelector:
         type: secondary
-      containers:
-        - name: prowlarr
-          image: lscr.io/linuxserver/prowlarr:latest
-          env:
-            - name: PUID
-              value: "1000"
-            - name: PGID
-              value: "1000"
-            - name: TZ
-              value: "Etc/UTC"
-          volumeMounts:
-            - name: data
-              mountPath: /data/media
-            - name: config
-              mountPath: /config
-        - name: flaresolverr
-          image: ghcr.io/flaresolverr/flaresolverr:latest
-          env:
-            - name: LOG_LEVEL
-              value: "info"
+      initContainers:
         - name: gluetun
           image: qmcgaw/gluetun:latest
+          # makes it an init sidecar container
+          # https://kubernetes.io/docs/concepts/workloads/pods/sidecar-containers/
+          restartPolicy: Always
           securityContext:
             capabilities:
               add: ["NET_ADMIN"]
@@ -169,9 +153,41 @@ spec:
               value: "9696,8191"
             - name: FIREWALL_INPUT_PORTS
               value: "9696,8191"
-              # volumeMounts:
-              #   - name: gluetun-config
-              #     mountPath: /gluetun
+            - name: HEALTH_SERVER_ADDRESS
+              value: "0.0.0.0:9999"
+            - name: FIREWALL
+              value: "off"
+          volumeMounts:
+            - name: config
+              mountPath: /gluetun
+          # readinessProbe:
+          #   exec:
+          #     command:
+          #       - /bin/sh
+          #       - -c
+          #       - /gluetun-entrypoint healthcheck
+          #   initialDelaySeconds: 3
+          #   periodSeconds: 3
+      containers:
+        - name: prowlarr
+          image: lscr.io/linuxserver/prowlarr:latest
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TZ
+              value: "Etc/UTC"
+          volumeMounts:
+            - name: data
+              mountPath: /data/media
+            - name: config
+              mountPath: /config
+        - name: flaresolverr
+          image: ghcr.io/flaresolverr/flaresolverr:latest
+          env:
+            - name: LOG_LEVEL
+              value: "info"
       volumes:
         - name: data
           persistentVolumeClaim:

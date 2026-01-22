@@ -314,6 +314,12 @@ data:
           - "[STATUS] == 200"
         alerts:
               - type: discord
+      - name: Discount Bandit
+        url: "http://discount-bandit.discount-bandit"
+        conditions:
+          - "[STATUS] == 200"
+        alerts:
+              - type: discord
       # - name: Mantium
       #   url: "http://mantium-api.mantium"
       #   conditions:

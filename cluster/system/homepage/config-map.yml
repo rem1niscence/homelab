@@ -336,11 +336,6 @@ data:
             href: https://commafeed.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://commafeed.commafeed
             description: RSS reader
-        # - Ente:
-        #     icon: si-googlephotos
-        #     href: https://ente.{{HOMEPAGE_VAR_DOMAIN}}
-        #     siteMonitor: http://web.ente
-        #     description: Online photo backup / viewer
         - Morphos:
             icon: si-convertio
             href: https://morphos.{{HOMEPAGE_VAR_DOMAIN}}
@@ -406,6 +401,16 @@ data:
             href: https://termix.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://termix.termix
             description: Server management platform
+        - Discount bandit:
+            icon: mdi-cart-variant
+            href: https://discount.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://discount-bandit.discount-bandit
+            description: Store price tracker
+        # - Ente:
+        #     icon: si-googlephotos
+        #     href: https://ente.{{HOMEPAGE_VAR_DOMAIN}}
+        #     siteMonitor: http://web.ente
+        #     description: Online photo backup / viewer
         # - Kubevirt UI:
         #     icon: vmware-workstation
         #     href: https://kubevirt.{{HOMEPAGE_VAR_DOMAIN}}

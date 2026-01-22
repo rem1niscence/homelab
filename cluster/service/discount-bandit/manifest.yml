@@ -1,0 +1,109 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: discount-bandit
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: discount-bandit
+  namespace: discount-bandit
+  labels:
+    app: discount-bandit
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: discount-bandit
+  template:
+    metadata:
+      labels:
+        app: discount-bandit
+    spec:
+      nodeSelector:
+        type: main
+      containers:
+        - name: discount-bandit
+          image: cybrarist/discount-bandit:v4.0.2
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: data
+              mountPath: /app/database/sqlite
+          env:
+            - name: DB_CONNECTION
+              value: sqlite
+            - name: APP_TIMEZONE
+              value: UTC
+            - name: THEME_COLOR
+              value: Red
+            - name: APP_PORT
+              value: "8080"
+            - name: APP_URL
+              value: http://localhost:8080
+            - name: APP_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: discount-bandit
+                  key: APP_KEY
+                  optional: false
+            - name: ASSET_URL
+              valueFrom:
+                secretKeyRef:
+                  name: discount-bandit
+                  key: ASSET_URL
+                  optional: false
+            - name: EXCHANGE_RATE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: discount-bandit
+                  key: EXCHANGE_RATE_API_KEY
+                  optional: false
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: discount-bandit
+  name: data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 512Mi
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: discount-bandit
+  name: discount-bandit
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    app: discount-bandit
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: discount-bandit
+  namespace: discount-bandit
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`discount.{{DOMAIN}}`)
+      kind: Rule
+      services:
+        - name: discount-bandit
+          port: 80

@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: canopy
+  name: config
+data:
+  config: |
+    {
+      "logStructured": false,
+      "logJSON": false,
+      "logLevel": "debug",
+      "chainId": 2,
+      "sleepUntil": 0,
+      "rootChain": [
+        {
+          "chainId": 1,
+          "url": "http://node-syncer-1:50002/"
+        }
+      ],
+      "runVDF": false,
+      "headless": false,
+      "autoUpdate": false,
+      "runningAutoUpdate": false,
+      "walletPort": "50000",
+      "explorerPort": "50001",
+      "rpcPort": "50002",
+      "adminPort": "50003",
+      "rpcURL": "https://rpc-syncer-2-canopy.rvserver.online",
+      "adminRPCUrl": "https://admin-rpc-syncer-2-canopy.rvserver.online",
+      "timeoutS": 3,
+      "dataDirPath": "/root/.canopy",
+      "dbName": "canopy",
+      "inMemory": false,
+      "networkID": 1,
+      "listenAddress": "0.0.0.0:9002",
+      "externalAddress": "",
+      "maxInbound": 21,
+      "maxOutbound": 7,
+      "trutedPeersIDs": null,
+      "dialPeers": [
+        "90703d453dfa70af3c85f3605e6cc8222d01d68d439ee5a9ade10be631572b330e1793206c8d417d9693be1d5af417fe@tcp://cnpy.network",
+        "b338f09135994130bee5da939513241b5d01ba5e73c409ed5ecea597b86a8b9c05fd27fb5e47a7296350fbae6262a484@tcp://cnpynetwork.com",
+        "b17d4eb3938957e710bacc9f09d2a9aa79a568fcdf1f8fc565bdb5de3f334295e929e4b086b9c8e9610654155fb0452b@tcp://canopycoin.xyz",
+        "8794c211342dc0da348b16e4e5903ffd7f913c390bd29dbfad0c44b891b08a99d74bc90546d89b54098ac7c0c5331550@tcp://dun3waves.xyz",
+        "a329a705dab85db2fd950cef9ffd87e27ff4b91b929d5ab26e6efb40b1b3b45e74f7d8162822c49b9909893e6461cc8d@tcp://uem44.com",
+        "9174b24ba27fe8a0f8616bf1a382d81428ef8a94b7ff70916bb9b266c9070bd848e49a0c33a1c17553416c949ea3409a@tcp://cleanmarro.com",
+        "99e38bdc8b7c7f9f8a67151da78994a2616ac127518d4dd8f5a08ad760921758269fcb5172713b9585ec7007f60cb6fe@tcp://canopynode.cam",
+        "a9c39d5cf14a95729c3c2585b58f8836c3afbfa993cf89dafb892721131662b48b155d1d83ccdf03241eac11d067b545@tcp://canopy-phx.liquify.com",
+        "88cf26fff03e33d755434406f4e5fec5d8eda9022ab8fa596c87fc1d88d1234f410d583791832ce53ded58a7a5d2676e@tcp://mars.valrocks.space",
+        "b88a5928e54cbf0a36e0b98f5bcf02de9a9a1deba6994739f9160181a609f516eb702936a0cbf4c1f2e7e6be5b8272f2@tcp://node-observer-2"
+      ],
+      "bannedPeerIDs": null,
+      "bannedIPs": null,
+      "minimumPeersToStart": 0,
+      "newHeightTimeoutMS": 4500,
+      "electionTimeoutMS": 1500,
+      "electionVoteTimeoutMS": 1500,
+      "proposeTimeoutMS": 2500,
+      "proposeVoteTimeoutMS": 3000,
+      "precommitTimeoutMS": 2000,
+      "precommitVoteTimeoutMS": 2000,
+      "commitTimeoutMS": 2000,
+      "roundInterruptTimeoutMS": 2000,
+      "maxTotalBytes": 1000000,
+      "maxTransactionCount": 5000,
+      "individualMaxTxSize": 4000,
+      "dropPercentage": 35,
+      "metricsEnabled": true,
+      "prometheusAddress": "0.0.0.0:9090",
+      "lssCompactionInterval": 0
+    }

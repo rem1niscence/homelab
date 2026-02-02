@@ -5,7 +5,7 @@
     - name: Run Tailscale container with Docker Compose tasks
       include_role:
         name: tailscale
-        tasks_from: docker-install
+        tasks_from: docker-setup
       vars:
         discord_webhook_id: "{{ docker.watchtower.discord.webhook_id }}"
         discord_token: "{{ docker.watchtower.discord.token }}"

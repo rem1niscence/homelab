@@ -41,12 +41,17 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /data
+            - name: cache
+              mountPath: /cache
             - name: config
               mountPath: /config
       volumes:
         - name: data
           persistentVolumeClaim:
             claimName: data-pvc
+        - name: cache
+          persistentVolumeClaim:
+            claimName: cache-pvc
         - name: config
           persistentVolumeClaim:
             claimName: jellyfin-config-pvc
@@ -159,6 +164,36 @@ spec:
     requests:
       storage: 3T
   volumeName: jellyfin-data-pv
+  storageClassName: local-path
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: cache-pv
+spec:
+  capacity:
+    storage: 3T
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 192.168.0.95
+    path: /mnt/sata_2tb/cache
+  storageClassName: local-path
+  mountOptions:
+    - vers=4.0
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: jellyfin
+  name: cache-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 3T
+  volumeName: cache-pv
   storageClassName: local-path
 ---
 apiVersion: v1

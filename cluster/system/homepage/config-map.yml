@@ -222,15 +222,25 @@ data:
               url: http://immich.immich
               key: ${IMMICH_API_KEY}
               version: 2
-        - ArgoCD:
-            icon: sh-argo-cd
-            href: https://argocd.{{HOMEPAGE_VAR_DOMAIN}}
-            siteMonitor: http://argocd-server.argocd
-            description: Continuous Delivery tool for K8s
+        # - ArgoCD:
+        #     icon: sh-argo-cd
+        #     href: https://argocd.{{HOMEPAGE_VAR_DOMAIN}}
+        #     siteMonitor: http://argocd-server.argocd
+        #     description: Continuous Delivery tool for K8s
+        #     widget:
+        #       type: argocd
+        #       url: http://argocd-server.argocd
+        #       key: ${ARGOCD_API_KEY}
+        - File Browser:
+            icon: filebrowser
+            href: https://filebrowser.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://filebrowser.filebrowser
+            description: Online file browser
             widget:
-              type: argocd
-              url: http://argocd-server.argocd
-              key: ${ARGOCD_API_KEY}
+              type: filebrowser
+              url: http://filebrowser.filebrowser
+              username: ${FILEBROWSER_USERNAME}
+              password: ${FILEBROWSER_PASSWORD}
         - Grafana:
             icon: grafana.svg
             href: https://grafana.{{HOMEPAGE_VAR_DOMAIN}}
@@ -276,11 +286,6 @@ data:
             href: https://dashboard.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://kubernetes-dashboard-kong-proxy.kubernetes-dashboard:443
             description: Kubernete's dashboard
-        - File Browser:
-            icon: filebrowser
-            href: https://filebrowser.{{HOMEPAGE_VAR_DOMAIN}}
-            siteMonitor: http://filebrowser.filebrowser
-            description: Online file browser
         - Syncthing:
             icon: syncthing.svg
             href: https://syncthing.{{HOMEPAGE_VAR_DOMAIN}}

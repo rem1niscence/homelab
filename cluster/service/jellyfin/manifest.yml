@@ -38,9 +38,15 @@ spec:
               value: "1000"
             - name: TZ
               value: "Etc/UTC"
+            # not working, overriden seemingly by an init script
+            # - name: "JELLYFIN_LOG_DIR"
+            #   value: /tmp/log
           volumeMounts:
             - name: data
               mountPath: /data
+            - name: data
+              mountPath: /config/data/data/subtitles
+              subPath: metadata/subtitles
             - name: cache
               mountPath: /cache
             - name: config

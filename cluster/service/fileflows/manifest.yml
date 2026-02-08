@@ -38,9 +38,9 @@ spec:
               value: "1000"
             - name: PGID
               value: "1000"
-          resources:
-            limits:
-              amd.com/gpu: 1
+          # resources:
+          #   limits:
+          #     amd.com/gpu: 1
           volumeMounts:
             - name: media
               mountPath: /media

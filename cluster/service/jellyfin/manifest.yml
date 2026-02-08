@@ -31,6 +31,9 @@ spec:
           image: lscr.io/linuxserver/jellyfin:latest
           ports:
             - containerPort: 8096
+          resources:
+            limits:
+              amd.com/gpu: 1
           env:
             - name: PUID
               value: "1000"

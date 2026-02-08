@@ -291,6 +291,11 @@ data:
             href: https://syncthing.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://syncthing.syncthing
             description: File synchronization across devices
+        - Tracearr:
+            icon: sh-tracearr
+            href: https://tracearr.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://tracearr.jellyfin
+            description: Jellyfin monitoring
         - Keel.sh:
             icon: mdi-alpha-k-box-outline
             href: https://keel.{{HOMEPAGE_VAR_DOMAIN}}

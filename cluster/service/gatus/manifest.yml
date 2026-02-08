@@ -320,6 +320,12 @@ data:
           - "[STATUS] == 200"
         alerts:
               - type: discord
+      - name: Tracearr
+        url: "http://tracearr.jellyfin"
+        conditions:
+          - "[STATUS] == 200"
+        alerts:
+              - type: discord
       # - name: Mantium
       #   url: "http://mantium-api.mantium"
       #   conditions:

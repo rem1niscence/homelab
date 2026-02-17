@@ -86,11 +86,13 @@ spec:
       labels:
         app: jellyseerr
     spec:
+      securityContext:
+        fsGroup: 1000
       nodeSelector:
         pi: pi-2
       containers:
         - name: jellyseerr
-          image: fallenbagel/jellyseerr:latest
+          image: ghcr.io/seerr-team/seerr:latest
           env:
             - name: TZ
               value: "Etc/UTC"

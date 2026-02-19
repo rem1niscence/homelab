@@ -32,6 +32,9 @@ iscsiadm -m discovery -t sendtargets -p $IP_ADDRESS
 # Log in to the target
 iscsiadm -m node -T $TARGET_NAME -p $IP_ADDRESS:3260 --login
 
+# Automatic reconnect
+iscsiadm -m node -T $TARGET_NAME -p $IP_ADDRESS:3260 --op update -n node.startup -v automatic
+
 # Wait for the device to be available
 sleep 5
 

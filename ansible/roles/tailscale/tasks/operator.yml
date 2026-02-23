@@ -4,11 +4,18 @@
     repo_url: https://pkgs.tailscale.com/helmcharts
     state: present
 
+- name: Update helm repositories
+  kubernetes.core.helm_repository:
+    name: tailscale
+    repo_url: https://pkgs.tailscale.com/helmcharts
+    state: present
+  register: helm_repo_update
+
 - name: Install tailscale-operator
   kubernetes.core.helm:
     name: tailscale-operator
     chart_ref: tailscale/tailscale-operator
-    chart_version: 1.92.5
+    chart_version: 1.94.2
     release_namespace: tailscale
     create_namespace: true
     values:

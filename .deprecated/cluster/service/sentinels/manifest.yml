@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: sentinels
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scraper
+  namespace: sentinels
+  labels:
+    app: scraper
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scraper
+  template:
+    metadata:
+      labels:
+        app: scraper
+    spec:
+      nodeSelector:
+        type: pi
+      containers:
+        - name: scraper
+          image: registry.local/scraper:latest
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: sqlite
+              mountPath: /var/opt/memos
+      volumes:
+        - name: sqlite
+          persistentVolumeClaim:
+            claimName: sqlite

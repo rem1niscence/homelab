@@ -1,0 +1,122 @@
+# From https://github.com/k3s-io/k3s-ansible/tree/1.1.1
+k3s_cluster:
+  children:
+    server:
+      hosts:
+        192.168.0.91:
+          tailscale_server:
+            routes:
+              - 192.168.0.98/32
+              - 192.168.0.95/32
+              - 192.168.0.91/32
+              - 192.168.0.88/32
+              - 192.168.0.87/32
+              - 192.168.0.86/32
+              # - 10.42.0.0/24
+              # - 10.42.1.0/24
+              # - 10.42.3.0/24
+              # - 10.42.4.0/24
+          ansible_user: nuc
+          # ansible_become: true
+          ansible_become_password: x9VamOSw73d
+          extra_server_args: >-
+            --secrets-encryption
+            --flannel-backend=none
+            --disable-network-policy
+          # --flannel-backend=vxlan
+    agent:
+      children:
+        local:
+          hosts:
+            192.168.0.98:
+              ansible_user: amd
+              # ansible_become: true
+              ansible_become_password: cWoK20Xag4SP
+              # extra_agent_args: >-
+              #   --flannel-iface={{ ansible_default_ipv4.interface }}
+              #   --flannel-iface=tailscale0
+            192.168.0.88:
+              ansible_user: pi-2
+            192.168.0.86:
+              ansible_user: pi-3
+              # extra_agent_args: >-
+              # --flannel-iface={{ ansible_default_ipv4.interface }}
+              # --flannel-iface=tailscale0
+        remote:
+          hosts:
+            46.224.1.27:
+              ansible_user: vm
+              # ansible_become: true
+              # ansible_become_password: 0zjF2zNRUwO5UT
+              # tailscale_server:
+              #   extra_args: "--accept-routes"
+              # extra_agent_args: >-
+              #   --node-ip=100.125.165.94
+              #   --flannel-iface=tailscale0
+            # --node-name=vm
+            # --node-external-ip=188.245.61.138
+            # pi-1:
+            #   ansible_host: 192.168.0.87
+            #   ansible_user: pi-1
+            #   become: true
+            #   tailscale_server:
+            #     routes:
+            #       - 192.168.0.98/32
+            #       - 192.168.0.95/32
+            #       - 192.168.0.91/32
+            #       - 192.168.0.88/32
+            #       - 192.168.0.87/32
+            #       - 192.168.0.86/32
+  # Required Vars
+  vars:
+    ansible_port: 22
+    # ansible_user: debian
+    k3s_version: v1.35.0+k3s1
+    # The token should be a random string of reasonable length. You can generate
+    # one with the following commands:
+    # - openssl rand -base64 64
+    # - pwgen -s 64 1
+    # You can use ansible-vault to encrypt this value / keep it secret.
+    # Or you can omit it if not using Vagrant and let the first server automatically generate one.
+    # token: "K10eb46c0906e8d0e90f0dd66b49b5752ee72375254cdca5a130a48c2a2d3d72d7e::server:cada207d2b183ce589f7587ffa11149a"
+    api_endpoint: "{{ hostvars[groups['server'][0]]['ansible_host'] | default(groups['server'][0]) }}"
+
+    cluster_context: homelab-k3s-ansible
+    # Optional vars
+    # extra_server_args: ""
+    # extra_agent_args: ""
+    # extra_install_envs: { 'INSTALL_K3S_SKIP_SELINUX_RPM': 'true' }
+    # api_port: 6443
+    # k3s_server_location: /var/lib/rancher/k3s
+    # systemd_dir: /etc/systemd/system
+    # extra_service_envs: [ 'ENV_VAR1=VALUE1', 'ENV_VAR2=VALUE2' ]
+    # user_kubectl: true, by default kubectl is symlinked and configured for use by ansible_user. Set to false to only kubectl via root user.
+
+    # Manifests or Airgap should be either full paths or relative to the playbook directory.
+    # List of locally available manifests to apply to the cluster, useful for PVCs or Traefik modifications.
+    # extra_manifests: [ '/path/to/manifest1.yaml', '/path/to/manifest2.yaml' ]
+    # airgap_dir: /tmp/k3s-airgap-images
+
+    # server_config_yaml:  |
+    #   This is now an inner yaml file. Maintain the indentation.
+    #   YAML here will be placed as the content of /etc/rancher/k3s/config.yaml
+    #   See https://docs.k3s.io/installation/configuration#configuration-file
+    # agent_config_yaml:  |
+    #   Same as server_config_yaml, but for the agent nodes.
+    #   YAML here will be placed as the content of /etc/rancher/k3s/config.yaml
+    #   See https://docs.k3s.io/installation/configuration#configuration-file
+    # registries_config_yaml:  |
+    #   Containerd can be configured to connect to private registries and use them to pull images as needed by the kubelet.
+    #   YAML here will be placed as the content of /etc/rancher/k3s/registries.yaml
+    #   See https://docs.k3s.io/installation/private-registry
+#  On control plane
+# # Add a rule to lookup table 52 for these subnets
+# ip rule add to 192.168.100.0/24 lookup 52 priority 5210
+# ip rule add to 192.168.101.0/24 lookup 52 priority 5211
+
+# # Verify the rules
+# ip rule list
+
+# # Now test connectivity
+# ping -c 3 192.168.100.88
+# ping -c 3 192.168.101.240

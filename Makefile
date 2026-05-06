@@ -121,8 +121,8 @@ sops/decrypt:
 	done
 
 # --- Terraform init Setup ---
-TF_INFRA = v2/terraform/infra
-TF_K8S   = v2/terraform/k8s
+TF_INFRA = terraform/infra
+TF_K8S   = terraform/k8s
 
 .PHONY: tf/init tf/infra-init tf/k8s-init
 tf/init: tf/infra-init tf/k8s-init

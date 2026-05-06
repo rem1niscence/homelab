@@ -1,0 +1,5 @@
+creation_rules:
+  # the default key location is $HOME/.config/sops/age/keys.txt
+  # override with $SOPS_AGE_KEY_FILE
+  - path_regex: terraform/.*secrets(\.enc)?\.yaml
+    age: age1ddy77qavrqeruf2kdp79t8n93flqau8vthxtv7a93hl2e88xaclsnkf338

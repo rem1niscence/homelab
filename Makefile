@@ -100,3 +100,53 @@ tailscale/unexpose:
 	$(call check_vars NAMESPACE SERVICE)
 	@kubectl annotate service -n $(NAMESPACE) $(SERVICE) tailscale.com/hostname-
 	@kubectl annotate service -n $(NAMESPACE) $(SERVICE) tailscale.com/expose-
+
+# kubectl kustomize ./cluster/service/canopy/nodes/overlays/main/node-2 | jinja2 -S - -D DOMAIN=rvserver.online -D VALIDATOR_KEY={pk} | kubectl apply -f -
+
+# ------- v2 ------
+
+SECRETS := $(shell find . -name "secrets.yaml" -not -path "*/.terraform/*")
+SOPS_AGE_KEY_FILE = $(HOME)/.config/sops/age/homelab.txt
+
+sops/encrypt:
+	@for f in $(SECRETS); do \
+		sops --encrypt $$f > $${f%.yaml}.enc.yaml; \
+		echo "encrypted $$f -> $${f%.yaml}.enc.yaml"; \
+	done
+
+sops/decrypt:
+	@for f in $(shell find . -name "secrets.enc.yaml" -not -path "*/.terraform/*"); do \
+		SOPS_AGE_KEY_FILE=$(SOPS_AGE_KEY_FILE) sops --decrypt $$f > $${f%.enc.yaml}.yaml; \
+		echo "decrypted $$f -> $${f%.enc.yaml}.yaml"; \
+	done
+
+# --- Terraform init Setup ---
+TF_INFRA = v2/terraform/infra
+TF_K8S   = v2/terraform/k8s
+
+.PHONY: tf/init tf/infra-init tf/k8s-init
+tf/init: tf/infra-init tf/k8s-init
+
+tf/infra-init:
+	export SOPS_AGE_KEY_FILE=$(SOPS_AGE_KEY_FILE)
+	terraform -chdir=${TF_INFRA} init -backend-config=../backend.hcl
+
+tf/k8s-init:
+	SOPS_AGE_KEY_FILE=$(SOPS_AGE_KEY_FILE)
+	terraform -chdir=${TF_K8S} init -backend-config=../backend.hcl
+
+# --- Infrastructure (runs without a cluster) ---
+.PHONY: tf/infra tf/infra-plan
+tf/infra:
+	SOPS_AGE_KEY_FILE=$(SOPS_AGE_KEY_FILE) terraform -chdir=$(TF_INFRA) apply
+
+tf/infra-plan:
+	SOPS_AGE_KEY_FILE=$(SOPS_AGE_KEY_FILE) terraform -chdir=$(TF_INFRA) plan
+
+# ---- Kubernetes (requires a running cluster) ----
+.PHONY: tf/k8s tf/k8s-plan
+tf/k8s:
+	SOPS_AGE_KEY_FILE=$(SOPS_AGE_KEY_FILE) terraform -chdir=$(TF_K8S) apply
+
+tf/k8s-plan:
+	SOPS_AGE_KEY_FILE=$(SOPS_AGE_KEY_FILE) terraform -chdir=$(TF_K8S) plan

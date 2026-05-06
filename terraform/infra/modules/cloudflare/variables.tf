@@ -3,3 +3,8 @@ variable "account_id" {
   type        = string
   sensitive   = true
 }
+
+variable "domains" {
+  description = "List of domains to create Cloudflare zones for"
+  type        = list(string)
+}

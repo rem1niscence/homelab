@@ -19,6 +19,7 @@ locals {
 module "cloudflare" {
   source     = "./modules/cloudflare"
   account_id = data.sops_file.secrets.data["cloudflare.account_id"]
+  domains    = nonsensitive(yamldecode(data.sops_file.secrets.raw)["domains"])
 }
 
 module "hetzner" {
@@ -82,7 +83,7 @@ resource "ansible_group" "k3s_cluster" {
     api_endpoint    = values(local.local_control_plane)[0].ip
     token           = data.sops_file.secrets.data["ansible.k3s_token"]
     cluster_context = "homelab-k3s"
-    k3s_version     = "v1.35.3+k3s1"
+    k3s_version     = "v1.35.4+k3s1"
     helm_version    = "v3.20.2"
     user_kubectl    = true
   }

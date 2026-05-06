@@ -12,11 +12,8 @@ locals {
     ssh_authorized_keys = values(nonsensitive(yamldecode(data.sops_file.secrets.raw)["ssh"]["keys"]))
   })
 
-  common_server_args = [
-    "--flannel-backend=none",
-    "--disable-network-policy",
-    "--secrets-encryption",
-  ]
+  local_agents        = nonsensitive(yamldecode(data.sops_file.secrets.raw)["ssh"]["local_agents"])
+  local_control_plane = nonsensitive(yamldecode(data.sops_file.secrets.raw)["ssh"]["local_control_plane"])
 }
 
 module "cloudflare" {
@@ -33,20 +30,44 @@ module "hetzner" {
 # --- Ansible inventory ---
 
 resource "ansible_host" "vm" {
-  name   = "hetzner-vm"
+  name   = values(module.hetzner.server)[0].ip
   groups = ["agent"]
 
   variables = {
-    ansible_user            = data.sops_file.secrets.data["ssh.admin_username"]
-    ansible_become_password = data.sops_file.secrets.data["ssh.admin_password"]
-    extra_server_args = join(" ", concat(
-      local.common_server_args,
-      [
-        "--node-label topology.kubernetes.io/zone=${each.value.provider}",
-        "--node-label topology.kubernetes.io/region=${each.value.location}"
-      ],
-    ))
+    ansible_user            = data.sops_file.secrets.data["ssh.vm_username"]
+    ansible_become_password = data.sops_file.secrets.data["ssh.vm_password"]
   }
+}
+
+resource "ansible_host" "local-agents" {
+  for_each = local.local_agents
+  name     = each.value.ip
+  groups   = ["agent"]
+
+  variables = {
+    ansible_user            = each.value.username
+    ansible_become_password = each.value.password
+  }
+}
+
+resource "ansible_host" "control-plane" {
+  for_each = local.local_control_plane
+  name     = each.value.ip
+  groups   = ["server"]
+
+  variables = {
+    ansible_user            = each.value.username
+    ansible_become_password = each.value.password
+    extra_server_args = [
+      "--flannel-backend=none",
+      "--disable-network-policy",
+      "--secrets-encryption",
+    ]
+  }
+}
+
+resource "ansible_group" "server" {
+  name = "server"
 }
 
 resource "ansible_group" "agent" {
@@ -55,14 +76,14 @@ resource "ansible_group" "agent" {
 
 resource "ansible_group" "k3s_cluster" {
   name     = "k3s_cluster"
-  children = ["server", "agent"]
+  children = ["agent"]
 
   variables = {
-    api_endpoint    = values(module.hetzner.servers)[0].ip
+    api_endpoint    = values(local.local_control_plane)[0].ip
     token           = data.sops_file.secrets.data["ansible.k3s_token"]
-    cluster_context = "mainnet-k3s"
+    cluster_context = "homelab-k3s"
     k3s_version     = "v1.35.3+k3s1"
     helm_version    = "v3.20.2"
-    user_kubectl    = false
+    user_kubectl    = true
   }
 }

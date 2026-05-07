@@ -15,3 +15,17 @@ module "cilium" {
   lan_lb_cidr       = "192.168.0.200/24"
   tailscale_lb_cidr = "100.108.209.0/24"
 }
+
+# argocd watches the infrastructure repo and reconciles cluster state from it
+module "argocd" {
+  source             = "./modules/argocd"
+  domain             = "argocd.${data.sops_file.secrets.data["argocd.domain"]}"
+  argocd_version     = "9.5.12"
+  repo_url           = "git@github.com:rem1niscence/homelab.git"
+  repo_deploy_key    = data.sops_file.secrets.data["argocd.deploy_key"]
+  sealed_secrets_crt = data.sops_file.secrets.data["sealed_secrets.tls_crt"]
+  sealed_secrets_key = data.sops_file.secrets.data["sealed_secrets.tls_key"]
+  admin_password     = data.sops_file.secrets.data["argocd.admin_password_hash"]
+  target_revision    = "v2"
+  depends_on         = [module.cilium]
+}

@@ -7,13 +7,16 @@ locals {
   ssh_keys = nonsensitive(yamldecode(data.sops_file.secrets.raw)["ssh"]["keys"])
 
   user_data_cloud_init = templatefile("${path.module}/templates/cloud-init.tpl", {
-    admin_username      = data.sops_file.secrets.data["ssh.vm_username"]
-    admin_password_hash = data.sops_file.secrets.data["ssh.vm_password_hash"]
+    admin_username      = data.sops_file.secrets.data["ssh.vm.username"]
+    admin_password_hash = data.sops_file.secrets.data["ssh.vm.password_hash"]
     ssh_authorized_keys = values(nonsensitive(yamldecode(data.sops_file.secrets.raw)["ssh"]["keys"]))
   })
 
-  local_agents        = nonsensitive(yamldecode(data.sops_file.secrets.raw)["ssh"]["local_agents"])
-  local_control_plane = nonsensitive(yamldecode(data.sops_file.secrets.raw)["ssh"]["local_control_plane"])
+  # servers
+  server_amd  = nonsensitive(yamldecode(data.sops_file.secrets.raw)["ssh"]["amd"])
+  server_nuc  = nonsensitive(yamldecode(data.sops_file.secrets.raw)["ssh"]["nuc"])
+  server_pi_2 = nonsensitive(yamldecode(data.sops_file.secrets.raw)["ssh"]["pi-2"])
+  server_pi_3 = nonsensitive(yamldecode(data.sops_file.secrets.raw)["ssh"]["pi-3"])
 }
 
 module "cloudflare" {
@@ -30,39 +33,71 @@ module "hetzner" {
 
 # --- Ansible inventory ---
 
-resource "ansible_host" "vm" {
-  name   = values(module.hetzner.server)[0].ip
+# TODO: Setup VM with encrypted connection
+# resource "ansible_host" "vm" {
+#   name   = values(module.hetzner.server)[0].ip
+#   groups = ["agent"]
+
+#   variables = {
+#     ansible_user            = data.sops_file.secrets.data["ssh.vm_username"]
+#     ansible_become_password = data.sops_file.secrets.data["ssh.vm_password"]
+#   }
+# }
+
+resource "ansible_host" "amd" {
+  name   = local.server_amd.ip
   groups = ["agent"]
 
   variables = {
-    ansible_user            = data.sops_file.secrets.data["ssh.vm_username"]
-    ansible_become_password = data.sops_file.secrets.data["ssh.vm_password"]
+    ansible_user            = local.server_amd.username
+    ansible_become_password = local.server_amd.password
+    extra_server_args = [
+      "--node-label platform.io/type=secondary",
+    ]
   }
 }
 
-resource "ansible_host" "local-agents" {
-  for_each = local.local_agents
-  name     = each.value.ip
-  groups   = ["agent"]
+resource "ansible_host" "pi-2" {
+  name   = local.server_pi_2.ip
+  groups = ["agent"]
 
   variables = {
-    ansible_user            = each.value.username
-    ansible_become_password = each.value.password
+    ansible_user            = local.server_pi_2.username
+    ansible_become_password = local.server_pi_2.password
+    extra_server_args = [
+      "--node-label platform.io/type=pi",
+      "--node-label platform.io/pi=pi-2",
+    ]
   }
 }
 
-resource "ansible_host" "control-plane" {
-  for_each = local.local_control_plane
-  name     = each.value.ip
-  groups   = ["server"]
+resource "ansible_host" "pi-3" {
+  name   = local.server_pi_3.ip
+  groups = ["agent"]
 
   variables = {
-    ansible_user            = each.value.username
-    ansible_become_password = each.value.password
+    ansible_user            = local.server_pi_3.username
+    ansible_become_password = local.server_pi_3.password
+    extra_server_args = [
+      "--node-label platform.io/type=pi",
+      "--node-label platform.io/pi=pi-3",
+    ]
+  }
+}
+
+
+resource "ansible_host" "nuc" {
+  name   = local.server_nuc.ip
+  groups = ["server"]
+
+  variables = {
+    ansible_user            = local.server_nuc.username
+    ansible_become_password = local.server_nuc.password
     extra_server_args = [
       "--flannel-backend=none",
       "--disable-network-policy",
       "--secrets-encryption",
+      "--node-label platform.io/type=secondary",
     ]
   }
 }
@@ -77,10 +112,10 @@ resource "ansible_group" "agent" {
 
 resource "ansible_group" "k3s_cluster" {
   name     = "k3s_cluster"
-  children = ["agent"]
+  children = ["server", "agent"]
 
   variables = {
-    api_endpoint    = values(local.local_control_plane)[0].ip
+    api_endpoint    = local.server_nuc.ip
     token           = data.sops_file.secrets.data["ansible.k3s_token"]
     cluster_context = "homelab-k3s"
     k3s_version     = "v1.35.4+k3s1"

@@ -28,7 +28,7 @@ ansible/setup:
 ## ansible/ping: util to ping the full cluster
 .PHONY: ansible/ping
 ansible/ping:
-	ansible k3s_cluster -m ping
+	ansible all -m ping
 
 ## ansible/teardown: removes the cluster and all nodes, requires ansible
 .PHONY: ansible/teardown

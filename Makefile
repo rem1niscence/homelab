@@ -8,6 +8,10 @@ help:
 	@echo 'Usage:'
 	@sed -n 's/^##//p' ${MAKEFILE_LIST} | column -t -s ':' |  sed -e 's/^/ /'
 
+.PHONY: ansible/inventory
+ansible/inventory:
+	ansible-inventory  --graph --vars
+
 ## ansible/requirements: installs the requirements for the ansible playbook, requires ansible
 .PHONY: ansible/requirements
 ansible/requirements:

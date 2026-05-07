@@ -13,8 +13,10 @@ locals {
   })
 
   # servers
-  server_amd  = nonsensitive(yamldecode(data.sops_file.secrets.raw)["ssh"]["amd"])
+  server_vm   = nonsensitive(yamldecode(data.sops_file.secrets.raw)["ssh"]["vm"])
   server_nuc  = nonsensitive(yamldecode(data.sops_file.secrets.raw)["ssh"]["nuc"])
+  server_amd  = nonsensitive(yamldecode(data.sops_file.secrets.raw)["ssh"]["amd"])
+  server_pi_1 = nonsensitive(yamldecode(data.sops_file.secrets.raw)["ssh"]["pi-1"])
   server_pi_2 = nonsensitive(yamldecode(data.sops_file.secrets.raw)["ssh"]["pi-2"])
   server_pi_3 = nonsensitive(yamldecode(data.sops_file.secrets.raw)["ssh"]["pi-3"])
 }
@@ -33,20 +35,20 @@ module "hetzner" {
 
 # --- Ansible inventory ---
 
-# TODO: Setup VM with encrypted connection
-# resource "ansible_host" "vm" {
-#   name   = values(module.hetzner.server)[0].ip
-#   groups = ["agent"]
+resource "ansible_host" "vm" {
+  name   = values(module.hetzner.server)[0].ip
+  groups = ["agent", "tailscale"]
 
-#   variables = {
-#     ansible_user            = data.sops_file.secrets.data["ssh.vm_username"]
-#     ansible_become_password = data.sops_file.secrets.data["ssh.vm_password"]
-#   }
-# }
+  variables = {
+    ansible_user            = local.server_vm.username
+    ansible_become_password = local.server_vm.password
+    ts_extra_args           = "--accept-routes"
+  }
+}
 
 resource "ansible_host" "amd" {
   name   = local.server_amd.ip
-  groups = ["agent"]
+  groups = ["agent", "tailscale"]
 
   variables = {
     ansible_user            = local.server_amd.username
@@ -59,7 +61,7 @@ resource "ansible_host" "amd" {
 
 resource "ansible_host" "pi-2" {
   name   = local.server_pi_2.ip
-  groups = ["agent"]
+  groups = ["agent", "tailscale"]
 
   variables = {
     ansible_user            = local.server_pi_2.username
@@ -73,7 +75,7 @@ resource "ansible_host" "pi-2" {
 
 resource "ansible_host" "pi-3" {
   name   = local.server_pi_3.ip
-  groups = ["agent"]
+  groups = ["agent", "tailscale"]
 
   variables = {
     ansible_user            = local.server_pi_3.username
@@ -85,10 +87,9 @@ resource "ansible_host" "pi-3" {
   }
 }
 
-
 resource "ansible_host" "nuc" {
   name   = local.server_nuc.ip
-  groups = ["server"]
+  groups = ["agent", "tailscale"]
 
   variables = {
     ansible_user            = local.server_nuc.username
@@ -98,7 +99,20 @@ resource "ansible_host" "nuc" {
       "--disable-network-policy",
       "--secrets-encryption",
       "--node-label platform.io/type=secondary",
+      "--cluster-cidr=10.42.0.0/16",
+      "--service-cidr=10.43.0.0/16"
     ]
+  }
+}
+
+resource "ansible_host" "pi-1" {
+  name   = local.server_pi_1.ip
+  groups = ["tailscale"]
+
+  variables = {
+    ansible_user            = local.server_pi_1.username
+    ansible_become_password = local.server_pi_1.password
+    ts_routes               = join(",", local.server_pi_1.ts_routes)
   }
 }
 
@@ -121,5 +135,13 @@ resource "ansible_group" "k3s_cluster" {
     k3s_version     = "v1.35.4+k3s1"
     helm_version    = "v3.20.2"
     user_kubectl    = true
+  }
+}
+
+resource "ansible_group" "tailscale" {
+  name = "tailscale"
+
+  variables = {
+    tailscale_auth_key = data.sops_file.secrets.data["ansible.tailscale.auth_key"]
   }
 }

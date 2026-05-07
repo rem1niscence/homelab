@@ -1,0 +1,39 @@
+# A docker tailscale deployment is used as a custom tailscale image is used for this setup. The image is
+# hosted at https://github.com/rem1niscence/tailscale and is focused on fixing an upstream issue that
+# affects this cluster. More information on the repository
+- name: Deploy tailscale
+  hosts: tailscale
+  become: true
+  collections:
+    - community.docker
+
+  vars:
+    tailscale_image: ghcr.io/rem1niscence/tailscale:latest
+    tailscale_authkey: "{{ tailscale_auth_key }}"
+    # TS_ROUTES empty is not the same as not set, so only set if defined and not empty. that's why
+    # the combine is used to conditionally add the routes env var along with the base env vars
+    _ts_base_env:
+      TS_AUTHKEY: "{{ tailscale_auth_key }}"
+      TS_EXTRA_ARGS: "{{ ts_extra_args | default('') }}"
+      TS_STATE_DIR: /var/lib/tailscale
+      TS_NO_LOGS_NO_SUPPORT: "true"
+      TS_USERSPACE: "false"
+    _ts_routes_env: "{{ {'TS_ROUTES': ts_routes} if ts_routes is defined else {} }}"
+
+  tasks:
+    - name: Run tailscale container
+      community.docker.docker_container:
+        name: tailscale
+        image: "{{ tailscale_image }}"
+        state: started
+        entrypoint: ["/usr/local/bin/containerboot"]
+        restart_policy: unless-stopped
+        network_mode: host
+        capabilities:
+          - NET_ADMIN
+          - NET_RAW
+        devices:
+          - /dev/net/tun:/dev/net/tun
+        volumes:
+          - /var/lib/tailscale:/var/lib/tailscale
+        env: "{{ _ts_base_env | combine(_ts_routes_env) }}"

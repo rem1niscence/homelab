@@ -1,0 +1,28 @@
+# Manages ClusterIssuers, the default wildcard certificate, and additional certificates for the cluster.
+# The cert-manager installation itself is handled separately (see k8s/apps/infra/cert-manager.yaml).
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: certificates
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: git@github.com:rem1niscence/homelab.git
+      targetRevision: v2
+      path: k8s/charts/certificates
+      helm:
+        valueFiles:
+          - $repo/k8s/values/infra/certificates/values.yml
+    - repoURL: git@github.com:rem1niscence/homelab.git
+      targetRevision: v2
+      ref: repo
+    - repoURL: git@github.com:rem1niscence/homelab.git
+      targetRevision: v2
+      path: k8s/values/infra/certificates/manifests
+  destination:
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

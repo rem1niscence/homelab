@@ -1,0 +1,14 @@
+certManagerEmail: example@email.com
+
+clusterIssuer: letsencrypt
+
+clusterIssuers:
+  - name: letsencrypt
+    server: https://acme-v02.api.letsencrypt.org/directory
+
+defaultCertificate:
+  enabled: true
+  baseDomain: rvserver.online
+
+tlsStore:
+  enabled: true

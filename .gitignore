@@ -20,8 +20,6 @@ copypasta.txt
 tmp
 
 # Helm files
-charts
-Chart.Lock
 *.tgz
 
 # cloudflare tunnel credentials

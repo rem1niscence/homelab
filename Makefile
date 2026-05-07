@@ -154,3 +154,13 @@ tf/k8s:
 
 tf/k8s-plan:
 	SOPS_AGE_KEY_FILE=$(SOPS_AGE_KEY_FILE) terraform -chdir=$(TF_K8S) plan
+
+# --- Sealed secrets ---
+SEAL_CERT  = k8s/sealed-secrets/pub-sealed-secrets.pem
+
+.PHONY: seal-fetch-cert
+seal-fetch-cert:
+	kubeseal --fetch-cert \
+		--controller-name=sealed-secrets \
+		--controller-namespace=sealed-secrets \
+		> $(SEAL_CERT)

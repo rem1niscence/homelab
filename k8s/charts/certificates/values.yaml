@@ -1,0 +1,45 @@
+defaultNamespace: kube-system
+
+# --- ClusterIssuers ---
+
+certManagerEmail: ""
+
+cloudflareApiTokenSecretName: cloudflare-api-token
+
+# clusterIssuer is the name of the ClusterIssuer used by the certificates list below
+clusterIssuer: ""
+
+# clusterIssuers:
+#   - name: letsencrypt
+#     server: https://acme-v02.api.letsencrypt.org/directory
+clusterIssuers: []
+
+# --- Default cluster-wide wildcard certificate ---
+
+defaultCertificate:
+  enabled: false
+  name: cluster-default-cert
+  namespace: kube-system
+  secretName: cluster-wildcard-cert
+  issuerName: letsencrypt
+  baseDomain: ""
+  # extraSans:
+  #   - "*.wallet.example.com"
+  extraSans: []
+
+# --- Traefik default TLSStore ---
+
+tlsStore:
+  enabled: false
+  namespace: kube-system
+
+# --- Additional certificates ---
+
+# certificates:
+#   - name: <certificate-name>
+#     namespace: <namespace> # optional, defaults to `defaultNamespace`
+#     secretName: <secret-name> # optional, defaults to `name`
+#     dnsNames:
+#       - "<domain>"
+#       - "*.<domain>"
+certificates: []

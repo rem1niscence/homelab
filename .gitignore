@@ -85,5 +85,5 @@ secrets.yaml
 terraform/backend.hcl
 v2/terraform/backend.hcl
 
-# Ansible installed collections
-ansible/collections/
+# Ansible external dependencies
+ansible/vendor/

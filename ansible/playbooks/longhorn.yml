@@ -1,0 +1,58 @@
+---
+# As per https://longhorn.io/kb/troubleshooting-volume-with-multipath/
+- name: configure multipathd to ignore Longhorn block devices
+  hosts: k3s_cluster
+  become: true
+  gather_facts: false
+  tasks:
+    - name: write /etc/multipath.conf with sd* blacklist
+      ansible.builtin.copy:
+        dest: /etc/multipath.conf
+        owner: root
+        group: root
+        mode: "0644"
+        content: |
+          # Managed by Ansible — do not edit manually.
+          # Longhorn exposes volumes as sd* iSCSI block devices. Without this
+          # blacklist, multipathd claims them with an exclusive I/O lock and
+          # prevents the Longhorn CSI driver from formatting new volumes.
+          # https://longhorn.io/kb/troubleshooting-volume-with-multipath/
+          blacklist {
+              devnode "^sd[a-z0-9]+"
+          }
+      notify: restart multipathd
+
+    - name: ensure multipathd is enabled and running
+      ansible.builtin.systemd:
+        name: multipathd
+        state: started
+        enabled: true
+      # multipathd may not be installed on every distro/image — skip if absent.
+      ignore_errors: true
+
+  handlers:
+    - name: restart multipathd
+      ansible.builtin.systemd:
+        name: multipathd
+        state: restarted
+
+- name: load dm_crypt kernel module
+  hosts: k3s_cluster
+  become: true
+  gather_facts: false
+  tasks:
+    - name: load dm_crypt immediately
+      community.general.modprobe:
+        name: dm_crypt
+        state: present
+
+    - name: persist dm_crypt across reboots
+      ansible.builtin.copy:
+        dest: /etc/modules-load.d/dm_crypt.conf
+        owner: root
+        group: root
+        mode: "0644"
+        content: |
+          # Managed by Ansible — do not edit manually.
+          # Required for Longhorn encrypted volumes.
+          dm_crypt

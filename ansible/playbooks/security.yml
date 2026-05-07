@@ -1,0 +1,98 @@
+---
+- name: harden all cluster nodes
+  hosts: k3s_cluster
+  roles:
+    - role: devsec.hardening.os_hardening
+      vars:
+        sysctl_overwrite:
+          # Required for Kubernetes pod networking. Overrides the role's
+          # default of 0 for both settings.
+          net.ipv4.ip_forward: 1
+          net.ipv6.conf.all.forwarding: 1
+          # Cilium resets net.ipv4.conf.all.rp_filter=0 on startup but does
+          # not touch `default`. Without this, every new veth interface
+          # (created when a pod starts or restarts) inherits rp_filter=1 and
+          # drops asymmetric return-path packets thus breaking ClusterIP routing.
+          net.ipv4.conf.default.rp_filter: 0
+        # The role defaults ufw's forward policy to DROP, which breaks
+        # pod-to-pod traffic. Set to ACCEPT for Kubernetes nodes.
+        ufw_default_forward_policy: ACCEPT
+
+    - role: devsec.hardening.ssh_hardening
+      vars:
+        # The role's default is "no", which blocks all SSH TCP forwarding.
+        # "local" allows outbound port-forwards only (e.g. ssh -L 6443:...
+        # to reach the k3s API server through a bastion), while still
+        # blocking reverse/remote tunnels (-R).
+        ssh_allow_tcp_forwarding: "local"
+        # Reaised to handle Ansible's parallel channel multiplexing and
+        # simultaneous kubectl sessions from multiple admins.
+        ssh_max_sessions: 20
+        # Allow more concurrent unauthenticated handshakes; CI/CD pipelines
+        # and Ansible can burst many connections to multiple nodes at once.
+        ssh_max_startups: "20:30:60"
+        # Ansible uses SFTP to push files/templates to nodes (copy, template,
+        # fetch modules).
+        sftp_enabled: true
+
+- name: protect iscsid and longhorn storage from unattended upgrades
+  hosts: k3s_cluster
+  become: true
+  tasks:
+    - name: create needrestart override to prevent auto-restart of iscsid
+      # iscsid is the iSCSI initiator daemon. Longhorn uses it to expose block
+      # devices over TCP to this node. if iscsid restarts, every active iSCSI
+      # session drops instantly. any process with I/O in-flight to a Longhorn
+      # volume enters uninterruptible D-state and cannot be killed. enough of
+      # these accumulate and the node deadlocks completely, requiring a hard
+      # reboot from the provider console. needrestart normally auto-restarts
+      # daemons after library upgrades (e.g. libcap2, which iscsid links to),
+      # so this must explicitly opt iscsid out of that behavior.
+      ansible.builtin.copy:
+        dest: /etc/needrestart/conf.d/k8s-storage.conf
+        content: |
+          $nrconf{override_rc}{qr(^iscsid)} = 0;
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: blacklist storage-critical packages from unattended-upgrades
+      # packages that iscsid links to must not be upgraded automatically.
+      # unattended-upgrades runs at a random time overnight, if it upgrades
+      # a library that iscsid depends on, needrestart will attempt to restart
+      # iscsid even with the override above (because the override only controls
+      # the restart decision, not whether apt triggers a service reload via
+      # its own postinst hooks). upgrading these packages requires a manual
+      # kubectl drain → apt upgrade → kubectl uncordon cycle so that pods are
+      # cleanly evicted before storage is disrupted.
+      ansible.builtin.copy:
+        dest: /etc/apt/apt.conf.d/52unattended-upgrades-k8s
+        content: |
+          Unattended-Upgrade::Package-Blacklist {
+              "libcap2";
+              "libcap2-bin";
+              "libpam-cap";
+              "open-iscsi";
+          };
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: disable unattended apt upgrade timers on kubernetes nodes
+      # unattended-upgrades applies patches at a random overnight time without
+      # any awareness of cluster state as it does not cordon the node, drain
+      # pods, or wait for storage to be safely detached before running. on
+      # nodes with iSCSI-backed storage (e.g. Longhorn), even a library upgrade
+      # that triggers a service restart can deadlock the node. package upgrades
+      # on nodes must be done manually via kubectl drain/uncordon so the
+      # cluster can reschedule workloads first. apt-daily.timer (the cache
+      # refresh) is also masked to remove the upgrade pathway entirely.
+      ansible.builtin.systemd:
+        name: "{{ item }}"
+        enabled: false
+        masked: true
+        state: stopped
+      loop:
+        - apt-daily-upgrade.timer
+        - apt-daily.timer
+      failed_when: false

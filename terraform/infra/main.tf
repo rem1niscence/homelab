@@ -43,6 +43,10 @@ resource "ansible_host" "vm" {
     ansible_user            = local.server_vm.username
     ansible_become_password = local.server_vm.password
     ts_extra_args           = "--accept-routes"
+    extra_agent_args = join(" ", [
+      "--node-label platform.io/type=vm",
+      "--node-ip=${local.server_vm.ts_ip}"
+    ])
   }
 }
 
@@ -53,9 +57,9 @@ resource "ansible_host" "amd" {
   variables = {
     ansible_user            = local.server_amd.username
     ansible_become_password = local.server_amd.password
-    extra_server_args = [
+    extra_agent_args = join(" ", [
       "--node-label platform.io/type=secondary",
-    ]
+    ])
   }
 }
 
@@ -66,10 +70,10 @@ resource "ansible_host" "pi-2" {
   variables = {
     ansible_user            = local.server_pi_2.username
     ansible_become_password = local.server_pi_2.password
-    extra_server_args = [
+    extra_agent_args = join(" ", [
       "--node-label platform.io/type=pi",
       "--node-label platform.io/pi=pi-2",
-    ]
+    ])
   }
 }
 
@@ -80,28 +84,30 @@ resource "ansible_host" "pi-3" {
   variables = {
     ansible_user            = local.server_pi_3.username
     ansible_become_password = local.server_pi_3.password
-    extra_server_args = [
+    extra_agent_args = join(" ", [
       "--node-label platform.io/type=pi",
       "--node-label platform.io/pi=pi-3",
-    ]
+    ])
   }
 }
 
 resource "ansible_host" "nuc" {
   name   = local.server_nuc.ip
-  groups = ["agent", "tailscale"]
+  groups = ["server", "tailscale"]
 
   variables = {
     ansible_user            = local.server_nuc.username
     ansible_become_password = local.server_nuc.password
-    extra_server_args = [
+    extra_server_args = join(" ", [
       "--flannel-backend=none",
       "--disable-network-policy",
+      "--disable servicelb",
+      "--disable-kube-proxy",
       "--secrets-encryption",
       "--node-label platform.io/type=secondary",
       "--cluster-cidr=10.42.0.0/16",
       "--service-cidr=10.43.0.0/16"
-    ]
+    ])
   }
 }
 

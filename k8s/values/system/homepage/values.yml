@@ -75,6 +75,26 @@ config:
               version: 6
               url: http://pihole.pihole
               key: {{HOMEPAGE_VAR_PIHOLE_API_KEY}}
+        - Paperless:
+            icon: paperless-ngx.svg
+            href: https://paperless.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://paperless.paperless
+            description: Digital document manager
+            widget:
+                type: paperlessngx
+                url: http://paperless.paperless
+                username: {{HOMEPAGE_VAR_PAPERLESS_USERNAME}}
+                password: {{HOMEPAGE_VAR_PAPERLESS_PASSWORD}}
+        - qBittorrent:
+            icon: qbittorrent.svg
+            href: https://torrent.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://qbittorrent.qbittorrent:8080
+            description: Open-source torrent software
+            widget:
+              type: qbittorrent
+              url: http://qbittorrent.qbittorrent:8080
+              username: {{HOMEPAGE_VAR_QBITTORRENT_USERNAME}}
+              password: {{HOMEPAGE_VAR_QBITTORRENT_PASSWORD}}
   bookmarks: |
     - Links:
         - Github:

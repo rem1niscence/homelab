@@ -85,3 +85,6 @@ v2/terraform/backend.hcl
 
 # Ansible external dependencies
 ansible/vendor/
+
+# K8s secrets
+k8s/**/secrets.yml

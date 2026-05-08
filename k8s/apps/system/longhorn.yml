@@ -4,7 +4,7 @@ metadata:
   name: longhorn
   namespace: argocd
   labels:
-    type: infra
+    type: system
 spec:
   project: default
   sources:
@@ -13,7 +13,7 @@ spec:
       targetRevision: v1.11.1
       helm:
         valueFiles:
-          - $repo/k8s/values/infra/longhorn.yml
+          - $repo/k8s/values/system/longhorn.yml
         values: |
           preUpgradeChecker:
             jobEnabled: false

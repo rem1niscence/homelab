@@ -6,7 +6,7 @@ metadata:
   name: certificates
   namespace: argocd
   labels:
-    type: infra
+    type: system
 spec:
   project: default
   sources:
@@ -15,13 +15,13 @@ spec:
       path: k8s/charts/certificates
       helm:
         valueFiles:
-          - $repo/k8s/values/infra/certificates/values.yml
+          - $repo/k8s/values/system/certificates/values.yml
     - repoURL: git@github.com:rem1niscence/homelab.git
       targetRevision: v2
       ref: repo
     - repoURL: git@github.com:rem1niscence/homelab.git
       targetRevision: v2
-      path: k8s/values/infra/certificates/manifests
+      path: k8s/values/system/certificates/manifests
   destination:
     server: https://kubernetes.default.svc
   syncPolicy:

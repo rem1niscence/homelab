@@ -1,0 +1,23 @@
+# k8s/apps/services/pihole.yml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: traefik
+  namespace: argocd
+  labels:
+    type: system
+spec:
+  project: default
+  source:
+    repoURL: git@github.com:rem1niscence/homelab.git
+    targetRevision: v2
+    path: k8s/system/traefik
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false

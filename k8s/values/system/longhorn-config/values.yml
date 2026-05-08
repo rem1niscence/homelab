@@ -1,7 +1,8 @@
 storageClasses:
   - name: longhorn-local
-    replicas: 1
+    replicas: 2
     nodeSelector: "local"
+    diskSelector: "local"
     reclaimPolicy: Delete
     recurringJobSelector:
       - name: longhorn-local

@@ -4,7 +4,7 @@ metadata:
   name: cert-manager
   namespace: argocd
   labels:
-    type: infra
+    type: system
   annotations:
     # ensure chart is available before the certificates chart
     argocd.argoproj.io/sync-wave: "-80"

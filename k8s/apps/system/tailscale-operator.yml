@@ -4,7 +4,7 @@ metadata:
   name: tailscale-operator
   namespace: argocd
   labels:
-    type: infra
+    type: system
 spec:
   project: default
   sources:
@@ -13,13 +13,13 @@ spec:
       targetRevision: 1.96.5
       helm:
         valueFiles:
-          - $repo/k8s/values/infra/tailscale-operator/values.yml
+          - $repo/k8s/values/system/tailscale-operator/values.yml
     - repoURL: git@github.com:rem1niscence/homelab.git
       targetRevision: v2
       ref: repo
     - repoURL: git@github.com:rem1niscence/homelab.git
       targetRevision: v2
-      path: k8s/values/infra/tailscale-operator/manifests
+      path: k8s/values/system/tailscale-operator/manifests
   destination:
     server: https://kubernetes.default.svc
     namespace: tailscale

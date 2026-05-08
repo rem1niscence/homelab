@@ -1,0 +1,19 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: traefik-dashboard-secure
+  namespace: kube-system
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: Host(`traefik.rvserver.online`)
+      services:
+        - name: api@internal
+          kind: TraefikService
+    - kind: Rule
+      match: Host(`traefik.rvserver.online`) && PathPrefix(`/api`)
+      services:
+        - name: api@internal
+          kind: TraefikService

@@ -1,6 +1,6 @@
 defaultSettings:
   # minimum number of replicas for each volume
-  defaultReplicaCount: 1
+  defaultReplicaCount: 2
   # minimum available storage before Longhorn stops scheduling
   storageMinimalAvailablePercentage: 10
   # storage reserved for the actual node

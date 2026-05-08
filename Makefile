@@ -111,6 +111,13 @@ tailscale/unexpose:
 
 SECRETS := $(shell find . -name "secrets.yaml" -not -path "*/.terraform/*")
 SOPS_AGE_KEY_FILE = $(HOME)/.config/sops/age/homelab.txt
+SEAL_CERT = k8s/sealed-secrets/pub-sealed-secrets.pem
+
+seal-manifests:
+	@for f in $(shell find k8s -name "secrets.yml"); do \
+		kubeseal --cert $(SEAL_CERT) --format yaml < $$f > $$(dirname $$f)/sealed-secrets.yml; \
+		echo "sealed $$f -> $$(dirname $$f)/sealed-secrets.yml"; \
+	done
 
 sops/encrypt:
 	@for f in $(SECRETS); do \
@@ -174,3 +181,18 @@ longhorn/preflight:
 		--image longhornio/longhorn-cli:$(LONGHORN_VERSION) \
 		--namespace $(NAMESPACE) \
 		install preflight
+
+# --- ArgoCD ---
+ARGOCD_PROJECT = default
+ARGOCD_NAMESPACE = argocd
+DENY_WINDOW = '{"spec":{"syncWindows":[{"kind":"deny","schedule":"* * * * *","duration":"24h","applications":["*"],"namespaces":["*"],"clusters":["*"],"manualSync":true}]}}'
+CLEAR_WINDOW = '{"spec":{"syncWindows":[]}}'
+
+.PHONY: argocd/pause argocd/unpause
+argocd/pause:
+	@kubectl patch appproject $(ARGOCD_PROJECT) -n $(ARGOCD_NAMESPACE) --type=merge -p $(DENY_WINDOW)
+	@echo "⏸️  ArgoCD syncing paused."
+
+argocd/resume:
+	@kubectl patch appproject $(ARGOCD_PROJECT) -n $(ARGOCD_NAMESPACE) --type=merge -p $(CLEAR_WINDOW)
+	@echo "▶️  ArgoCD syncing resumed."

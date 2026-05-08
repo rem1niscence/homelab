@@ -1,5 +1,3 @@
-# k8s/values/infra/tailscale-operator.yaml
-
 # OAuth credentials — pre-created as SealedSecret "operator-oauth" in
 # tailscale namespace
 # Keys: client_id, client_secret

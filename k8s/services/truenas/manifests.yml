@@ -1,0 +1,62 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: truenas
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+  clusterIP: None
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: https-redirect
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: truenas
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`truenas.rvserver.online`)
+      kind: Rule
+      services:
+        - name: truenas
+          port: 80
+      middlewares:
+        - name: https-redirect
+          namespace: truenas
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: router
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+  clusterIP: None
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: router
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`router.rvserver.online`)
+      kind: Rule
+      services:
+        - name: router
+          port: 80

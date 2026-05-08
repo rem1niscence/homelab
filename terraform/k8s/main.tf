@@ -50,6 +50,43 @@ resource "kubernetes_annotations" "traefik_tailscale" {
 
 data "kubernetes_nodes" "all" {}
 
+# Endpoints are excluded from ArgoCD's resource tracking by default
+resource "kubernetes_endpoints_v1" "truenas" {
+  metadata {
+    name      = "truenas"
+    namespace = "truenas"
+  }
+  subset {
+    address {
+      ip = "192.168.0.95"
+    }
+    port {
+      port     = 80
+      name     = "http"
+      protocol = "TCP"
+    }
+  }
+  depends_on = [module.argocd]
+}
+
+resource "kubernetes_endpoints_v1" "router" {
+  metadata {
+    name      = "router"
+    namespace = "truenas"
+  }
+  subset {
+    address {
+      ip = "192.168.0.1"
+    }
+    port {
+      port     = 80
+      name     = "http"
+      protocol = "TCP"
+    }
+  }
+  depends_on = [module.argocd]
+}
+
 # annotate nodes with Longhorn tags based on their storage labels so that
 # Longhorn can schedule volumes to the correct nodes
 resource "kubernetes_annotations" "longhorn_node_tags" {

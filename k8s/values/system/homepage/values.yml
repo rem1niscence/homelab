@@ -1,0 +1,122 @@
+ingress:
+  description: "Homelab homepage"
+  host: "rvserver.online"
+
+envFrom:
+  - secretRef:
+      name: dashboard
+
+config:
+  settings: |
+    title: Homelab's homepage
+    target: _self
+    layout:
+      Widgets:
+        style: row
+        columns: 4
+      Apps:
+        style: row
+        columns: 4
+      "Comic/Manga":
+        style: row
+        columns: 2
+      Blog:
+        style: row
+        columns: 2
+      System:
+        style: row
+        columns: 4
+      Media:
+        style: row
+        columns: 2
+      Canopy:
+        style: row
+        columns: 4
+      Calendar:
+        style: column
+        # columns: 2
+    providers:
+      longhorn:
+        url: http://longhorn-frontend.longhorn-system
+
+  services: |
+    - Widgets:
+        - Traefik:
+            icon: traefik.svg
+            href: https://traefik.{{HOMEPAGE_VAR_DOMAIN}}
+            description: Reverse proxy
+            widget:
+              type: traefik
+              url: http://traefik-api.kube-system
+        - TrueNAS SCALE:
+            icon: truenas-scale.png
+            href: https://truenas.{{HOMEPAGE_VAR_DOMAIN}}/ui/
+            siteMonitor: http://truenas.truenas
+            description: Open-source storage operating system
+            widget:
+                type: truenas
+                url: http://truenas.truenas
+                key: {{HOMEPAGE_VAR_TRUENAS_API_KEY}}
+        - Speedtest:
+            icon: si-speedtest
+            href: https://speedtest.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://speedtest.speedtest
+            description: Speed test tracker
+            widget:
+              type: speedtest
+              url: http://speedtest.speedtest
+        - Pi-hole:
+            icon: pi-hole.svg
+            href: https://pihole.{{HOMEPAGE_VAR_DOMAIN}}/admin
+            siteMonitor: http://pihole.pihole
+            description: Network-wide ad blocker
+            widget:
+              type: pihole
+              version: 6
+              url: http://pihole.pihole
+              key: {{HOMEPAGE_VAR_PIHOLE_API_KEY}}
+  bookmarks: |
+    - Links:
+        - Github:
+            - abbr: GH
+              href: https://github.com/rem1niscence
+        - Grafana Explore:
+            - abbr: GF
+              href: https://grafana.{{HOMEPAGE_VAR_DOMAIN}}/explore
+
+  widgets: |
+    - kubernetes:
+        cluster:
+          show: true
+          cpu: true
+          memory: true
+          showLabel: true
+          label: "cluster"
+        nodes:
+          show: true
+          cpu: true
+          memory: true
+          showLabel: true
+    - resources:
+        backend: resources
+        expanded: true
+        # network: default
+        cpu: true
+        memory: true
+        uptime: true
+    - longhorn:
+        expanded: true
+        total: true
+        labels: true
+        nodes: false
+    - search:
+        provider: custom
+        url: https://searxng.{{HOMEPAGE_VAR_DOMAIN}}/search?q=
+        target: _self
+        suggestionUrl: http://searxng.searxng/autocompleter?q=
+        showSearchSuggestions: true
+    - openmeteo:
+        latitude: 40.4168
+        longitude: -3.703790
+        units: metric
+        cache: 5

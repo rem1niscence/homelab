@@ -1,0 +1,165 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: speedtest
+  labels:
+    app: speedtest
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: speedtest
+  template:
+    metadata:
+      labels:
+        app: speedtest
+    spec:
+      nodeSelector:
+        platform.io/type: pi
+      containers:
+        - name: speedtest
+          image: lscr.io/linuxserver/speedtest-tracker:latest
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: DB_CONNECTION
+              value: "pgsql"
+            - name: DB_HOST
+              value: "postgres"
+            - name: TZ
+              value: "Etc/UTC"
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_DATABASE
+              value: "speedtest"
+            - name: DB_USERNAME
+              value: "speedtest"
+            - name: DB_PASSWORD
+              value: "speedtest1234"
+            - name: APP_KEY
+              value: "base64:u3Nnlo7HUtFnGoSsn8jsgxaHZLXuT/eNMhFJdSFYxqw="
+            - name: SPEEDTEST_SCHEDULE
+              value: "0 * * * *"
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: config
+              mountPath: /config
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: config
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 30m"
+    keel.sh/trigger: poll
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: "speedtest"
+            - name: POSTGRES_USER
+              value: "speedtest"
+            - name: POSTGRES_PASSWORD
+              value: "speedtest1234"
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          volumeMounts:
+            - name: db
+              mountPath: /var/lib/postgresql/data
+              subPath: postgres
+      volumes:
+        - name: db
+          persistentVolumeClaim:
+            claimName: db
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: config
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1.5G
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: db
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1.5G
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: speedtest
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    app: speedtest
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: postgres
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: speedtest
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`speedtest.rvserver.online`)
+      kind: Rule
+      services:
+        - name: speedtest
+          port: 80

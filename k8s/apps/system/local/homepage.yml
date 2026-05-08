@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: homepage
+  namespace: argocd
+  labels:
+    type: system
+spec:
+  project: default
+  sources:
+    - repoURL: git@github.com:rem1niscence/homelab.git
+      targetRevision: v2
+      path: k8s/charts/homepage
+      helm:
+        valueFiles:
+          - $repo/k8s/values/system/homepage/values.yml
+    - repoURL: git@github.com:rem1niscence/homelab.git
+      targetRevision: v2
+      ref: repo
+    - repoURL: git@github.com:rem1niscence/homelab.git
+      targetRevision: v2
+      path: k8s/values/system/homepage/manifests
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: homepage
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

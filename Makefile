@@ -119,6 +119,11 @@ seal-manifests:
 		echo "sealed $$f -> $$(dirname $$f)/sealed-secrets.yml"; \
 	done
 
+seal-single:
+	$(call check_vars, DIR)
+	@kubeseal --cert $(SEAL_CERT) --format yaml < $(DIR)/secrets.yml > $(DIR)/sealed-secrets.yml
+	@echo "sealed $(DIR)/secrets.yml -> $(DIR)/sealed-secrets.yml"
+
 sops/encrypt:
 	@for f in $(SECRETS); do \
 		sops --encrypt $$f > $${f%.yaml}.enc.yaml; \

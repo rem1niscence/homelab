@@ -1,0 +1,69 @@
+image:
+  repository: ghcr.io/gethomepage/homepage
+  tag: latest
+  pullPolicy: Always
+
+replicaCount: 1
+
+nodeSelector:
+  node-role.kubernetes.io/control-plane: "true"
+
+env: []
+envFrom: []
+
+ingress:
+  enabled: true
+  className: traefik
+  description: "Homelab homepage"
+  host: "host.network"
+  annotations: {}
+  tls:
+    enabled: false
+    secretName: ""
+
+# homepage config files (mounted as ConfigMap)
+config:
+  kubernetes: |
+    mode: cluster
+
+  settings: ""
+
+  bookmarks: |
+    - Developer:
+        - Github:
+            - abbr: GH
+              href: https://github.com/
+
+  services: |
+    - My First Group:
+        - My First Service:
+            href: http://localhost/
+            description: Hellooooo
+
+  widgets: |
+    - kubernetes:
+        cluster:
+          show: true
+          cpu: true
+          memory: true
+          showLabel: true
+          label: "cluster"
+        nodes:
+          show: true
+          cpu: true
+          memory: true
+          showLabel: true
+    - resources:
+        backend: resources
+        expanded: true
+        cpu: true
+        memory: true
+        network: default
+
+  docker: ""
+
+  proxmox: ""
+
+  customCss: ""
+
+  customJs: ""

@@ -16,7 +16,7 @@ variable "admin_password" {
 }
 
 variable "domain" {
-  description = "Domain for ArgoCD UI (e.g. argocd.example.com)"
+  description = "Domain for ArgoCD UI"
   type        = string
 }
 

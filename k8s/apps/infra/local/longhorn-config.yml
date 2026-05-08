@@ -1,32 +1,33 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: sealed-secrets
+  name: longhorn-config
   namespace: argocd
   labels:
     type: infra
   annotations:
-    # ensure sealed secrets is available before the sealed secrets manifests application starts
-    argocd.argoproj.io/sync-wave: "-100"
+    argocd.argoproj.io/sync-wave: "10"
 spec:
   project: default
   sources:
-    - chart: sealed-secrets
-      repoURL: https://bitnami-labs.github.io/sealed-secrets
-      targetRevision: 2.18.5
+    - repoURL: git@github.com:rem1niscence/homelab.git
+      targetRevision: v2
+      path: k8s/charts/longhorn-config
       helm:
         valueFiles:
-          - $repo/k8s/values/infra/sealed-secrets.yml
+          - $repo/k8s/values/infra/longhorn-config/values.yml
     - repoURL: git@github.com:rem1niscence/homelab.git
       targetRevision: v2
       ref: repo
+    - repoURL: git@github.com:rem1niscence/homelab.git
+      targetRevision: v2
+      path: k8s/values/infra/longhorn-config/manifests
   destination:
     server: https://kubernetes.default.svc
-    namespace: sealed-secrets
+    namespace: longhorn-system
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
-      # Created in Terraform along with the cluster secret
       - CreateNamespace=false

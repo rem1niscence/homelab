@@ -59,3 +59,32 @@ resource "kubectl_manifest" "cilium_l2_policy" {
 
   depends_on = [helm_release.cilium]
 }
+
+# Cilium IngressRoute for Hubble UI
+resource "kubectl_manifest" "argocd_ingress" {
+  yaml_body = yamlencode({
+    apiVersion = "traefik.io/v1alpha1"
+    kind       = "IngressRoute"
+    metadata = {
+      name      = "hubble-ui"
+      namespace = var.namespace
+    }
+    spec = {
+      entryPoints = ["websecure"]
+      routes = [
+        {
+          match = "Host(`hubble.${var.domain}`)"
+          kind  = "Rule"
+          services = [
+            {
+              name = "hubble-ui"
+              port = 80
+            }
+          ]
+        }
+      ]
+    }
+  })
+
+  depends_on = [helm_release.cilium]
+}

@@ -19,3 +19,8 @@ variable "tailscale_lb_cidr" {
   description = "CIDR block for Tailscale LoadBalancer IPs"
   type        = string
 }
+
+variable "domain" {
+  description = "Domain for Hubble UI"
+  type        = string
+}

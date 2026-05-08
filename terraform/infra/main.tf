@@ -46,6 +46,7 @@ resource "ansible_host" "vm" {
     ts_extra_args           = "--accept-routes"
     extra_agent_args = join(" ", [
       "--node-label platform.io/type=vm",
+      "--node-label platform.io/remote-storage=true",
       "--node-ip=${local.server_vm.ts_ip}"
     ])
   }
@@ -60,7 +61,25 @@ resource "ansible_host" "amd" {
     ansible_become_password = local.server_amd.password
     extra_agent_args = join(" ", [
       "--node-label platform.io/type=secondary",
+      "--node-label platform.io/local-storage=true",
+      "--node-label platform.io/remote-storage=true"
     ])
+    iscsi_mounts = [
+      {
+        name       = "local"
+        ip         = "192.168.0.95"
+        target     = "iscsi-main-drive:longhorn.ssd-2tb"
+        mount_path = "/var/lib/longhorn-local"
+        format     = "false"
+      },
+      {
+        name       = "remote"
+        ip         = "192.168.0.95"
+        target     = "iscsi-main-drive:longhorn-remote.ssd-2tb"
+        mount_path = "/var/lib/longhorn-remote"
+        format     = "false"
+      }
+    ]
   }
 }
 
@@ -100,6 +119,7 @@ resource "ansible_host" "nuc" {
     ansible_user            = local.server_nuc.username
     ansible_become_password = local.server_nuc.password
     extra_server_args = join(" ", [
+      "--node-label platform.io/local-storage=true",
       "--flannel-backend=none",
       "--disable-network-policy",
       "--disable servicelb",
@@ -109,6 +129,15 @@ resource "ansible_host" "nuc" {
       "--cluster-cidr=10.42.0.0/16",
       "--service-cidr=10.43.0.0/16"
     ])
+    iscsi_mounts = [
+      {
+        name       = "local"
+        ip         = "192.168.0.95"
+        target     = "iscsi-main-drive:longhorn.main-drive"
+        mount_path = "/var/lib/longhorn-local"
+        format     = "false"
+      },
+    ]
   }
 }
 

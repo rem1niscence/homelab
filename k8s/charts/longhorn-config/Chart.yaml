@@ -1,0 +1,4 @@
+apiVersion: v2
+name: longhorn-config
+description: Custom StorageClasses and RecurringJobs for Longhorn
+version: 0.1.0

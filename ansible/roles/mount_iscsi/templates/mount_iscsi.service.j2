@@ -1,0 +1,17 @@
+# Managed by Ansible — do not edit manually.
+[Unit]
+Description=Mount iSCSI volume {{ item.name }} at boot
+After=network.target iscsid.service
+
+[Service]
+Type=oneshot
+ExecStartPre=/bin/sleep 30
+ExecStart=/usr/bin/mount_iscsi {{ item.ip }} {{ item.target }} {{ item.mount_path }} {{ item.format }}
+RemainAfterExit=yes
+Restart=on-failure
+RestartSec=10s
+StartLimitBurst=5
+
+
+[Install]
+WantedBy=multi-user.target

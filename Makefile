@@ -164,3 +164,13 @@ seal-fetch-cert:
 		--controller-name=sealed-secrets \
 		--controller-namespace=sealed-secrets \
 		> $(SEAL_CERT)
+
+LONGHORN_VERSION = v1.11.1
+NAMESPACE = longhorn-system
+
+.PHONY: longhorn/preflight
+longhorn/preflight:
+	longhornctl --kubeconfig ~/.kube/config \
+		--image longhornio/longhorn-cli:$(LONGHORN_VERSION) \
+		--namespace $(NAMESPACE) \
+		install preflight

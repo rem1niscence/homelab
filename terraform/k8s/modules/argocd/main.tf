@@ -136,7 +136,7 @@ resource "kubectl_manifest" "argocd_ingress" {
       entryPoints = ["websecure"]
       routes = [
         {
-          match = "Host(`${var.domain}`)"
+          match = "Host(`argocd.${var.domain}`)"
           kind  = "Rule"
           services = [
             {

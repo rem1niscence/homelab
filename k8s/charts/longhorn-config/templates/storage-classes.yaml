@@ -1,0 +1,24 @@
+{{- range .Values.storageClasses }}
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ .name }}
+provisioner: driver.longhorn.io
+allowVolumeExpansion: true
+reclaimPolicy: {{ .reclaimPolicy | default "Delete" }}
+volumeBindingMode: Immediate
+parameters:
+  numberOfReplicas: "{{ .replicas }}"
+  staleReplicaTimeout: "2880"
+  dataLocality: "{{ .dataLocality | default "disabled" }}"
+  {{- if .nodeSelector }}
+  nodeSelector: "{{ .nodeSelector }}"
+  {{- end }}
+  {{- if .diskSelector }}
+  diskSelector: "{{ .diskSelector }}"
+  {{- end }}
+  {{- if .recurringJobSelector }}
+  recurringJobSelector: '[{{- range $i, $j := .recurringJobSelector }}{{- if $i }},{{- end }}{"name":"{{ $j.name }}","isGroup":{{ $j.isGroup }}}{{- end }}]'
+  {{- end }}
+{{- end }}

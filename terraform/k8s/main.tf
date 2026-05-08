@@ -14,12 +14,13 @@ module "cilium" {
   chart_version     = "1.18.6"
   lan_lb_cidr       = "192.168.0.200/24"
   tailscale_lb_cidr = "100.108.209.0/24"
+  domain            = data.sops_file.secrets.data["domain"]
 }
 
 # argocd watches the infrastructure repo and reconciles cluster state from it
 module "argocd" {
   source             = "./modules/argocd"
-  domain             = "argocd.${data.sops_file.secrets.data["argocd.domain"]}"
+  domain             = data.sops_file.secrets.data["domain"]
   argocd_version     = "9.5.12"
   repo_url           = "git@github.com:rem1niscence/homelab.git"
   repo_deploy_key    = data.sops_file.secrets.data["argocd.deploy_key"]
@@ -29,6 +30,8 @@ module "argocd" {
   target_revision    = "v2"
   depends_on         = [module.cilium]
 }
+
+# --- Kubernetes bootstrap configuration ---
 
 # annotate the Traefik service to be exposed via Tailscale
 resource "kubernetes_annotations" "traefik_tailscale" {
@@ -41,6 +44,33 @@ resource "kubernetes_annotations" "traefik_tailscale" {
   annotations = {
     "tailscale.com/hostname" = "traefik"
     "tailscale.com/expose"   = "true"
+  }
+  depends_on = [module.argocd]
+}
+
+data "kubernetes_nodes" "all" {}
+
+# annotate nodes with Longhorn tags based on their storage labels so that
+# Longhorn can schedule volumes to the correct nodes
+resource "kubernetes_annotations" "longhorn_node_tags" {
+  for_each = {
+    for n in data.kubernetes_nodes.all.nodes : n.metadata[0].name => n
+    if(
+      lookup(n.metadata[0].labels, "platform.io/local-storage", null) == "true" ||
+      lookup(n.metadata[0].labels, "platform.io/remote-storage", null) == "true"
+    )
+  }
+
+  api_version = "v1"
+  kind        = "Node"
+  metadata { name = each.key }
+  annotations = {
+    "node.longhorn.io/default-node-tags" = jsonencode(compact([
+      lookup(each.value.metadata[0].labels,
+      "platform.io/local-storage", null) == "true" ? "local" : "",
+      lookup(each.value.metadata[0].labels,
+      "platform.io/remote-storage", null) == "true" ? "remote" : "",
+    ]))
   }
   depends_on = [module.argocd]
 }

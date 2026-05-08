@@ -29,3 +29,18 @@ module "argocd" {
   target_revision    = "v2"
   depends_on         = [module.cilium]
 }
+
+# annotate the Traefik service to be exposed via Tailscale
+resource "kubernetes_annotations" "traefik_tailscale" {
+  api_version = "v1"
+  kind        = "Service"
+  metadata {
+    name      = "traefik"
+    namespace = "kube-system"
+  }
+  annotations = {
+    "tailscale.com/hostname" = "traefik"
+    "tailscale.com/expose"   = "true"
+  }
+  depends_on = [module.argocd]
+}

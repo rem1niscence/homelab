@@ -2,8 +2,8 @@ output "hetzner_server" {
   value = module.hetzner.server
 }
 
-output "cloudflare_zones" {
-  value = module.cloudflare.zones
+output "cloudflare_zone" {
+  value = module.cloudflare.zone
 }
 
 output "cloudflare_buckets" {

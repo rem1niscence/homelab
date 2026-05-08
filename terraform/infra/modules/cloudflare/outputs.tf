@@ -1,10 +1,8 @@
-output "zones" {
-  description = "cloudflare zones"
+output "zone" {
+  description = "cloudflare zone"
   value = {
-    for k, z in cloudflare_zone.main : k => {
-      id   = z.id
-      name = z.name
-    }
+    id   = cloudflare_zone.main.id
+    name = cloudflare_zone.main.name
   }
 }
 

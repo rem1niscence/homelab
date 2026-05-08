@@ -24,7 +24,8 @@ locals {
 module "cloudflare" {
   source     = "./modules/cloudflare"
   account_id = data.sops_file.secrets.data["cloudflare.account_id"]
-  domains    = nonsensitive(yamldecode(data.sops_file.secrets.raw)["domains"])
+  domain     = nonsensitive(data.sops_file.secrets.data["server.domain"])
+  server_ip  = nonsensitive(data.sops_file.secrets.data["server.ip"])
 }
 
 module "hetzner" {

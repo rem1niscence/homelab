@@ -33,6 +33,7 @@ hostPort:
 
 socketLB:
   enabled: true
+  hostNamespaceOnly: true
 
 sessionAffinity: true
 

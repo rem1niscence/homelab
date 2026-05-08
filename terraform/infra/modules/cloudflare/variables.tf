@@ -4,7 +4,12 @@ variable "account_id" {
   sensitive   = true
 }
 
-variable "domains" {
-  description = "List of domains to create Cloudflare zones for"
-  type        = list(string)
+variable "domain" {
+  description = "Domain to be used over the cluster"
+  type        = string
+}
+
+variable "server_ip" {
+  description = "IP address for the wildcard DNS record"
+  type        = string
 }

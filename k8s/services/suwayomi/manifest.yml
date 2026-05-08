@@ -1,0 +1,158 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: suwayomi
+  labels:
+    app: suwayomi
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: suwayomi
+  template:
+    metadata:
+      labels:
+        app: suwayomi
+    spec:
+      nodeSelector:
+        platform.io/type: main
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: suwayomi
+          securityContext:
+            runAsUser: 1000
+          image: ghcr.io/suwayomi/suwayomi-server:preview
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 4567
+          env:
+            - name: TZ
+              value: "Europe/Madrid"
+            - name: FLARESOLVERR_ENABLED
+              value: "true"
+            - name: FLARESOLVERR_URL
+              value: "http://localhost:8191"
+            - name: AUTO_DOWNLOAD_CHAPTERS
+              value: "true"
+            - name: AUTO_DOWNLOAD_NEW_CHAPTERS_LIMIT
+              value: "5"
+            - name: DOWNLOAD_AS_CBZ
+              value: "true"
+            - name: UPDATE_EXCLUDE_UNREAD
+              value: "false"
+            - name: UPDATE_EXCLUDE_STARTED
+              value: "false"
+            - name: UPDATE_EXCLUDE_COMPLETED
+              value: "false"
+            - name: UPDATE_INTERVAL
+              value: "4"
+            - name: UPDATE_MANGA_INFO
+              value: "true"
+          volumeMounts:
+            - name: config
+              mountPath: /home/suwayomi/.local/share/Tachidesk
+            - name: data
+              mountPath: /home/suwayomi/downloads
+              subPath: manga
+        - name: flaresolverr
+          image: ghcr.io/flaresolverr/flaresolverr:latest
+          ports:
+            - containerPort: 8191
+          env:
+            - name: LOG_LEVEL
+              value: "info"
+              # - name: gluetun
+              #   image: qmcgaw/gluetun:latest
+              #   securityContext:
+              #     capabilities:
+              #       add: ["NET_ADMIN"]
+              #     privileged: true
+              #   envFrom:
+              #     - secretRef:
+              #         name: gluetun
+              #   env:
+              #     - name: TZ
+              #       value: Etc/UTC
+              #     - name: VPN_TYPE
+              #       value: wireguard
+              #     - name: DNS_KEEP_NAMESERVER
+              #       value: "on"
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: config
+        - name: data
+          persistentVolumeClaim:
+            claimName: data
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: suwayomi-pv
+spec:
+  capacity:
+    storage: 3T
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 192.168.0.95
+    path: /mnt/main_drive/data/manga
+  storageClassName: local-path
+  mountOptions:
+    - vers=4.0
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 3T
+  volumeName: suwayomi-pv
+  storageClassName: local-path
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: config
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1100Mi
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: suwayomi
+spec:
+  ports:
+    - port: 80
+      targetPort: 4567
+  selector:
+    app: suwayomi
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: suwayomi
+
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`suwayomi.rvserver.online`)
+      kind: Rule
+      services:
+        - name: suwayomi
+          port: 80

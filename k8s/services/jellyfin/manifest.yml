@@ -1,0 +1,252 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jellyfin
+  labels:
+    app: jellyfin
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jellyfin
+  template:
+    metadata:
+      labels:
+        app: jellyfin
+    spec:
+      nodeSelector:
+        platform.io/type: secondary
+      containers:
+        - name: jellyfin
+          image: lscr.io/linuxserver/jellyfin:latest
+          ports:
+            - containerPort: 8096
+          resources:
+            limits:
+              amd.com/gpu: 1
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TZ
+              value: "Etc/UTC"
+            # not working, overriden seemingly by an init script
+            # - name: "JELLYFIN_LOG_DIR"
+            #   value: /tmp/log
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: data
+              mountPath: /config/data/data/subtitles
+              subPath: metadata/subtitles
+            - name: cache
+              mountPath: /cache
+            - name: config
+              mountPath: /config
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data-pvc
+        - name: cache
+          persistentVolumeClaim:
+            claimName: cache-pvc
+        - name: config
+          persistentVolumeClaim:
+            claimName: jellyfin-config-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: seerr
+  labels:
+    app: seerr
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: seerr
+  template:
+    metadata:
+      labels:
+        app: seerr
+    spec:
+      securityContext:
+        fsGroup: 1000
+      nodeSelector:
+        platform.io/pi: pi-2
+      containers:
+        - name: seerr
+          image: ghcr.io/seerr-team/seerr:latest
+          env:
+            - name: TZ
+              value: "Etc/UTC"
+          ports:
+            - containerPort: 5055
+          volumeMounts:
+            - name: config
+              mountPath: /app/config
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: seerr-config-pvc
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: jellyfin
+
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`jellyfin.rvserver.online`)
+      kind: Rule
+      services:
+        - name: jellyfin
+          port: 8096
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: jellyfin-lan
+
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`jellyfin.home`)
+      kind: Rule
+      services:
+        - name: jellyfin
+          port: 8096
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jellyfin
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  ports:
+    - port: 8096
+      targetPort: 8096
+  selector:
+    app: jellyfin
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: seerr
+spec:
+  selector:
+    app: seerr
+  ports:
+    - protocol: TCP
+      port: 5055
+      targetPort: 5055
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: jellyfin-data-pv
+spec:
+  capacity:
+    storage: 3T
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 192.168.0.95
+    path: /mnt/main_drive/media
+  storageClassName: local-path
+  mountOptions:
+    - vers=4.0
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 3T
+  volumeName: jellyfin-data-pv
+  storageClassName: local-path
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: cache-pv
+spec:
+  capacity:
+    storage: 3T
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 192.168.0.95
+    path: /mnt/sata_2tb/cache
+  storageClassName: local-path
+  mountOptions:
+    - vers=4.0
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cache-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 3T
+  volumeName: cache-pv
+  storageClassName: local-path
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jellyfin-config-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5000Mi
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: seerr-config-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 954Mi
+  storageClassName: longhorn-local
+  volumeName: seerr-pv
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: seerr
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`seerr.rvserver.online`)
+      kind: Rule
+      services:
+        - name: seerr
+          port: 5055

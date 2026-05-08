@@ -25,7 +25,7 @@ defaultSettings:
 
 # backup store for longhorn's PVCs, can be s3 compatible storage or nfs server
 defaultBackupStore:
-  backupTarget: nfs://192.168.0.95:/mnt/main_drive/longhorn_backup
+  backupTarget: nfs://192.168.0.95:/mnt/main_drive/longhorn_backup?nfsOptions=nfsvers=4.1,softerr,timeo=50,retrans=2
 
 ingress:
   enabled: false

@@ -95,6 +95,99 @@ config:
               url: http://qbittorrent.qbittorrent:8080
               username: {{HOMEPAGE_VAR_QBITTORRENT_USERNAME}}
               password: {{HOMEPAGE_VAR_QBITTORRENT_PASSWORD}}
+        - Radarr:
+            icon: radarr.svg
+            href: https://radarr.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://radarr.servarr:7878
+            description: Movie indexer engine
+            widget:
+              type: radarr
+              url: http://radarr.servarr:7878
+              key: {{HOMEPAGE_VAR_RADARR_API_KEY}}
+        - Sonarr:
+            icon: sonarr.svg
+            href: https://sonarr.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://sonarr.servarr:8989
+            description: Anime/TV indexer engine
+            widget:
+              type: sonarr
+              url: http://sonarr.servarr:8989
+              key: {{HOMEPAGE_VAR_SONARR_API_KEY}}
+        - Bazarr:
+            icon: bazarr.svg
+            href: https://bazarr.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://bazarr.servarr:6767
+            description: Subtitle management for media
+            widget:
+              type: bazarr
+              url: http://bazarr.servarr:6767
+              key: {{HOMEPAGE_VAR_BAZARR_API_KEY}}
+        - Prowlarr:
+            icon: prowlarr.svg
+            href: https://prowlarr.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://prowlarr.servarr:9696
+            description: Meta-search application for torrents
+            fields: ["numberOfGrabs", "numberOfQueries", "numberOfFailGrabs"]
+            widget:
+              type: prowlarr
+              url: http://prowlarr.servarr:9696
+              key: {{HOMEPAGE_VAR_PROWLARR_API_KEY}}
+        - Jellyfin:
+            icon: jellyfin.svg
+            href: https://jellyfin.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://jellyfin.jellyfin:8096
+            description: Media server for movies & shows
+            widget:
+              type: jellyfin
+              url: http://jellyfin.jellyfin:8096
+              key: {{HOMEPAGE_VAR_JELLYFIN_API_KEY}}
+              enableBlocks: true
+              enableNowPlaying: false
+        - Seerr:
+            icon: seerr.svg
+            href: https://seerr.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://seerr.jellyfin:5055
+            description: Media request management
+            widget:
+              type: seerr
+              url: http://seerr.jellyfin:5055
+              key: {{HOMEPAGE_VAR_SEERR_API_KEY}}
+        - Gatus:
+            icon: gatus.svg
+            href: https://gatus.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://gatus.gatus
+            description: Website/Service monitoring
+            widget:
+              type: gatus
+              url: http://gatus.gatus
+        # - Prometheus:
+        #     icon: prometheus.svg
+        #     href: https://prometheus.{{HOMEPAGE_VAR_DOMAIN}}
+        #     siteMonitor: http://prometheus-operated.monitoring:9090
+        #     description: Metrics monitoring and alerting toolkit
+        #     widget:
+        #       type: prometheus
+        #       url: http://prometheus-operated.monitoring:9090
+    - Apps:
+        - Cloudflare:
+            icon: cloudflare
+            href: https://dash.cloudflare.com/{{HOMEPAGE_VAR_CLOUDFLARE_ACCOUNT_ID}}
+            siteMonitor: https://dash.cloudflare.com/
+            description: Internet infrastructure and DNS provider
+            # widget:
+            #   type: cloudflared
+            #   accountid: {{HOMEPAGE_VAR_CLOUDFLARE_ACCOUNT_ID}}
+            #   tunnelid: {{HOMEPAGE_VAR_CLOUDFLARE_TUNNEL_ID}}
+            #   key: {{HOMEPAGE_VAR_CLOUDFLARE_API_TOKEN}}
+    - Comic/Manga:
+        - Suwayomi:
+            icon: sh-suwayomi-dark
+            href: https://suwayomi.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://suwayomi.suwayomi
+            description: Self-hosted manga server
+            widget:
+              type: suwayomi
+              url: http://suwayomi.suwayomi
   bookmarks: |
     - Links:
         - Github:

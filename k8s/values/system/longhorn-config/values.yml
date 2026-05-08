@@ -23,6 +23,7 @@ recurringJobs:
     cron: "0 * * * *"
     concurrency: 3
     groups:
+      - default
       - longhorn-local
       - longhorn-remote
   - name: backup
@@ -31,6 +32,7 @@ recurringJobs:
     retain: 2
     concurrency: 3
     groups:
+      - default
       - longhorn-local
   - name: snapshot
     task: snapshot

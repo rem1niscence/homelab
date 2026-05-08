@@ -187,6 +187,20 @@ longhorn/preflight:
 		--namespace $(NAMESPACE) \
 		install preflight
 
+## longhorn/disable: removes a node from longhorn scheduling by adding a NoExecute taint (NODE=<node-name>)
+.PHONY: longhorn/disable
+longhorn/disable:
+	$(call check_vars, NODE)
+	@kubectl taint node $(NODE) longhorn.io/disabled=true:NoExecute --overwrite
+	@echo "node $(NODE) removed from longhorn scheduling"
+
+## longhorn/enable: re-enables a node in longhorn by removing the NoExecute taint (NODE=<node-name>)
+.PHONY: longhorn/enable
+longhorn/enable:
+	$(call check_vars, NODE)
+	@kubectl taint node $(NODE) longhorn.io/disabled-
+	@echo "node $(NODE) re-enabled in longhorn scheduling"
+
 # --- ArgoCD ---
 ARGOCD_PROJECT = default
 ARGOCD_NAMESPACE = argocd

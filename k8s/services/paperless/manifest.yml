@@ -20,7 +20,7 @@ spec:
     spec:
       restartPolicy: Always
       nodeSelector:
-        platform.io/type: secondary
+        platform.io/type: pi
       containers:
         - name: paperless
           image: paperlessngx/paperless-ngx:latest

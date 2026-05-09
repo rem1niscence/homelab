@@ -214,6 +214,19 @@ config:
               type: wallos
               url: http://wallos.wallos
               key: {{HOMEPAGE_VAR_WALLOS_API_KEY}}
+        - Tracearr:
+            icon: sh-tracearr
+            href: https://tracearr.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://tracearr.jellyfin
+            description: Jellyfin monitoring
+            widget:
+              type: tracearr
+              url: http://tracearr.jellyfin
+              key: {{HOMEPAGE_VAR_TRACEARR_API_KEY}}
+              view: summary
+              enableUser: true
+              showEpisodeNumber: false
+              expandOneStreamToTwoRows: false
     - Apps:
         - Tailscale:
             icon: tailscale.svg
@@ -238,7 +251,7 @@ config:
         - Longhorn:
             icon: longhorn.svg
             href: https://longhorn.{{HOMEPAGE_VAR_DOMAIN}}
-            siteMonitor: http://longhorn-frontend.longhorn
+            siteMonitor: http://longhorn-frontend.longhorn-system
             description: Cloud-native distributed storage for K8S
         # - Container Registry:
         #     icon: docker.svg
@@ -255,6 +268,51 @@ config:
             href: https://syncthing.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://syncthing.syncthing
             description: File synchronization across devices
+        # - Keel.sh:
+        #     icon: mdi-alpha-k-box-outline
+        #     href: https://keel.{{HOMEPAGE_VAR_DOMAIN}}
+        #     siteMonitor: http://keel.keel:9300
+        #     description: K8S image updater
+        - Firefly III:
+            icon: firefly
+            href: https://firefly.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://firefly.firefly
+            description: Personal finance manager
+        - SearNXG:
+            icon: searxng.svg
+            href: https://searxng.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://searxng.searxng
+            description: Meta Search Engine
+        - IT Tools:
+            icon: it-tools.svg
+            href: https://it-tools.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://it-tools.it-tools
+            description: Handy tools for developers
+        - Cyberchef:
+            icon: cyberchef
+            href: https://cyberchef.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://cyberchef.cyberchef
+            description: Swiss army knife for data
+        - Bento PDF:
+            icon: sh-bentopdf
+            href: https://pdf.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://bentopdf.bentopdf
+            description: PDF Multitools
+        - Omni Tools:
+            icon: mdi-tools
+            href: https://omnitools.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://omnitools.omnitools
+            description: Handy miscellaneous tools
+        - Memos:
+            icon: sh-memos
+            href: https://memos.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://memos.memos
+            description: lightweight note taking
+        - Commafeed:
+            icon: commafeed
+            href: https://commafeed.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://commafeed.commafeed
+            description: RSS reader
     - Comic/Manga:
         - Suwayomi:
             icon: sh-suwayomi-dark

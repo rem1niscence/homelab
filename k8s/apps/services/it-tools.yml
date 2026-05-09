@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: it-tools
+  namespace: argocd
+  labels:
+    type: service
+spec:
+  project: default
+  source:
+    repoURL: git@github.com:rem1niscence/homelab.git
+    targetRevision: v2
+    path: k8s/services/it-tools
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: it-tools
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

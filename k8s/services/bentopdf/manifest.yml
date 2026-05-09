@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bentopdf
+
+  labels:
+    app: bentopdf
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bentopdf
+  template:
+    metadata:
+      labels:
+        app: bentopdf
+    spec:
+      nodeSelector:
+        platform.io/type: pi
+      containers:
+        - name: bentopdf
+          image: ghcr.io/alam00000/bentopdf:latest
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bentopdf
+spec:
+  ports:
+    - port: 80
+      targetPort: 8080
+  selector:
+    app: bentopdf
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: bentopdf
+
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`pdf.rvserver.online`)
+      kind: Rule
+      services:
+        - name: bentopdf
+          port: 80

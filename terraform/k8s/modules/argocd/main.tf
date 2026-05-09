@@ -57,6 +57,10 @@ resource "helm_release" "argocd" {
         # Traefik handles TLS termination
         "server.insecure" = true
       }
+      cm = {
+        "accounts.admin"         = "apiKey, login"
+        "accounts.admin.enabled" = "true"
+      }
     }
 
     # ServiceMonitor for VictoriaMetrics (Prometheus) monitoring

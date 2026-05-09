@@ -1,10 +1,15 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: syncthing
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: fileflows
-  name: fileflows
+  namespace: syncthing
+  name: syncthing
   labels:
-    app: fileflows
+    app: syncthing
   annotations:
     keel.sh/policy: all
     keel.sh/pollSchedule: "@every 1h"
@@ -13,46 +18,45 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: fileflows
+      app: syncthing
   template:
     metadata:
       labels:
-        app: fileflows
+        app: syncthing
     spec:
       nodeSelector:
-        type: secondary
+        platform.io/type: pi
       containers:
-        - name: fileflows
-          image: revenz/fileflows
-          ports:
-            - containerPort: 5000
+        - name: syncthing
+          image: linuxserver/syncthing:latest
           env:
-            - name: TZ
-              value: "Europe/Madrid"
             - name: PUID
               value: "1000"
             - name: PGID
               value: "1000"
-          # resources:
-          #   limits:
-          #     amd.com/gpu: 1
+            - name: TZ
+              value: "Etc/UTC"
+          ports:
+            - containerPort: 8384
+            - containerPort: 22000
+            - containerPort: 21027
           volumeMounts:
-            - name: media
-              mountPath: /media
+            - name: data
+              mountPath: /data
             - name: config
-              mountPath: /app/Data
+              mountPath: /config
       volumes:
-        - name: media
+        - name: data
           persistentVolumeClaim:
-            claimName: media
+            claimName: data-pvc
         - name: config
           persistentVolumeClaim:
-            claimName: config
+            claimName: config-pvc
 ---
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: fileflows-media-pv
+  name: syncthing-data-pv
 spec:
   capacity:
     storage: 3T
@@ -60,7 +64,7 @@ spec:
     - ReadWriteMany
   nfs:
     server: 192.168.0.95
-    path: /mnt/main_drive/media
+    path: /mnt/ssd_2tb/sync
   storageClassName: local-path
   mountOptions:
     - vers=4.0
@@ -68,53 +72,67 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  namespace: fileflows
-  name: media
+  namespace: syncthing
+  name: data-pvc
 spec:
   accessModes:
     - ReadWriteMany
   resources:
     requests:
       storage: 3T
-  volumeName: fileflows-media-pv
+  volumeName: syncthing-data-pv
   storageClassName: local-path
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  namespace: fileflows
-  name: config
+  namespace: syncthing
+  name: config-pvc
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 1G
+      storage: 5100Mi
   storageClassName: longhorn-local
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: fileflows
-  namespace: fileflows
+  namespace: syncthing
+  name: syncthing
 spec:
-  ports:
-    - port: 80
-      targetPort: 5000
   selector:
-    app: fileflows
+    app: syncthing
+  ports:
+    - name: web
+      protocol: TCP
+      port: 80
+      targetPort: 8384
+    - name: tcp1
+      protocol: TCP
+      port: 22000
+      targetPort: 22000
+    - name: udp1
+      protocol: UDP
+      port: 22000
+      targetPort: 22000
+    - name: udp2
+      protocol: UDP
+      port: 21027
+      targetPort: 21027
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: fileflows
-  namespace: fileflows
+  name: syncthing
+  namespace: syncthing
 spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`fileflows.{{DOMAIN}}`)
+    - match: Host(`syncthing.rvserver.online`)
       kind: Rule
       services:
-        - name: fileflows
+        - name: syncthing
           port: 80

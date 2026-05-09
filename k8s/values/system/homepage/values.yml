@@ -168,7 +168,58 @@ config:
         #     widget:
         #       type: prometheus
         #       url: http://prometheus-operated.monitoring:9090
+        - Fileflows:
+            icon: fileflows.svg
+            href: https://fileflows.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://fileflows.fileflows
+            description: File processing tool
+            widget:
+              type: fileflows
+              url: http://fileflows.fileflows
+        - Immich:
+            icon: immich.svg
+            href: https://immich.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://immich.immich
+            description: Photo album storage
+            widget:
+              type: immich
+              url: http://immich.immich
+              key: {{HOMEPAGE_VAR_IMMICH_API_KEY}}
+              version: 2
+        - File Browser:
+            icon: filebrowser
+            href: https://filebrowser.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://filebrowser.filebrowser
+            description: Online file browser
+            widget:
+              type: filebrowser
+              url: http://filebrowser.filebrowser
+              username: {{HOMEPAGE_VAR_FILEBROWSER_USERNAME}}
+              password: {{HOMEPAGE_VAR_FILEBROWSER_PASSWORD}}
+        - ArgoCD:
+            icon: sh-argo-cd
+            href: https://argocd.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://argocd-server.argocd
+            description: Continuous Delivery tool for K8s
+            widget:
+              type: argocd
+              url: http://argocd-server.argocd
+              key: {{HOMEPAGE_VAR_ARGOCD_API_KEY}}
+        - Wallos:
+            icon: wallos
+            href: https://wallos.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://wallos.wallos
+            description: Subscriptions tracker & analytics
+            widget:
+              type: wallos
+              url: http://wallos.wallos
+              key: {{HOMEPAGE_VAR_WALLOS_API_KEY}}
     - Apps:
+        - Tailscale:
+            icon: tailscale.svg
+            href: https://login.tailscale.com/admin/machines
+            siteMonitor: https://login.tailscale.com/admin/machines
+            description: Wireguard VPN as a service
         - Cloudflare:
             icon: cloudflare
             href: https://dash.cloudflare.com/{{HOMEPAGE_VAR_CLOUDFLARE_ACCOUNT_ID}}
@@ -179,6 +230,31 @@ config:
             #   accountid: {{HOMEPAGE_VAR_CLOUDFLARE_ACCOUNT_ID}}
             #   tunnelid: {{HOMEPAGE_VAR_CLOUDFLARE_TUNNEL_ID}}
             #   key: {{HOMEPAGE_VAR_CLOUDFLARE_API_TOKEN}}
+        - Hetzner:
+            icon: sh-hetzner
+            href: https://console.hetzner.com/
+            siteMonitor: https://console.hetzner.com/
+            description: Cloud VM provider
+        - Longhorn:
+            icon: longhorn.svg
+            href: https://longhorn.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://longhorn-frontend.longhorn
+            description: Cloud-native distributed storage for K8S
+        # - Container Registry:
+        #     icon: docker.svg
+        #     href: https://registry-ui.{{HOMEPAGE_VAR_DOMAIN}}
+        #     siteMonitor: http://registry.registry
+        #     description: Private container registry
+        # - Kubernetes:
+        #     icon: kubernetes-dashboard.png
+        #     href: https://dashboard.{{HOMEPAGE_VAR_DOMAIN}}
+        #     siteMonitor: http://kubernetes-dashboard-kong-proxy.kubernetes-dashboard:443
+        #     description: Kubernete's dashboard
+        - Syncthing:
+            icon: syncthing.svg
+            href: https://syncthing.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://syncthing.syncthing
+            description: File synchronization across devices
     - Comic/Manga:
         - Suwayomi:
             icon: sh-suwayomi-dark

@@ -20,7 +20,7 @@ spec:
         app: fileflows
     spec:
       nodeSelector:
-        type: secondary
+        platform.io/type: secondary
       containers:
         - name: fileflows
           image: revenz/fileflows
@@ -89,8 +89,9 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 1G
+      storage: 1100Mi
   storageClassName: longhorn-local
+  volumeName: fileflows
 ---
 apiVersion: v1
 kind: Service
@@ -113,7 +114,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`fileflows.{{DOMAIN}}`)
+    - match: Host(`fileflows.rvserver.online`)
       kind: Rule
       services:
         - name: fileflows

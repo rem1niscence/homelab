@@ -1,5 +1,0 @@
-- name: Install Monitoring Stack [Promtail, Loki, Prometheus & Grafana]
-  hosts: server[0]
-  gather_facts: false
-  roles:
-    - role: monitoring

@@ -1,3 +1,0 @@
----
-- name: Install k3s cluster - add new nodes
-  ansible.builtin.import_playbook: k3s.orchestration.site

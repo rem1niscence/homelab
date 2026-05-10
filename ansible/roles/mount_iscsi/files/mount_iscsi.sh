@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# logout of all sessions
+# sudo iscsiadm --mode node --logoutall=all
+
 set -e
 
 if [ $# -ne 4 ]; then
@@ -19,7 +22,7 @@ fi
 
 service iscsid start
 
-# Attempt to logout of any existing session for this target before (re)connecting
+# attempt to logout of any existing session for this target before (re)connecting
 iscsiadm -m node -T $TARGET_NAME -p $IP_ADDRESS:3260 --logout 2>/dev/null || true
 
 DEVICES_BEFORE=$(lsblk -ndo NAME)

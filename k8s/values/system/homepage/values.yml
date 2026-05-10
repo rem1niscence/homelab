@@ -124,9 +124,9 @@ config:
             href: https://prowlarr.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://prowlarr.servarr:9696
             description: Meta-search application for torrents
-            fields: ["numberOfGrabs", "numberOfQueries", "numberOfFailGrabs"]
             widget:
               type: prowlarr
+              fields: ["numberOfGrabs", "numberOfQueries", "numberOfFailGrabs"]
               url: http://prowlarr.servarr:9696
               key: {{HOMEPAGE_VAR_PROWLARR_API_KEY}}
         - Jellyfin:
@@ -192,6 +192,7 @@ config:
             description: Subscriptions tracker & analytics
             widget:
               type: wallos
+              fields: ["activeSubscriptions", "previousMonthlyCost", "thisMonthlyCost", "nextMonthlyCost"]
               url: http://wallos.wallos
               key: {{HOMEPAGE_VAR_WALLOS_API_KEY}}
         - Tracearr:
@@ -214,6 +215,7 @@ config:
             description: Visualization platform for metrics
             widget:
               type: grafana
+              fields: ["dashboards", "datasources", "alertstriggered"]
               url: http://victoria-metrics-grafana.monitoring
               username: {{HOMEPAGE_VAR_GRAFANA_URSERNAME}}
               password: {{HOMEPAGE_VAR_GRAFANA_PASSWORD}}

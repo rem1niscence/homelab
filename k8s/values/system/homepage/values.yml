@@ -20,18 +20,15 @@ config:
       "Comic/Manga":
         style: row
         columns: 2
-      Blog:
-        style: row
-        columns: 2
       System:
         style: row
         columns: 4
-      Media:
-        style: row
-        columns: 2
-      Canopy:
-        style: row
-        columns: 4
+      # Blog:
+      #   style: row
+      #   columns: 2
+      # Canopy:
+      #   style: row
+      #   columns: 4
       Calendar:
         style: column
         # columns: 2
@@ -340,11 +337,36 @@ config:
             href: https://wiki.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://wiki.wiki
             description: Personal wiki
+        - Draw.io:
+            icon: sh-draw-io
+            href: https://drawio.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://drawio.drawio
+            description: Online diagramming tool
         - AirTrail:
             icon: sh-airtrail
             href: https://airtrail.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://airtrail.airtrail
             description: Private Flight Tracker
+        - Monitarr:
+            icon: mdi-television
+            href: https://monitarr.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://monitarr.servarr
+            description: Monitor *arr downloads
+        - Kitchen Owl:
+            icon: kitchenowl
+            href: https://kitchenowl.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://front.kitchenowl
+            description: Recipe management software
+        - Termix:
+            icon: sh-termix
+            href: https://termix.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://termix.termix
+            description: Server management platform
+        - Discount bandit:
+            icon: mdi-cart-variant
+            href: https://discount.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://discount-bandit.discount-bandit
+            description: Store price tracker
     - Comic/Manga:
         - Suwayomi:
             icon: sh-suwayomi-dark
@@ -354,6 +376,90 @@ config:
             widget:
               type: suwayomi
               url: http://suwayomi.suwayomi
+        - Komga:
+            icon: komga.svg
+            href: https://komga.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://komga.komga:25600
+            description: Online Comic/Manga reader
+            widget:
+              type: komga
+              url: http://komga.komga:25600
+              username: {{HOMEPAGE_VAR_KOMGA_USERNAME}}
+              password: {{HOMEPAGE_VAR_KOMGA_PASSWORD}}
+    - System:
+        - NUC:
+            icon: mdi-server
+            href: {{HOMEPAGE_VAR_GLANCES_NUC_URL}}
+            siteMonitor: {{HOMEPAGE_VAR_GLANCES_NUC_PING}}
+            widget:
+              type: glances
+              url: {{HOMEPAGE_VAR_GLANCES_NUC_PING}}
+              version: 4
+              metric: info
+        - AMD:
+            icon: mdi-server
+            href: {{HOMEPAGE_VAR_GLANCES_AMD_URL}}
+            siteMonitor: {{HOMEPAGE_VAR_GLANCES_AMD_PING}}
+            widget:
+              type: glances
+              url: {{HOMEPAGE_VAR_GLANCES_AMD_PING}}
+              version: 4
+              metric: info
+        - PI-2:
+            icon: mdi-raspberry-pi
+            href: {{HOMEPAGE_VAR_GLANCES_PI_2_URL}}
+            siteMonitor: {{HOMEPAGE_VAR_GLANCES_PI_2_PING}}
+            widget:
+              type: glances
+              url: {{HOMEPAGE_VAR_GLANCES_PI_2_PING}}
+              version: 4
+              metric: info
+        - PI-3:
+            icon: mdi-raspberry-pi
+            href: {{HOMEPAGE_VAR_GLANCES_PI_3_URL}}
+            siteMonitor: {{HOMEPAGE_VAR_GLANCES_PI_3_PING}}
+            widget:
+              type: glances
+              url: {{HOMEPAGE_VAR_GLANCES_PI_3_PING}}
+              version: 4
+              metric: info
+        - VM:
+            icon: mdi-cloud
+            href: {{HOMEPAGE_VAR_GLANCES_VM_URL}}
+            siteMonitor: {{HOMEPAGE_VAR_GLANCES_VM_PING}}
+            widget:
+              type: glances
+              url: {{HOMEPAGE_VAR_GLANCES_VM_PING}}
+              version: 4
+              metric: info
+        - NAS:
+            icon: mdi-nas
+            href: {{HOMEPAGE_VAR_GLANCES_NAS_URL}}
+            siteMonitor: {{HOMEPAGE_VAR_GLANCES_NAS_PING}}
+            widget:
+              type: glances
+              url: {{HOMEPAGE_VAR_GLANCES_NAS_PING}}
+              version: 4
+              metric: info
+    - Calendar:
+        - Calendar:
+            icon: nextcloud-calendar
+            description: Calendar widget for Arr media
+            widget:
+              type: calendar
+              integrations:
+                - type: sonarr
+                  service_group: Widgets
+                  service_name: Sonarr
+                  color: teal
+                  params:
+                    unmonitored: true
+                - type: radarr
+                  service_group: Widgets
+                  service_name: Radarr
+                  color: emerald
+                  params:
+                    unmonitored: true
   bookmarks: |
     - Links:
         - Github:

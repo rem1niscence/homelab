@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wiki
+  labels:
+    app: wiki
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wiki
+  template:
+    metadata:
+      labels:
+        app: wiki
+    spec:
+      nodeSelector:
+        platform.io/type: pi
+      containers:
+        - name: wiki
+          # https://otterwiki.com/
+          image: redimp/otterwiki:2
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SITE_NAME
+              value: "HomelabWiki"
+          volumeMounts:
+            - name: data
+              mountPath: /app-data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1100Mi
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wiki
+spec:
+  ports:
+    - port: 80
+      targetPort: 8080
+  selector:
+    app: wiki
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: wiki
+
+  annotations:
+    argocd.argoproj.io/sync-options: Ignore=true
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`wiki.rvserver.online`)
+      kind: Rule
+      services:
+        - name: wiki
+          port: 80

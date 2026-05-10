@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vaultwarden
+  labels:
+    app: vaultwarden
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vaultwarden
+  template:
+    metadata:
+      labels:
+        app: vaultwarden
+    spec:
+      nodeSelector:
+        platform.io/type: main
+      containers:
+        - name: vaultwarden
+          image: vaultwarden/server:alpine
+          envFrom:
+            - secretRef:
+                name: vaultwarden
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2100Mi
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vaultwarden
+
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    app: vaultwarden
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: vaultwarden
+
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`vaultwarden.rvserver.online`)
+      kind: Rule
+      services:
+        - name: vaultwarden
+          port: 80

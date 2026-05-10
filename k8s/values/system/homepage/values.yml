@@ -160,14 +160,6 @@ config:
             widget:
               type: gatus
               url: http://gatus.gatus
-        # - Prometheus:
-        #     icon: prometheus.svg
-        #     href: https://prometheus.{{HOMEPAGE_VAR_DOMAIN}}
-        #     siteMonitor: http://prometheus-operated.monitoring:9090
-        #     description: Metrics monitoring and alerting toolkit
-        #     widget:
-        #       type: prometheus
-        #       url: http://prometheus-operated.monitoring:9090
         - Fileflows:
             icon: fileflows.svg
             href: https://fileflows.{{HOMEPAGE_VAR_DOMAIN}}
@@ -313,6 +305,46 @@ config:
             href: https://commafeed.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://commafeed.commafeed
             description: RSS reader
+        - ByteStash:
+            icon: sh-bytestash
+            href: https://bytestash.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://bytestash.bytestash
+            description: Code Snippet Manager
+        - PDFDing:
+            icon: mdi-file-document
+            href: https://pdfding.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://pdfding.pdfding
+            description: Online PDF viewer
+        - Beaver Habits:
+            icon: sh-beaver-habit-tracker
+            href: https://beaverhabits.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://beaverhabits.beaverhabits
+            description: Habit tracker
+        - Kapowarr:
+            icon: kapowarr
+            href: https://kapowarr.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://kapowarr.kapowarr
+            description: Comic management tool
+        - Vaultwarden:
+            icon: vaultwarden.svg
+            href: https://vaultwarden.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://vaultwarden.vaultwarden
+            description: Self-hosted password management
+        - Homebox:
+            icon: homebox
+            href: https://homebox.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://homebox.homebox
+            description: Home inventory & organization
+        - An Otter Wiki:
+            icon: sh-an-otter-wiki
+            href: https://wiki.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://wiki.wiki
+            description: Personal wiki
+        - AirTrail:
+            icon: sh-airtrail
+            href: https://airtrail.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://airtrail.airtrail
+            description: Private Flight Tracker
     - Comic/Manga:
         - Suwayomi:
             icon: sh-suwayomi-dark

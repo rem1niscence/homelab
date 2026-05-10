@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: beaverhabits
+  labels:
+    app: beaverhabits
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: beaverhabits
+  template:
+    metadata:
+      labels:
+        app: beaverhabits
+    spec:
+      nodeSelector:
+        platform.io/type: pi
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: beaverhabits
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+          image: daya0576/beaverhabits
+          ports:
+            - containerPort: 8080
+          env:
+            - name: FIRST_DAY_OF_WEEK
+              value: "1"
+            - name: HABITS_STORAGE
+              value: "DATABASE"
+            - name: MAX_USER_COUNT
+              value: "1"
+            - name: ENABLE_IOS_STANDALONE
+              value: "true"
+            - name: INDEX_SHOW_HABIT_COUNT
+              value: "true"
+          volumeMounts:
+            - name: data
+              mountPath: /app/.user
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1G
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: beaverhabits
+spec:
+  ports:
+    - port: 80
+      targetPort: 8080
+  selector:
+    app: beaverhabits
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: beaverhabits
+
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`beaverhabits.rvserver.online`)
+      kind: Rule
+      services:
+        - name: beaverhabits
+          port: 80

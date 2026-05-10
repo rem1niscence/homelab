@@ -21,6 +21,9 @@ storageClasses:
     reclaimPolicy: Delete
     nodeSelector: "local"
     diskSelector: "local"
+    recurringJobSelector:
+      - name: longhorn-single
+        isGroup: true
 
 recurringJobs:
   - name: trim

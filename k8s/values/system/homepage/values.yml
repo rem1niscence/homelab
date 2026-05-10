@@ -372,16 +372,16 @@ config:
             href: https://discount.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://discount-bandit.discount-bandit
             description: Store price tracker
+        - N8N:
+            icon: n8n.svg
+            href: https://n8n.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://n8n.n8n:5678
+            description: Workflow automation tool
         # - Container Registry:
         #     icon: docker.svg
         #     href: https://registry-ui.{{HOMEPAGE_VAR_DOMAIN}}
         #     siteMonitor: http://registry.registry
         #     description: Private container registry
-        # - Kubernetes:
-        #     icon: kubernetes-dashboard.png
-        #     href: https://dashboard.{{HOMEPAGE_VAR_DOMAIN}}
-        #     siteMonitor: http://kubernetes-dashboard-kong-proxy.kubernetes-dashboard:443
-        #     description: Kubernete's dashboard
         # - Keel.sh:
         #     icon: mdi-alpha-k-box-outline
         #     href: https://keel.{{HOMEPAGE_VAR_DOMAIN}}

@@ -185,15 +185,6 @@ config:
               url: http://filebrowser.filebrowser
               username: {{HOMEPAGE_VAR_FILEBROWSER_USERNAME}}
               password: {{HOMEPAGE_VAR_FILEBROWSER_PASSWORD}}
-        - ArgoCD:
-            icon: sh-argo-cd
-            href: https://argocd.{{HOMEPAGE_VAR_DOMAIN}}
-            siteMonitor: http://argocd-server.argocd
-            description: Continuous Delivery tool for K8s
-            widget:
-              type: argocd
-              url: http://argocd-server.argocd
-              key: {{HOMEPAGE_VAR_ARGOCD_API_KEY}}
         - Wallos:
             icon: wallos
             href: https://wallos.{{HOMEPAGE_VAR_DOMAIN}}
@@ -216,6 +207,25 @@ config:
               enableUser: true
               showEpisodeNumber: false
               expandOneStreamToTwoRows: false
+        - Grafana:
+            icon: grafana.svg
+            href: https://grafana.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://victoria-metrics-grafana.monitoring
+            description: Visualization platform for metrics
+            widget:
+              type: grafana
+              url: http://victoria-metrics-grafana.monitoring
+              username: {{HOMEPAGE_VAR_GRAFANA_URSERNAME}}
+              password: {{HOMEPAGE_VAR_GRAFANA_PASSWORD}}
+        - ArgoCD:
+            icon: sh-argo-cd
+            href: https://argocd.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://argocd-server.argocd
+            description: Continuous Delivery tool for K8s
+            widget:
+              type: argocd
+              url: http://argocd-server.argocd
+              key: {{HOMEPAGE_VAR_ARGOCD_API_KEY}}
     - Apps:
         - Tailscale:
             icon: tailscale.svg
@@ -242,26 +252,21 @@ config:
             href: https://longhorn.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://longhorn-frontend.longhorn-system
             description: Cloud-native distributed storage for K8S
-        # - Container Registry:
-        #     icon: docker.svg
-        #     href: https://registry-ui.{{HOMEPAGE_VAR_DOMAIN}}
-        #     siteMonitor: http://registry.registry
-        #     description: Private container registry
-        # - Kubernetes:
-        #     icon: kubernetes-dashboard.png
-        #     href: https://dashboard.{{HOMEPAGE_VAR_DOMAIN}}
-        #     siteMonitor: http://kubernetes-dashboard-kong-proxy.kubernetes-dashboard:443
-        #     description: Kubernete's dashboard
+        - Rancher:
+            icon: rancher.svg
+            href: https://rancher.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://rancher.cattle-system:443
+            description: Kubernetes management platform
+        - Hubble:
+            icon: sh-cilium-hubble
+            href: https://hubble.rvserver.online
+            siteMonitor: http://hubble-ui.kube-system
+            description: Cilium's network observability tool
         - Syncthing:
             icon: syncthing.svg
             href: https://syncthing.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://syncthing.syncthing
             description: File synchronization across devices
-        # - Keel.sh:
-        #     icon: mdi-alpha-k-box-outline
-        #     href: https://keel.{{HOMEPAGE_VAR_DOMAIN}}
-        #     siteMonitor: http://keel.keel:9300
-        #     description: K8S image updater
         - Firefly III:
             icon: firefly
             href: https://firefly.{{HOMEPAGE_VAR_DOMAIN}}
@@ -367,6 +372,21 @@ config:
             href: https://discount.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://discount-bandit.discount-bandit
             description: Store price tracker
+        # - Container Registry:
+        #     icon: docker.svg
+        #     href: https://registry-ui.{{HOMEPAGE_VAR_DOMAIN}}
+        #     siteMonitor: http://registry.registry
+        #     description: Private container registry
+        # - Kubernetes:
+        #     icon: kubernetes-dashboard.png
+        #     href: https://dashboard.{{HOMEPAGE_VAR_DOMAIN}}
+        #     siteMonitor: http://kubernetes-dashboard-kong-proxy.kubernetes-dashboard:443
+        #     description: Kubernete's dashboard
+        # - Keel.sh:
+        #     icon: mdi-alpha-k-box-outline
+        #     href: https://keel.{{HOMEPAGE_VAR_DOMAIN}}
+        #     siteMonitor: http://keel.keel:9300
+        #     description: K8S image updater
     - Comic/Manga:
         - Suwayomi:
             icon: sh-suwayomi-dark

@@ -1,0 +1,13 @@
+remoteWrite:
+  - url: http://victoria-logs-vls-server:9428
+    # saves on memory the logs in case of network issues with the server,
+    # will send them when the connection is back
+    maxDiskUsagePerURL: 1GB
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi

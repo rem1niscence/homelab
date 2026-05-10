@@ -1,0 +1,7 @@
+hostname: rancher.rvserver.online
+replicas: 1
+
+ingress:
+  ingressClassName: traefik
+  tls:
+    source: secret

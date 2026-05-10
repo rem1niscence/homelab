@@ -1,0 +1,375 @@
+# short name to avoid 63 char resource name limits
+nameOverride: vmks
+
+# -----------------------
+# VictoriaMetrics Operator
+# -----------------------
+victoria-metrics-operator:
+  # use cert-manager for webhook certs (prevents ArgoCD re-render issue)
+  # https://docs.victoriametrics.com/helm/victoria-metrics-k8s-stack/#argocd-issues
+  admissionWebhooks:
+    certManager:
+      enabled: true
+  nodeSelector:
+    node-role.kubernetes.io/control-plane: "true"
+
+# -----------------------
+# Core VictoriaMetrics components
+# -----------------------
+
+# single-node metrics operator
+vmsingle:
+  enabled: true
+  spec:
+    # nodeSelector:
+    #   node-role.kubernetes.io/control-plane: "true"
+    retentionPeriod: "7d"
+    replicaCount: 1
+    storage:
+      storageClassName: longhorn-single
+      resources:
+        requests:
+          storage: 10Gi
+    resources:
+      requests:
+        cpu: 100m
+        memory: 2Gi
+      limits:
+        memory: 4Gi
+
+vmagent:
+  enabled: true
+  spec:
+    # nodeSelector:
+    #   node-role.kubernetes.io/control-plane: "true"
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+
+vmalert:
+  enabled: true
+  spec:
+    # nodeSelector:
+    #   node-role.kubernetes.io/control-plane: "true"
+    # pick up all VMRule resources
+    selectAllByDefault: true
+    # how often rules are checked
+    evaluationInterval: 10s
+
+vmcluster:
+  enabled: false
+
+# -----------------------
+# Exporters & node metrics
+# -----------------------
+prometheus-node-exporter:
+  enabled: true
+
+kube-state-metrics:
+  enabled: true
+  nodeSelector:
+    node-role.kubernetes.io/control-plane: "true"
+
+kubelet:
+  enabled: true
+  spec:
+    metricRelabelConfigs:
+      # drop high-cardinality metrics to save storage
+      - action: drop
+        sourceLabels: [__name__]
+        regex: "kubelet_runtime_operations_duration_seconds_bucket"
+
+# -----------------------
+# Kubernetes control plane scrapers
+# -----------------------
+kubeApiServer:
+  enabled: true
+
+kubeControllerManager:
+  # not accessible on k3s by default
+  enabled: false
+
+kubeScheduler:
+  # not accessible on k3s by default
+  enabled: false
+
+kubeProxy:
+  # k3s uses kube-proxy replacement via cilium
+  enabled: false
+
+kubeEtcd:
+  # embedded etcd in k3s, not directly scrapeable
+  enabled: false
+
+# -----------------------
+# Alertmanager
+# -----------------------
+alertmanager:
+  enabled: true
+  spec:
+    nodeSelector:
+      node-role.kubernetes.io/control-plane: "true"
+    # mount the sealed credentials into Alertmanager pod
+    secrets:
+      - alertmanager-discord
+  config:
+    global:
+      # time to wait before marking an alert as resolved after it stops firing
+      resolve_timeout: 5m
+    route:
+      receiver: discord
+      # grouping of alerts by labels, minimizes notification spam
+      group_by: ["alertname", "namespace"]
+      # wait time of alerts to be grouped before sending a notification
+      group_wait: 5s
+      group_interval: 5m
+      # reminder of unresolved alerts
+      repeat_interval: 1h
+      routes:
+        - matchers:
+            - severity = critical
+          receiver: discord
+          continue: true
+        - matchers:
+            - severity = warning
+          receiver: discord
+        # info/watchdog/inhibitor alerts are silenced
+        - matchers:
+            - alertname = Watchdog
+          receiver: "null"
+        - matchers:
+            - alertname = InfoInhibitor
+          receiver: "null"
+        - matchers:
+            - severity = info
+          receiver: "null"
+    receivers:
+      - name: "null"
+        # matches any other alert on the cluster
+      - name: discord
+        discord_configs:
+          # read the cluster webhook URL from the sealed secret
+          - webhook_url_file: /etc/vm/secrets/alertmanager-discord/webhook-url
+            send_resolved: true
+            # Title example:
+            #   🔥 [FIRING] HighMemoryUsage
+            #   ✅ [RESOLVED] HighMemoryUsage
+            title: '{{ if eq .Status "firing" }}🔥{{ else }}✅{{ end }} [{{ .Status | toUpper }}] {{ .GroupLabels.alertname }}'
+            # Message example:
+            #   **HighMemoryUsage** (critical)
+            #   Memory usage is above 90% for node k3s-server-1
+            #   Node k3s-server-1 memory usage is at 94.2%
+            #
+            #   **HighMemoryUsage** (critical)
+            #   Memory usage is above 90% for node k3s-agent-0
+            #   Node k3s-agent-0 memory usage is at 91.8%
+            message: |
+              {{ range .Alerts }}
+              **{{ .Labels.alertname }}** ({{ .Labels.severity }})
+              {{ .Annotations.summary }}
+              {{ .Annotations.description }}
+              {{ end }}
+
+defaultDashboards:
+  enabled: false
+
+defaultDatasources:
+  extra:
+    # VictoriaLogs datasource for log dashboards
+    - name: VictoriaLogs
+      type: victoriametrics-logs-datasource
+      access: proxy
+      url: http://victoria-logs-vls-server.logging:9428
+      isDefault: false
+      isEditable: false
+    - name: Pyroscope
+      type: grafana-pyroscope-datasource
+      access: proxy
+      url: http://pyroscope.monitoring:4040
+      isDefault: false
+      isEditable: false
+
+grafana:
+  enabled: true
+  nodeSelector:
+    node-role.kubernetes.io/control-plane: "true"
+  plugins:
+    # install the VictoriaLogs plugin
+    - victoriametrics-logs-datasource
+  persistence:
+    enabled: false
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    hosts:
+      - grafana.rvserver.online
+
+  admin:
+    # use external secret for admin credentials
+    existingSecret: grafana-admin-credentials
+    userKey: admin-user
+    passwordKey: admin-password
+
+  sidecar:
+    dashboards:
+      enabled: false
+
+  # allows to load dashboards from external resources
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+        - name: default
+          orgId: 1
+          folder: ""
+          type: file
+          disableDeletion: false
+          editable: true
+          options:
+            path: /var/lib/grafana/dashboards/default
+
+  dashboards:
+    default:
+      node-exporter-full:
+        gnetId: 1860
+        revision: 42
+        datasource: VictoriaMetrics
+      coredns:
+        gnetId: 12539
+        revision: 5
+        datasource:
+          - name: DS_PROMETHEUS
+            value: VictoriaMetrics
+      k8s-api-server:
+        gnetId: 15761
+        revision: 21
+        datasource:
+          - name: DS_VICTORIAMETRICS
+            value: VictoriaMetrics
+      k8s-compute-resources-cluster:
+        gnetId: 21011
+        revision: 2
+        datasource:
+          - name: DS_VICTORIAMETRICS
+            value: VictoriaMetrics
+      k8s-compute-resources-pod:
+        gnetId: 21014
+        revision: 2
+        datasource:
+          - name: DS_VICTORIAMETRICS
+            value: VictoriaMetrics
+      k8s-compute-resources-namespace-workloads:
+        gnetId: 21016
+        revision: 2
+        datasource:
+          - name: DS_VICTORIAMETRICS
+            value: VictoriaMetrics
+      k8s-compute-resources-node-pods:
+        gnetId: 21013
+        revision: 2
+        datasource:
+          - name: DS_VICTORIAMETRICS
+            value: VictoriaMetrics
+      k8s-networking-cluster:
+        gnetId: 21008
+        revision: 2
+        datasource:
+          - name: DS_VICTORIAMETRICS
+            value: VictoriaMetrics
+      k8s-networking-namespace-pods:
+        gnetId: 21018
+        revision: 2
+        datasource:
+          - name: DS_VICTORIAMETRICS
+            value: VictoriaMetrics
+      k8s-networking-namespace-workload:
+        gnetId: 21019
+        revision: 2
+        datasource:
+          - name: DS_VICTORIAMETRICS
+            value: VictoriaMetrics
+      k8s-networking-pod:
+        gnetId: 21021
+        revision: 2
+        datasource:
+          - name: DS_VICTORIAMETRICS
+            value: VictoriaMetrics
+      k8s-networking-workload:
+        gnetId: 21025
+        revision: 2
+        datasource:
+          - name: DS_VICTORIAMETRICS
+            value: VictoriaMetrics
+      k8s-persistent-volumes:
+        gnetId: 21020
+        revision: 2
+        datasource:
+          - name: DS_VICTORIAMETRICS
+            value: VictoriaMetrics
+      kubelet:
+        gnetId: 21017
+        revision: 2
+        datasource:
+          - name: DS_VICTORIAMETRICS
+            value: VictoriaMetrics
+      longhorn:
+        gnetId: 16888
+        revision: 11
+        datasource:
+          - name: DS_PROMETHEUS
+            value: VictoriaMetrics
+      argocd:
+        gnetId: 19993
+        revision: 7
+        datasource:
+          - name: DS_PROMETHEUS
+            value: VictoriaMetrics
+      vm-single:
+        gnetId: 10229
+        revision: 51
+        datasource: VictoriaMetrics
+      vm-operator:
+        gnetId: 17869
+        revision: 8
+        datasource: VictoriaMetrics
+      vm-agent:
+        gnetId: 12683
+        revision: 33
+        datasource: VictoriaMetrics
+      vls-single:
+        gnetId: 22084
+        revision: 11
+        datasource: VictoriaMetrics
+      vm-alert:
+        gnetId: 14950
+        revision: 18
+        datasource: VictoriaMetrics
+      vm-alert-stats:
+        gnetId: 24553
+        revision: 3
+        datasource: VictoriaMetrics
+      traefik:
+        gnetId: 17346
+        revision: 3
+        datasource:
+          - name: DS_PROMETHEUS
+            value: VictoriaMetrics
+      cilium-agent:
+        gnetId: 16611
+        revision: 1
+        datasource:
+          - name: DS_PROMETHEUS
+            value: VictoriaMetrics
+      cilium-operator:
+        gnetId: 16612
+        revision: 1
+        datasource:
+          - name: DS_PROMETHEUS
+            value: VictoriaMetrics
+      cilium-hubble:
+        gnetId: 16613
+        revision: 1
+        datasource:
+          - name: DS_PROMETHEUS
+            value: VictoriaMetrics

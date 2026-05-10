@@ -126,14 +126,14 @@ data:
           - "[STATUS] == 200"
         alerts:
           - type: discord
-      - name: Kubernetes dashboard
-        url: "http://kubernetes-dashboard-kong-proxy.kubernetes-dashboard:443"
+      - name: Rancher
+        url: "http://rancher.cattle-system:443"
         conditions:
           - "[STATUS] == 400"
         alerts:
           - type: discord
       - name: Longhorn
-        url: "http://longhorn-frontend.longhorn"
+        url: "http://longhorn-frontend.longhorn-system"
         conditions:
           - "[STATUS] == 200"
         alerts:
@@ -181,19 +181,13 @@ data:
         alerts:
           - type: discord
       - name: Bento PDF
-        url: "http://bento-pdf.bento-pdf"
+        url: "http://bentopdf.bentopdf"
         conditions:
           - "[STATUS] == 200"
         alerts:
           - type: discord
       - name: Syncthing
         url: "http://syncthing.syncthing"
-        conditions:
-          - "[STATUS] == 200"
-        alerts:
-          - type: discord
-      - name: Morphos
-        url: "http://morphos.morphos"
         conditions:
           - "[STATUS] == 200"
         alerts:
@@ -211,7 +205,7 @@ data:
         alerts:
           - type: discord
       - name: Memos
-        url: "http://memos-service.memos"
+        url: "http://memos.memos"
         conditions:
           - "[STATUS] == 200"
         alerts:
@@ -264,12 +258,6 @@ data:
           - "[STATUS] == 200"
         alerts:
               - type: discord
-      - name: Container Registry
-        url: "http://registry.registry"
-        conditions:
-          - "[STATUS] == 200"
-        alerts:
-              - type: discord
       - name: Wiki
         url: "http://wiki.wiki"
         conditions:
@@ -318,6 +306,18 @@ data:
           - "[STATUS] == 200"
         alerts:
               - type: discord
+      # - name: Container Registry
+      #   url: "http://registry.registry"
+      #   conditions:
+      #     - "[STATUS] == 200"
+      #   alerts:
+      #         - type: discord
+      # - name: Morphos
+      #   url: "http://morphos.morphos"
+      #   conditions:
+      #     - "[STATUS] == 200"
+      #   alerts:
+      #     - type: discord
       # - name: Mantium
       #   url: "http://mantium-api.mantium"
       #   conditions:
@@ -370,12 +370,6 @@ data:
       #   url: "http://true-command.true-command"
       #   conditions:
       #     - "[STATUS] == 200"
-      #   alerts:
-      #         - type: discord
-      # - name: Rancher
-      #   url: "http://rancher.cattle-system:443"
-      #   conditions:
-      #     - "[STATUS] == 400"
       #   alerts:
       #         - type: discord
       # - name: Microbin

@@ -145,6 +145,17 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  name: jellyfin-ts
+spec:
+  ports:
+    - port: 8096
+      targetPort: 8096
+  selector:
+    app: jellyfin
+---
+apiVersion: v1
+kind: Service
+metadata:
   name: seerr
 spec:
   selector:
@@ -250,3 +261,47 @@ spec:
       services:
         - name: seerr
           port: 5055
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jellyfin-ts
+  annotations:
+    tailscale.com/hostname: jellyfin
+spec:
+  ingressClassName: tailscale
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: jellyfin-ts
+                port:
+                  number: 8096
+  tls:
+    - hosts:
+        - jellyfin
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: seerr-ts
+  annotations:
+    tailscale.com/hostname: seerr
+spec:
+  ingressClassName: tailscale
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: seerr
+                port:
+                  number: 5055
+  tls:
+    - hosts:
+        - seerr

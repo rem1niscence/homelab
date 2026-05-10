@@ -16,6 +16,11 @@ storageClasses:
     recurringJobSelector:
       - name: longhorn-local
         isGroup: true
+  - name: longhorn-single
+    replicas: 1
+    reclaimPolicy: Delete
+    nodeSelector: "local"
+    diskSelector: "local"
 
 recurringJobs:
   - name: trim
@@ -26,6 +31,7 @@ recurringJobs:
       - default
       - longhorn-local
       - longhorn-remote
+      - longhorn-single
   - name: backup
     task: backup
     cron: "0 */6 * * *"

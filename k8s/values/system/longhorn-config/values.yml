@@ -14,7 +14,7 @@ storageClasses:
     diskSelector: "remote"
     dataLocality: best-effort
     recurringJobSelector:
-      - name: longhorn-local
+      - name: longhorn-remote
         isGroup: true
   - name: longhorn-single
     replicas: 1

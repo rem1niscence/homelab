@@ -26,9 +26,9 @@ config:
       # Blog:
       #   style: row
       #   columns: 2
-      # Canopy:
-      #   style: row
-      #   columns: 4
+      Canopy:
+        style: row
+        columns: 4
       Calendar:
         style: column
         # columns: 2
@@ -463,6 +463,12 @@ config:
               url: {{HOMEPAGE_VAR_GLANCES_NAS_PING}}
               version: 4
               metric: info
+    - Canopy:
+        - Wallet 1:
+            icon: mdi-wallet
+            href: https://sentinel-1-wallet.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://sentinel-1.canopy:50000
+            description: Wallet for chain 1
     - Calendar:
         - Calendar:
             icon: nextcloud-calendar

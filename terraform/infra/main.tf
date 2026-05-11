@@ -34,6 +34,16 @@ module "hetzner" {
   user_data = local.user_data_cloud_init
 }
 
+module "oracle" {
+  source         = "./modules/oracle-cloud"
+  compartment_id = data.sops_file.secrets.data["oracle.compartment_id"]
+  ssh_keys       = local.ssh_keys
+  display_name   = "oracle-vm"
+  # Ubuntu 24.04
+  image_id     = "ocid1.image.oc1.iad.aaaaaaaadixs2qfdqjmauecmzcnlvvnhlw2jmxulgrmmf3e2emc56xqarj7q"
+  arm_image_id = "ocid1.image.oc1.iad.aaaaaaaaccnswiekwi4w3pkmygjvfk24epduwj7uvq2smjmznu4kq6dcs27a"
+}
+
 # --- Ansible inventory ---
 
 resource "ansible_host" "vm" {

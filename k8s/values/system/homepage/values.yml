@@ -379,6 +379,16 @@ config:
             href: https://n8n.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://n8n.n8n:5678
             description: Workflow automation tool
+        - FRP Client:
+            icon: sh-haproxy
+            href: https://frpc.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://frp.frp
+            description: FRP Local Client
+        - FRP Server:
+            icon: sh-haproxy
+            href: https://frps.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://frp.frp:7501
+            description: FRP Remote Server
         # - Container Registry:
         #     icon: docker.svg
         #     href: https://registry-ui.{{HOMEPAGE_VAR_DOMAIN}}
@@ -469,6 +479,11 @@ config:
             href: https://sentinel-1-wallet.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://sentinel-1.canopy:50000
             description: Wallet for chain 1
+        - Explorer 1:
+            icon: mdi-web
+            href: https://sentinel-1-explorer.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://sentinel-1.canopy:50001
+            description: Explorer for chain 1
     - Calendar:
         - Calendar:
             icon: nextcloud-calendar

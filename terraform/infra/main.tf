@@ -66,6 +66,5 @@ module "ansible" {
   frp_dashboard_username   = data.sops_file.secrets.data["tunnel.frp.dashboard_username"]
   frp_dashboard_password   = data.sops_file.secrets.data["tunnel.frp.dashboard_password"]
   frp_dashboard_secret_key = data.sops_file.secrets.data["tunnel.frp.dashboard_secret_key"]
-
-  frp_extra_ports = []
+  frp_extra_ports          = []
 }

@@ -60,4 +60,12 @@ module "ansible" {
   server_pi_3        = local.server_pi_3
   k3s_token          = data.sops_file.secrets.data["ansible.k3s_token"]
   tailscale_auth_key = data.sops_file.secrets.data["ansible.tailscale.auth_key"]
+
+  # Tunnel configuration
+  frp_token                = data.sops_file.secrets.data["tunnel.frp.token"]
+  frp_dashboard_username   = data.sops_file.secrets.data["tunnel.frp.dashboard_username"]
+  frp_dashboard_password   = data.sops_file.secrets.data["tunnel.frp.dashboard_password"]
+  frp_dashboard_secret_key = data.sops_file.secrets.data["tunnel.frp.dashboard_secret_key"]
+
+  frp_extra_ports = []
 }

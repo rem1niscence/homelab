@@ -1,0 +1,7 @@
+- name: Deploy FRP tunnel server
+  hosts: tunnel
+  become: true
+  collections:
+    - community.docker
+  roles:
+    - role: frp_server

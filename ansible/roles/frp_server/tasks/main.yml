@@ -1,0 +1,88 @@
+---
+- name: Create FRP config directory
+  ansible.builtin.file:
+    path: "{{ frp_config_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0750"
+
+- name: Template frps config
+  ansible.builtin.template:
+    src: frps.toml.j2
+    dest: "{{ frp_config_dir }}/frps.toml"
+    owner: root
+    group: root
+    mode: "0640"
+  notify: restart frps
+
+- name: Template frpc server config
+  ansible.builtin.template:
+    src: frpc_server.toml.j2
+    dest: "{{ frp_config_dir }}/frpc_server.toml"
+    owner: root
+    group: root
+    mode: "0640"
+  notify: restart frpc
+
+- name: Ensure tunnel Docker network exists
+  community.docker.docker_network:
+    name: "{{ frp_network_name }}"
+    driver: bridge
+
+- name: Deploy frps container
+  community.docker.docker_container:
+    name: "frps-{{ frp_network_name }}"
+    image: "ghcr.io/fatedier/frps:{{ frp_version }}"
+    state: started
+    restart_policy: always
+    volumes:
+      - "{{ frp_config_dir }}/frps.toml:/etc/frp/frps.toml"
+    published_ports: >-
+      {{
+        [frp_bind_port | string + ':' + frp_bind_port | string,
+         frp_bind_port | string + ':' + frp_bind_port | string + '/udp']
+        + frp_extra_ports
+      }}
+    command: ["-c", "/etc/frp/frps.toml"]
+    networks:
+      - name: "{{ frp_network_name }}"
+
+- name: Deploy frpc server container
+  community.docker.docker_container:
+    name: "frpc-{{ frp_network_name }}"
+    image: "ghcr.io/fatedier/frpc:{{ frp_version }}"
+    state: started
+    restart_policy: always
+    volumes:
+      - "{{ frp_config_dir }}/frpc_server.toml:/etc/frp/frpc.toml"
+    published_ports:
+      - "{{ frp_dashboard_port }}:{{ frp_dashboard_port }}"
+    command: ["-c", "/etc/frp/frpc.toml"]
+    networks:
+      - name: "{{ frp_network_name }}"
+
+- name: Template Caddyfile
+  ansible.builtin.template:
+    src: Caddyfile.j2
+    dest: "{{ frp_config_dir }}/Caddyfile"
+    owner: root
+    group: root
+    mode: "0640"
+  when: frp_caddy_enabled
+  notify: restart tunnel caddy
+
+- name: Deploy Caddy container
+  community.docker.docker_container:
+    name: "caddy-{{ frp_network_name }}"
+    image: "{{ frp_caddy_image }}"
+    state: started
+    restart_policy: always
+    volumes:
+      - "{{ frp_config_dir }}/Caddyfile:/etc/caddy/Caddyfile"
+    published_ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - name: "{{ frp_network_name }}"
+  when: frp_caddy_enabled

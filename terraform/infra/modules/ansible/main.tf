@@ -119,8 +119,13 @@ resource "ansible_host" "oracle_vm" {
   groups = ["tunnel"]
 
   variables = {
-    ansible_user            = var.oracle_vm.username
-    ansible_become_password = var.oracle_vm.password
+    ansible_user             = var.oracle_vm.username
+    ansible_become_password  = var.oracle_vm.password
+    frp_token                = var.frp_token
+    frp_dashboard_username   = var.frp_dashboard_username
+    frp_dashboard_password   = var.frp_dashboard_password
+    frp_dashboard_secret_key = var.frp_dashboard_secret_key
+    frp_extra_ports          = var.frp_extra_ports
   }
 }
 

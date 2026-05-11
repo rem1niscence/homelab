@@ -1,0 +1,13 @@
+# Managed by Ansible — do not edit manually.
+
+bindPort = {{ frp_bind_port }}
+
+[auth]
+method = "token"
+token = "{{ frp_token }}"
+
+[webServer]
+port = {{ frp_dashboard_port }}
+addr = "0.0.0.0"
+user = "{{ frp_dashboard_username }}"
+password = "{{ frp_dashboard_password }}"

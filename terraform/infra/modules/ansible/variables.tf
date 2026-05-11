@@ -62,3 +62,34 @@ variable "tailscale_auth_key" {
   type        = string
   sensitive   = true
 }
+
+# Tunnel
+
+variable "frp_token" {
+  description = "FRP token for token auth"
+  type        = string
+  sensitive   = true
+}
+
+variable "frp_dashboard_username" {
+  description = "FRP dashboard username"
+  type        = string
+}
+
+variable "frp_dashboard_password" {
+  description = "FRP dashboard password"
+  type        = string
+  sensitive   = true
+}
+
+variable "frp_dashboard_secret_key" {
+  description = "FRP dashboard secret key"
+  type        = string
+  sensitive   = true
+}
+
+variable "frp_extra_ports" {
+  description = "List of extra ports to expose via FRP. Dockr port expose format"
+  type        = list(string)
+  default     = []
+}

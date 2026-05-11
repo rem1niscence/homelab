@@ -1,0 +1,18 @@
+---
+- name: restart frps
+  community.docker.docker_container:
+    name: "frps-{{ frp_network_name }}"
+    state: started
+    restart: true
+
+- name: restart frpc
+  community.docker.docker_container:
+    name: "frpc-{{ frp_network_name }}"
+    state: started
+    restart: true
+
+- name: restart tunnel caddy
+  community.docker.docker_container:
+    name: "caddy-{{ frp_network_name }}"
+    state: started
+    restart: true

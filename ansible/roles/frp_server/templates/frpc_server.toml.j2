@@ -1,0 +1,16 @@
+# Managed by Ansible — do not edit manually.
+
+serverAddr = "frps-{{ frp_network_name }}"
+serverPort = {{ frp_bind_port }}
+
+[auth]
+method = "token"
+token = "{{ frp_token }}"
+
+[[proxies]]
+name = "frps-dashboard-stcp"
+type = "stcp"
+secretKey = "{{ frp_dashboard_secret_key }}"
+
+localIP = "frps-{{ frp_network_name }}"
+localPort = {{ frp_dashboard_port }}

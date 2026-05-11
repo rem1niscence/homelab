@@ -484,6 +484,16 @@ config:
             href: https://sentinel-1-explorer.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://sentinel-1.canopy:50001
             description: Explorer for chain 1
+        - Wallet 2:
+            icon: mdi-wallet
+            href: https://sentinel-2-wallet.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://sentinel-2.canopy:50000
+            description: Wallet for chain 2
+        - Explorer 2:
+            icon: mdi-web
+            href: https://sentinel-2-explorer.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://sentinel-2.canopy:50001
+            description: Explorer for chain 2
     - Calendar:
         - Calendar:
             icon: nextcloud-calendar

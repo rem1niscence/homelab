@@ -48,8 +48,7 @@ auth:
   enabled: true
   name: "canopy-basic-auth"
   secretName: "canopy-basic-auth-secret"
-  users: "canopy:$2y$10$vnMMHAE7iBVJHK3CJRpK1exNrMJnBHqIz2QNegDYZars25PLvDigu"
-
+  users: "remini:$2y$10$P5WGSIZySBWuB5Fm0o1rlenU6bd7.0b3wMbUNESfS0xQ7oLH95PGq"
 # P2P
 p2p:
   enabled: false

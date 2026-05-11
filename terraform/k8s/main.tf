@@ -94,7 +94,8 @@ resource "kubernetes_annotations" "longhorn_node_tags" {
     for n in data.kubernetes_nodes.all.nodes : n.metadata[0].name => n
     if(
       lookup(n.metadata[0].labels, "platform.io/local-storage", null) == "true" ||
-      lookup(n.metadata[0].labels, "platform.io/remote-storage", null) == "true"
+      lookup(n.metadata[0].labels, "platform.io/remote-storage", null) == "true" ||
+      lookup(n.metadata[0].labels, "platform.io/vm-storage", null) == "true"
     )
   }
 
@@ -107,6 +108,8 @@ resource "kubernetes_annotations" "longhorn_node_tags" {
       "platform.io/local-storage", null) == "true" ? "local" : "",
       lookup(each.value.metadata[0].labels,
       "platform.io/remote-storage", null) == "true" ? "remote" : "",
+      lookup(each.value.metadata[0].labels,
+      "platform.io/vm-storage", null) == "true" ? "vm" : "",
     ]))
   }
   depends_on = [module.argocd]

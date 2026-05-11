@@ -1,0 +1,90 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "validator.name" . }}-config
+  labels:
+    {{- include "validator.labels" . | nindent 4 }}
+data:
+  {{- if .Values.config.genesis }}
+  genesis.json: |
+    {{- .Values.config.genesis | toJson | nindent 4 }}
+  {{- end }}
+  {{- if .Values.config.config }}
+  config.json: |
+    {{- .Values.config.config | toJson | nindent 4 }}
+  {{- end }}
+  {{- if .Values.config.keystore }}
+  keystore.json: |
+    {{- .Values.config.keystore | toJson | nindent 4 }}
+  {{- end }}
+  {{- if .Values.restore.enabled }}
+  restore-backup.sh: |
+    #!/bin/sh
+    set -euo pipefail
+    apk add --no-cache rsync > /dev/null
+    MOUNT="{{ .Values.storage.mountPath }}"
+    BACKUP_DIR="$MOUNT/backupVolume/backup"
+    DB_DIR="$MOUNT/canopy"
+    HEIGHT_FILE="$MOUNT/height.txt"
+    BACKUP_HEIGHT_FILE="$BACKUP_DIR/height.txt"
+    THRESHOLD="{{ .Values.restore.threshold }}"
+
+    echo "restore-backup: mount=$MOUNT backup=$BACKUP_DIR db=$DB_DIR threshold=$THRESHOLD"
+
+    if [ ! -d "$BACKUP_DIR" ]; then
+      echo "restore-backup: no backup directory found at $BACKUP_DIR, skipping."
+      exit 0
+    fi
+
+    if [ ! -f "$BACKUP_HEIGHT_FILE" ]; then
+      echo "restore-backup: no backup height file, skipping."
+      exit 0
+    fi
+
+    if [ ! -f "$HEIGHT_FILE" ]; then
+      echo "restore-backup: no current height file, restoring from backup..."
+      mkdir -p "$DB_DIR"
+      rsync -az --delete-before --info=progress "$BACKUP_DIR/" "$DB_DIR/"
+      echo "restore-backup: done"
+      exit 0
+    fi
+
+    CUR_HEIGHT=$(grep -oE '[0-9]+' "$HEIGHT_FILE" || echo "0")
+    BKP_HEIGHT=$(grep -oE '[0-9]+' "$BACKUP_HEIGHT_FILE" || echo "0")
+    CUR_HEIGHT=${CUR_HEIGHT:-0}
+    BKP_HEIGHT=${BKP_HEIGHT:-0}
+
+    echo "restore-backup: current=$CUR_HEIGHT backup=$BKP_HEIGHT"
+
+    DIFF=$(( BKP_HEIGHT - CUR_HEIGHT ))
+    echo "restore-backup: diff=$DIFF threshold=$THRESHOLD"
+
+    if [ "$DIFF" -gt "$THRESHOLD" ]; then
+      echo "restore-backup: diff exceeds threshold, restoring..."
+      mkdir -p "$DB_DIR"
+      rsync -az --delete-before --info=progress "$BACKUP_DIR/" "$DB_DIR/"
+      echo "restore-backup: done"
+    else
+      echo "restore-backup: diff within threshold, skipping."
+    fi
+  {{- end }}
+  save-height.sh: |
+    #!/bin/sh
+    HEIGHT_FILE="/root/.canopy/$FILE_NAME"
+
+    if [ -z "$PORT" ]; then
+      echo "Error: PORT environment variable is not set"
+      exit 1
+    fi
+
+    while true; do
+      HEIGHT=$(curl -X POST "http://localhost:$PORT/v1/query/height" 2>/dev/null)
+
+      if [ $? -eq 0 ] && [ ! -z "$HEIGHT" ]; then
+        echo "$HEIGHT" | grep -oE '[0-9]+' > "$HEIGHT_FILE"
+      else
+        echo "Failed to query height or empty response"
+      fi
+
+      sleep {{ .Values.heightSaver.intervalSeconds }}
+    done

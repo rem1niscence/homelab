@@ -1,0 +1,5 @@
+apiVersion: v2
+name: canopy-node
+description: Canopy Network node
+version: 0.1.0
+type: application

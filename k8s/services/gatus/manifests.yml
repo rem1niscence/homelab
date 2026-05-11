@@ -306,6 +306,12 @@ data:
           - "[STATUS] == 200"
         alerts:
               - type: discord
+      - name: N8N
+        url: "http://n8n.n8n:5678"
+        conditions:
+          - "[STATUS] == 200"
+        alerts:
+              - type: discord
       # - name: Container Registry
       #   url: "http://registry.registry"
       #   conditions:

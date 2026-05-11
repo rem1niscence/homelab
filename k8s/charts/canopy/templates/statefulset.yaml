@@ -1,0 +1,190 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "validator.name" . }}
+  labels:
+    {{- include "validator.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  serviceName: {{ include "validator.name" . }}
+  ordinals:
+    start: {{ .Values.ordinals.start }}
+  selector:
+    matchLabels:
+      {{- include "validator.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "validator.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- if .Values.profiling.enabled }}
+      annotations:
+        pyroscope.io/service_name: {{ .Release.Namespace }}/{{ include "validator.name" . }}
+        profiles.grafana.com/memory.scrape: "true"
+        profiles.grafana.com/memory.port_name: "debug"
+        profiles.grafana.com/cpu.scrape: "true"
+        profiles.grafana.com/cpu.port_name: "debug"
+        profiles.grafana.com/goroutine.scrape: "true"
+        profiles.grafana.com/goroutine.port_name: "debug"
+      {{- end }}
+    spec:
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      {{- if .Values.restore.enabled }}
+      initContainers:
+        - name: restore-backup
+          image: {{ .Values.restore.image }}
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh", "/scripts/restore-backup.sh"]
+          volumeMounts:
+            {{- if .Values.storage.enabled }}
+            - name: chain-data
+              mountPath: {{ .Values.storage.mountPath }}
+            {{- end }}
+            - name: backup-data
+              mountPath: {{ .Values.storage.mountPath }}/backupVolume
+              readOnly: true
+            - name: config
+              mountPath: /scripts/restore-backup.sh
+              subPath: restore-backup.sh
+              readOnly: true
+      {{- end }}
+
+      containers:
+        - name: validator
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- with .Values.extraArgs }}
+          args:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: p2p
+              containerPort: {{ .Values.p2p.port }}
+              protocol: TCP
+            - name: wallet
+              containerPort: {{ .Values.ports.wallet }}
+              protocol: TCP
+            - name: explorer
+              containerPort: {{ .Values.ports.explorer }}
+              protocol: TCP
+            - name: rpc
+              containerPort: {{ .Values.ports.rpc }}
+              protocol: TCP
+            - name: admin-rpc
+              containerPort: {{ .Values.ports.adminRpc }}
+              protocol: TCP
+            - name: metrics
+              containerPort: {{ .Values.ports.metrics }}
+              protocol: TCP
+            {{- if .Values.profiling.enabled }}
+            - name: debug
+              containerPort: {{ .Values.ports.debug }}
+              protocol: TCP
+            {{- end }}
+          {{- if .Values.env }}
+          env:
+            {{- toYaml .Values.env | nindent 12 }}
+          {{- end }}
+          {{- if .Values.livenessProbe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.livenessProbe.httpGet.path }}
+              port: {{ .Values.livenessProbe.httpGet.port }}
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+          {{- end }}
+          {{- if .Values.readinessProbe.enabled }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.readinessProbe.httpGet.path }}
+              port: {{ .Values.readinessProbe.httpGet.port }}
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            {{- if .Values.storage.enabled }}
+            - name: chain-data
+              mountPath: {{ .Values.storage.mountPath }}
+            {{- end }}
+            - name: config
+              mountPath: {{ .Values.configs.mountPath }}/genesis.json
+              subPath: genesis.json
+              readOnly: true
+            - name: config
+              mountPath: {{ .Values.configs.mountPath }}/config.json
+              subPath: config.json
+              readOnly: true
+            - name: config
+              mountPath: {{ .Values.configs.mountPath }}/keystore.json
+              subPath: keystore.json
+              readOnly: true
+            - name: secrets
+              mountPath: {{ .Values.secrets.mountPath }}/validator_key.json
+              subPath: validator_key.json
+              readOnly: true
+        {{- if .Values.heightSaver.enabled }}
+        - name: height-saver
+          image: "{{ .Values.heightSaver.image }}"
+          imagePullPolicy: IfNotPresent
+          # curlimages/curl runs as a non-root user by default and
+          # cannot write to /root/.canopy
+          securityContext:
+            runAsUser: 0
+          command: ["/bin/sh", "/scripts/save-height.sh"]
+          env:
+            - name: PORT
+              value: "{{ .Values.ports.rpc }}"
+            - name: FILE_NAME
+              value: "{{ .Values.heightSaver.fileName }}"
+          volumeMounts:
+            {{- if .Values.storage.enabled }}
+            - name: chain-data
+              mountPath: {{ .Values.storage.mountPath }}
+            {{- end }}
+            - name: config
+              mountPath: /scripts/save-height.sh
+              subPath: save-height.sh
+              readOnly: true
+        {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "validator.name" . }}-config
+            defaultMode: 0755
+        - name: secrets
+          secret:
+            secretName: {{ include "validator.secretName" . }}
+        {{- if .Values.restore.enabled }}
+        - name: backup-data
+          persistentVolumeClaim:
+            claimName: {{ .Values.restore.backupClaimName }}
+            readOnly: true
+        {{- end }}
+  {{- if .Values.storage.enabled }}
+  volumeClaimTemplates:
+    - metadata:
+        name: chain-data
+      spec:
+        accessModes:
+          {{- toYaml .Values.storage.accessModes | nindent 10 }}
+        storageClassName: {{ .Values.storage.storageClassName }}
+        resources:
+          requests:
+            storage: {{ .Values.storage.size }}
+  {{- end }}

@@ -1,0 +1,46 @@
+# Auto-discovers validators by scanning k8s/values/validators/chain_*/*.yml.
+# Each file becomes a separate ArgoCD Application that deploys
+# the validator chart with that file's values.
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: canopy-nodes
+  namespace: argocd
+spec:
+  generators:
+    - git:
+        repoURL: git@github.com:rem1niscence/homelab.git
+        revision: deploy
+        files:
+          - path: k8s/values/services/canopy/*/*.yml
+          - path: k8s/values/services/canopy/*/manifests/*.yml
+            exclude: true
+  template:
+    metadata:
+      name: "{{name}}"
+      namespace: argocd
+    spec:
+      project: default
+      sources:
+        # chart definition from deploy
+        - repoURL: git@github.com:rem1niscence/homelab.git
+          targetRevision: deploy
+          path: k8s/charts/canopy
+          helm:
+            valueFiles:
+              - $repo/k8s/values/services/canopy/{{path.basename}}/{{path.filename}}
+        - repoURL: git@github.com:rem1niscence/homelab.git
+          targetRevision: deploy
+          ref: repo
+        - repoURL: git@github.com:rem1niscence/homelab.git
+          targetRevision: deploy
+          path: k8s/values/services/canopy/{{path.basename}}/manifests
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: canopy
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true

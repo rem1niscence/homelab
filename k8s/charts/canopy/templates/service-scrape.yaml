@@ -1,0 +1,26 @@
+{{- if .Values.metrics.enabled }}
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMServiceScrape
+metadata:
+  name: {{ include "validator.name" . }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "validator.selectorLabels" . | nindent 6 }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  endpoints:
+    - port: metrics
+      interval: 15s
+      path: /metrics
+      relabelConfigs:
+        # add aggregated label to group all validator nodes
+        - targetLabel: canopy_component
+          replacement: validator
+        {{- if .Values.metrics.chain }}
+        - targetLabel: chain
+          replacement: {{ .Values.metrics.chain | quote }}
+        {{- end }}
+{{- end }}

@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "validator.name" . }}
+  labels:
+    {{- include "validator.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    {{- include "validator.selectorLabels" . | nindent 4 }}
+  ports:
+    - name: wallet
+      port: {{ .Values.ports.wallet }}
+      targetPort: wallet
+      protocol: TCP
+    - name: explorer
+      port: {{ .Values.ports.explorer }}
+      targetPort: explorer
+      protocol: TCP
+    - name: rpc
+      port: {{ .Values.ports.rpc }}
+      targetPort: rpc
+      protocol: TCP
+    - name: admin-rpc
+      port: {{ .Values.ports.adminRpc }}
+      targetPort: admin-rpc
+      protocol: TCP
+    - name: metrics
+      port: {{ .Values.ports.metrics }}
+      targetPort: metrics
+      protocol: TCP
+    {{- if .Values.profiling.enabled }}
+    - name: debug
+      port: {{ .Values.ports.debug }}
+      targetPort: debug
+      protocol: TCP
+    {{- end }}
+---
+{{- if .Values.p2p.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "validator.name" . }}-p2p
+  labels:
+    {{- include "validator.labels" . | nindent 4 }}
+  {{- if .Values.p2p.hostname }}
+  annotations:
+      external-dns.alpha.kubernetes.io/managed: "true"
+      external-dns.alpha.kubernetes.io/hostname: "{{ .Values.p2p.hostname }},{{ .Values.routes.validatorPrefix }}.{{ .Values.p2p.hostname }}"
+  {{- end }}
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: {{ .Values.p2p.externalTrafficPolicy | default "Cluster" }}
+  selector:
+    {{- include "validator.selectorLabels" . | nindent 4 }}
+  ports:
+    - name: p2p
+      port: {{ .Values.p2p.port }}
+      targetPort: p2p
+      protocol: TCP
+{{- end }}

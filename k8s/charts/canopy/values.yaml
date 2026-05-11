@@ -1,0 +1,182 @@
+# Validator name (overridden per instance)
+name: ""
+
+# Role (validator or full node)
+role: ""
+
+# Container image
+image:
+  repository: canopynetwork/canopy
+  tag: latest
+  pullPolicy: IfNotPresent
+
+# Ordinal start index
+ordinals:
+  start: 0
+
+# Replica count (always 1 for a validator)
+replicaCount: 1
+
+# Resource limits
+resources: null
+# resources:
+#   requests:
+#     cpu: 500m
+#     memory: 1Gi
+#   limits:
+#     cpu: "2"
+#     memory: 2Gi
+
+# Chain data storage
+storage:
+  enabled: true
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn-node
+  size: 4Gi
+  mountPath: /root/.canopy
+
+# Domain
+routes:
+  domain: ""
+  validatorPrefix:
+  # uses default TLS certificate if not set
+  tlsSecretName: ""
+
+# Authentication for wallet and explorer routes
+auth:
+  enabled: true
+  name: "canopy-basic-auth"
+  secretName: "canopy-basic-auth-secret"
+  users: "canopy:$2y$10$vnMMHAE7iBVJHK3CJRpK1exNrMJnBHqIz2QNegDYZars25PLvDigu"
+
+# P2P
+p2p:
+  enabled: false
+  port: 9001
+  hostname: ""
+  externalTrafficPolicy: Cluster
+
+# Profiling (pprof)
+profiling:
+  enabled: false
+
+# Ports
+ports:
+  p2p: 9001
+  wallet: 50000
+  explorer: 50001
+  rpc: 50002
+  adminRpc: 50003
+  metrics: 9090
+  debug: 6060
+
+# Metrics scraping
+metrics:
+  enabled: true
+  chain: 0
+
+# Service configuration
+service:
+  type: ClusterIP
+
+# Config files (public — mounted as ConfigMap)
+config:
+  # genesis.json content or reference
+  genesis: {}
+  # config.json content or reference
+  config: {}
+  # keystore.json content or reference
+  keystore: {}
+
+# Secrets
+# The validator_key.json is mounted from a SealedSecret.
+# The secret name follows the convention: <name>-key
+# Expected key in the secret:
+#   - validator_key.json
+secrets:
+  mountPath: /root/.canopy
+
+# Configs
+# The config files are mounted from a ConfigMap.
+# The ConfigMap name follows the convention: <name>-config
+# Expected keys in the ConfigMap:
+#   - genesis.json
+#   - config.json
+#   - keystore.json
+configs:
+  mountPath: /root/.canopy
+
+# extra labels added to the pod template (not the StatefulSet itself)
+podLabels: {}
+
+# Node selection
+nodeSelector: {}
+
+# Tolerations
+tolerations: []
+
+# Affinity
+# Spreads validator pods across nodes so no two validators land on the same host.
+# Uses preferredDuringScheduling (soft rule) — if there are more validators than nodes,
+# excess pods will still be scheduled rather than staying Pending indefinitely.
+# weight: 100 makes this as strong a preference as possible without being a hard requirement.
+# topologyKey: kubernetes.io/hostname means the unit of separation is a single node.
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/component
+                operator: In
+                values:
+                  - validator
+          topologyKey: "kubernetes.io/hostname"
+
+# Additional environment variables
+env: []
+
+# Additional args to the validator binary
+extraArgs: ["start"]
+
+# Liveness probe
+livenessProbe:
+  enabled: true
+  httpGet:
+    path: /v1/
+    port: rpc
+  initialDelaySeconds: 30
+  periodSeconds: 30
+
+# Readiness probe
+readinessProbe:
+  enabled: true
+  httpGet:
+    path: /v1/
+    port: rpc
+  initialDelaySeconds: 10
+  periodSeconds: 10
+
+# PodDisruptionBudget
+pdb:
+  enabled: true
+  minAvailable: 1
+
+# Backup restore init container
+restore:
+  enabled: false
+  image: alpine:3.23
+  # Height difference that triggers a restore
+  threshold: 1000
+  # Name of the existing PVC that holds the backup data (mounted at mountPath/backup)
+  backupClaimName: ""
+
+# Height saver sidecar
+heightSaver:
+  enabled: true
+  image: curlimages/curl:8.17.0
+  intervalSeconds: 30
+  # File written under /root/.canopy/
+  fileName: height.txt

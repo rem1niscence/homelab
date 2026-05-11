@@ -1,0 +1,61 @@
+{{- if .Values.auth.enabled }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "validator.name" . }}-{{ .Values.auth.secretName }}
+  labels:
+    {{- include "validator.labels" . | nindent 4 }}
+stringData:
+  users: {{ .Values.auth.users }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ include "validator.name" . }}-{{ .Values.auth.name }}
+spec:
+  basicAuth:
+    secret: {{ include "validator.name" . }}-{{ .Values.auth.secretName }}
+{{- end }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ include "validator.name" . }}-routes
+  labels:
+    {{- include "validator.labels" . | nindent 4 }}
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`{{ include "validator.hostPrefix" . }}wallet.{{ .Values.routes.domain }}`)
+      kind: Rule
+      {{- if .Values.auth.enabled }}
+      middlewares:
+        - name: {{ include "validator.name" . }}-{{ .Values.auth.name }}
+      {{- end }}
+      services:
+        - name: {{ include "validator.name" . }}
+          port: {{ .Values.ports.wallet }}
+    - match: Host(`{{ include "validator.hostPrefix" . }}explorer.{{ .Values.routes.domain }}`)
+      kind: Rule
+      {{- if .Values.auth.enabled }}
+      middlewares:
+        - name: {{ include "validator.name" . }}-{{ .Values.auth.name }}
+      {{- end }}
+      services:
+        - name: {{ include "validator.name" . }}
+          port: {{ .Values.ports.explorer }}
+    - match: Host(`{{ include "validator.hostPrefix" . }}rpc.{{ .Values.routes.domain }}`)
+      kind: Rule
+      services:
+        - name: {{ include "validator.name" . }}
+          port: {{ .Values.ports.rpc }}
+    - match: Host(`{{ include "validator.hostPrefix" . }}admin-rpc.{{ .Values.routes.domain }}`)
+      kind: Rule
+      services:
+        - name: {{ include "validator.name" . }}
+          port: {{ .Values.ports.adminRpc }}
+  {{- if .Values.routes.tlsSecretName }}
+  tls:
+    secretName: {{ .Values.routes.tlsSecretName }}
+  {{- end }}

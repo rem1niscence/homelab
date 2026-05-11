@@ -1,0 +1,24 @@
+# Installs the prometheus-operator CRDs (ServiceMonitor, PodMonitor, etc.) so that helm charts
+# that render these resources by default (argocd, cert-manager, traefik, etc.) work without
+# extra configuration. The victoria-metrics operator then converts them to VMServiceScrape equivalents.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: prometheus-operator-crds
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: https://prometheus-community.github.io/helm-charts
+      chart: prometheus-operator-crds
+      targetRevision: "28.0.1"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true

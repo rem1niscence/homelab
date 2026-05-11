@@ -1,7 +1,0 @@
-- name: Install Cilium on the cluster
-  hosts: localhost
-  tasks:
-    - name: Run Cilium CLI install tasks
-      include_role:
-        name: cilium
-        tasks_from: install-cli

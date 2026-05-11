@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wallos
+  labels:
+    app: wallos
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wallos
+  template:
+    metadata:
+      labels:
+        app: wallos
+    spec:
+      nodeSelector:
+        platform.io/type: pi
+      containers:
+        - name: wallos
+          image: bellamy/wallos:latest
+          ports:
+            - containerPort: 80
+          env:
+            - name: TZ
+              value: "Europe/Madrid"
+          volumeMounts:
+            - name: data
+              mountPath: /var/www/html/db
+            - name: data
+              mountPath: /var/www/html/images/uploads/logos
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1100Mi
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wallos
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    app: wallos
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: wallos
+  annotations:
+    argocd.argoproj.io/sync-options: Ignore=true
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`wallos.rvserver.online`)
+      kind: Rule
+      services:
+        - name: wallos
+          port: 80

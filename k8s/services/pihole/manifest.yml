@@ -1,0 +1,130 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pihole
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pihole
+  template:
+    metadata:
+      labels:
+        app: pihole
+    spec:
+      nodeSelector:
+        platform.io/type: main
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: pihole
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
+          # image: pihole/pihole:2024.07.0
+          image: pihole/pihole:latest
+          ports:
+            - containerPort: 80
+            - containerPort: 53
+              protocol: TCP
+            - containerPort: 53
+              protocol: UDP
+          env:
+            - name: TZ
+              value: "Europe/Madrid"
+            - name: FTLCONF_webserver_api_password
+              valueFrom:
+                secretKeyRef:
+                  name: pihole
+                  key: PASSWORD
+                  optional: false
+          volumeMounts:
+            - name: config
+              mountPath: /etc/pihole
+            - name: tailscale-dns-config
+              mountPath: /etc/dnsmasq.d
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: config-pvc
+        - name: tailscale-dns-config
+          configMap:
+            name: pihole-tailscale-dns
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: config-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2500Mi
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pihole
+  annotations:
+    tailscale.com/expose: "true"
+    tailscale.com/hostname: pihole
+spec:
+  ports:
+    - name: admin-tcp
+      protocol: TCP
+      port: 80
+      targetPort: 80
+    - name: dns-tcp
+      protocol: TCP
+      port: 53
+      targetPort: 53
+    - name: dns-udp
+      protocol: UDP
+      port: 53
+      targetPort: 53
+  selector:
+    app: pihole
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: pihole
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`pihole.rvserver.online`)
+      kind: Rule
+      services:
+        - name: pihole
+          port: 80
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pihole-tailscale-dns
+data:
+  02-tailscale.conf: |
+    # Forward .ts.net domains to Tailscale MagicDNS
+    server=/ts.net/100.100.100.100
+
+    # Forward your specific tailnet domain
+    # TODO: Automatically inject the tailnet ID
+    server=/{{TAILNET_ID}}.ts.net/100.100.100.100
+
+    # Optional: Forward reverse DNS for Tailscale IP range
+    server=/100.in-addr.arpa/100.100.100.100
+
+    # Optional: Enable strict order for these domains
+    strict-order
+
+# Blocklists
+# https://blocklistproject.github.io/Lists/tracking.txt
+# https://github.com/fabriziosalmi/blacklists/releases/download/latest/blacklist.txt

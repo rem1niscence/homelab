@@ -1,0 +1,7 @@
+---
+- name: install and enable iSCSI mount service
+  hosts: k3s_cluster
+  become: true
+  gather_facts: false
+  roles:
+    - mount_iscsi

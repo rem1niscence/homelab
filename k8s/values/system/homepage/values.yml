@@ -1,0 +1,529 @@
+ingress:
+  description: "Homelab homepage"
+  host: "rvserver.online"
+
+envFrom:
+  - secretRef:
+      name: dashboard
+
+config:
+  settings: |
+    title: Homelab's homepage
+    target: _self
+    layout:
+      Widgets:
+        style: row
+        columns: 4
+      Apps:
+        style: row
+        columns: 4
+      "Comic/Manga":
+        style: row
+        columns: 2
+      System:
+        style: row
+        columns: 4
+      # Blog:
+      #   style: row
+      #   columns: 2
+      # Canopy:
+      #   style: row
+      #   columns: 4
+      Calendar:
+        style: column
+        # columns: 2
+    providers:
+      longhorn:
+        url: http://longhorn-frontend.longhorn-system
+
+  services: |
+    - Widgets:
+        - Traefik:
+            icon: traefik.svg
+            href: https://traefik.{{HOMEPAGE_VAR_DOMAIN}}
+            description: Reverse proxy
+            widget:
+              type: traefik
+              url: http://traefik-api.kube-system
+        - TrueNAS SCALE:
+            icon: truenas-scale.png
+            href: https://truenas.{{HOMEPAGE_VAR_DOMAIN}}/ui/
+            siteMonitor: http://truenas.truenas
+            description: Open-source storage operating system
+            widget:
+                type: truenas
+                url: http://truenas.truenas
+                key: {{HOMEPAGE_VAR_TRUENAS_API_KEY}}
+        - Speedtest:
+            icon: si-speedtest
+            href: https://speedtest.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://speedtest.speedtest
+            description: Speed test tracker
+            widget:
+              type: speedtest
+              url: http://speedtest.speedtest
+        - Pi-hole:
+            icon: pi-hole.svg
+            href: https://pihole.{{HOMEPAGE_VAR_DOMAIN}}/admin
+            siteMonitor: http://pihole.pihole
+            description: Network-wide ad blocker
+            widget:
+              type: pihole
+              version: 6
+              url: http://pihole.pihole
+              key: {{HOMEPAGE_VAR_PIHOLE_API_KEY}}
+        - Paperless:
+            icon: paperless-ngx.svg
+            href: https://paperless.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://paperless.paperless
+            description: Digital document manager
+            widget:
+                type: paperlessngx
+                url: http://paperless.paperless
+                username: {{HOMEPAGE_VAR_PAPERLESS_USERNAME}}
+                password: {{HOMEPAGE_VAR_PAPERLESS_PASSWORD}}
+        - qBittorrent:
+            icon: qbittorrent.svg
+            href: https://torrent.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://qbittorrent.qbittorrent:8080
+            description: Open-source torrent software
+            widget:
+              type: qbittorrent
+              url: http://qbittorrent.qbittorrent:8080
+              username: {{HOMEPAGE_VAR_QBITTORRENT_USERNAME}}
+              password: {{HOMEPAGE_VAR_QBITTORRENT_PASSWORD}}
+        - Radarr:
+            icon: radarr.svg
+            href: https://radarr.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://radarr.servarr:7878
+            description: Movie indexer engine
+            widget:
+              type: radarr
+              url: http://radarr.servarr:7878
+              key: {{HOMEPAGE_VAR_RADARR_API_KEY}}
+        - Sonarr:
+            icon: sonarr.svg
+            href: https://sonarr.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://sonarr.servarr:8989
+            description: Anime/TV indexer engine
+            widget:
+              type: sonarr
+              url: http://sonarr.servarr:8989
+              key: {{HOMEPAGE_VAR_SONARR_API_KEY}}
+        - Bazarr:
+            icon: bazarr.svg
+            href: https://bazarr.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://bazarr.servarr:6767
+            description: Subtitle management for media
+            widget:
+              type: bazarr
+              url: http://bazarr.servarr:6767
+              key: {{HOMEPAGE_VAR_BAZARR_API_KEY}}
+        - Prowlarr:
+            icon: prowlarr.svg
+            href: https://prowlarr.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://prowlarr.servarr:9696
+            description: Meta-search application for torrents
+            widget:
+              type: prowlarr
+              fields: ["numberOfGrabs", "numberOfQueries", "numberOfFailGrabs"]
+              url: http://prowlarr.servarr:9696
+              key: {{HOMEPAGE_VAR_PROWLARR_API_KEY}}
+        - Jellyfin:
+            icon: jellyfin.svg
+            href: https://jellyfin.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://jellyfin.jellyfin:8096
+            description: Media server for movies & shows
+            widget:
+              type: jellyfin
+              url: http://jellyfin.jellyfin:8096
+              key: {{HOMEPAGE_VAR_JELLYFIN_API_KEY}}
+              enableBlocks: true
+              enableNowPlaying: false
+        - Seerr:
+            icon: seerr.svg
+            href: https://seerr.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://seerr.jellyfin:5055
+            description: Media request management
+            widget:
+              type: seerr
+              url: http://seerr.jellyfin:5055
+              key: {{HOMEPAGE_VAR_SEERR_API_KEY}}
+        - Gatus:
+            icon: gatus.svg
+            href: https://gatus.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://gatus.gatus
+            description: Website/Service monitoring
+            widget:
+              type: gatus
+              url: http://gatus.gatus
+        - Fileflows:
+            icon: fileflows.svg
+            href: https://fileflows.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://fileflows.fileflows
+            description: File processing tool
+            widget:
+              type: fileflows
+              url: http://fileflows.fileflows
+        - Immich:
+            icon: immich.svg
+            href: https://immich.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://immich.immich
+            description: Photo album storage
+            widget:
+              type: immich
+              url: http://immich.immich
+              key: {{HOMEPAGE_VAR_IMMICH_API_KEY}}
+              version: 2
+        - File Browser:
+            icon: filebrowser
+            href: https://filebrowser.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://filebrowser.filebrowser
+            description: Online file browser
+            widget:
+              type: filebrowser
+              url: http://filebrowser.filebrowser
+              username: {{HOMEPAGE_VAR_FILEBROWSER_USERNAME}}
+              password: {{HOMEPAGE_VAR_FILEBROWSER_PASSWORD}}
+        - Wallos:
+            icon: wallos
+            href: https://wallos.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://wallos.wallos
+            description: Subscriptions tracker & analytics
+            widget:
+              type: wallos
+              fields: ["activeSubscriptions", "previousMonthlyCost", "thisMonthlyCost", "nextMonthlyCost"]
+              url: http://wallos.wallos
+              key: {{HOMEPAGE_VAR_WALLOS_API_KEY}}
+        - Tracearr:
+            icon: sh-tracearr
+            href: https://tracearr.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://tracearr.jellyfin
+            description: Jellyfin monitoring
+            widget:
+              type: tracearr
+              url: http://tracearr.jellyfin
+              key: {{HOMEPAGE_VAR_TRACEARR_API_KEY}}
+              view: summary
+              enableUser: true
+              showEpisodeNumber: false
+              expandOneStreamToTwoRows: false
+        - Grafana:
+            icon: grafana.svg
+            href: https://grafana.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://victoria-metrics-grafana.monitoring
+            description: Visualization platform for metrics
+            widget:
+              type: grafana
+              fields: ["dashboards", "datasources", "alertstriggered"]
+              url: http://victoria-metrics-grafana.monitoring
+              username: {{HOMEPAGE_VAR_GRAFANA_URSERNAME}}
+              password: {{HOMEPAGE_VAR_GRAFANA_PASSWORD}}
+        - ArgoCD:
+            icon: sh-argo-cd
+            href: https://argocd.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://argocd-server.argocd
+            description: Continuous Delivery tool for K8s
+            widget:
+              type: argocd
+              url: http://argocd-server.argocd
+              key: {{HOMEPAGE_VAR_ARGOCD_API_KEY}}
+    - Apps:
+        - Tailscale:
+            icon: tailscale.svg
+            href: https://login.tailscale.com/admin/machines
+            siteMonitor: https://login.tailscale.com/admin/machines
+            description: Wireguard VPN as a service
+        - Cloudflare:
+            icon: cloudflare
+            href: https://dash.cloudflare.com/{{HOMEPAGE_VAR_CLOUDFLARE_ACCOUNT_ID}}
+            siteMonitor: https://dash.cloudflare.com/
+            description: Internet infrastructure and DNS provider
+            # widget:
+            #   type: cloudflared
+            #   accountid: {{HOMEPAGE_VAR_CLOUDFLARE_ACCOUNT_ID}}
+            #   tunnelid: {{HOMEPAGE_VAR_CLOUDFLARE_TUNNEL_ID}}
+            #   key: {{HOMEPAGE_VAR_CLOUDFLARE_API_TOKEN}}
+        - Hetzner:
+            icon: sh-hetzner
+            href: https://console.hetzner.com/
+            siteMonitor: https://console.hetzner.com/
+            description: Cloud VM provider
+        - Longhorn:
+            icon: longhorn.svg
+            href: https://longhorn.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://longhorn-frontend.longhorn-system
+            description: Cloud-native distributed storage for K8S
+        - Rancher:
+            icon: rancher.svg
+            href: https://rancher.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://rancher.cattle-system:443
+            description: Kubernetes management platform
+        - Hubble:
+            icon: sh-cilium-hubble
+            href: https://hubble.rvserver.online
+            siteMonitor: http://hubble-ui.kube-system
+            description: Cilium's network observability tool
+        - Syncthing:
+            icon: syncthing.svg
+            href: https://syncthing.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://syncthing.syncthing
+            description: File synchronization across devices
+        - Firefly III:
+            icon: firefly
+            href: https://firefly.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://firefly.firefly
+            description: Personal finance manager
+        - SearNXG:
+            icon: searxng.svg
+            href: https://searxng.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://searxng.searxng
+            description: Meta Search Engine
+        - IT Tools:
+            icon: it-tools.svg
+            href: https://it-tools.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://it-tools.it-tools
+            description: Handy tools for developers
+        - Cyberchef:
+            icon: cyberchef
+            href: https://cyberchef.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://cyberchef.cyberchef
+            description: Swiss army knife for data
+        - Bento PDF:
+            icon: sh-bentopdf
+            href: https://pdf.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://bentopdf.bentopdf
+            description: PDF Multitools
+        - Omni Tools:
+            icon: mdi-tools
+            href: https://omnitools.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://omnitools.omnitools
+            description: Handy miscellaneous tools
+        - Memos:
+            icon: sh-memos
+            href: https://memos.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://memos.memos
+            description: lightweight note taking
+        - Commafeed:
+            icon: commafeed
+            href: https://commafeed.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://commafeed.commafeed
+            description: RSS reader
+        - ByteStash:
+            icon: sh-bytestash
+            href: https://bytestash.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://bytestash.bytestash
+            description: Code Snippet Manager
+        - PDFDing:
+            icon: mdi-file-document
+            href: https://pdfding.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://pdfding.pdfding
+            description: Online PDF viewer
+        - Beaver Habits:
+            icon: sh-beaver-habit-tracker
+            href: https://beaverhabits.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://beaverhabits.beaverhabits
+            description: Habit tracker
+        - Kapowarr:
+            icon: kapowarr
+            href: https://kapowarr.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://kapowarr.kapowarr
+            description: Comic management tool
+        - Vaultwarden:
+            icon: vaultwarden.svg
+            href: https://vaultwarden.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://vaultwarden.vaultwarden
+            description: Self-hosted password management
+        - Homebox:
+            icon: homebox
+            href: https://homebox.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://homebox.homebox
+            description: Home inventory & organization
+        - An Otter Wiki:
+            icon: sh-an-otter-wiki
+            href: https://wiki.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://wiki.wiki
+            description: Personal wiki
+        - Draw.io:
+            icon: sh-draw-io
+            href: https://drawio.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://drawio.drawio
+            description: Online diagramming tool
+        - AirTrail:
+            icon: sh-airtrail
+            href: https://airtrail.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://airtrail.airtrail
+            description: Private Flight Tracker
+        - Monitarr:
+            icon: mdi-television
+            href: https://monitarr.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://monitarr.servarr
+            description: Monitor *arr downloads
+        - Kitchen Owl:
+            icon: kitchenowl
+            href: https://kitchenowl.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://front.kitchenowl
+            description: Recipe management software
+        - Termix:
+            icon: sh-termix
+            href: https://termix.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://termix.termix
+            description: Server management platform
+        - Discount bandit:
+            icon: mdi-cart-variant
+            href: https://discount.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://discount-bandit.discount-bandit
+            description: Store price tracker
+        - N8N:
+            icon: n8n.svg
+            href: https://n8n.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://n8n.n8n:5678
+            description: Workflow automation tool
+        # - Container Registry:
+        #     icon: docker.svg
+        #     href: https://registry-ui.{{HOMEPAGE_VAR_DOMAIN}}
+        #     siteMonitor: http://registry.registry
+        #     description: Private container registry
+        # - Keel.sh:
+        #     icon: mdi-alpha-k-box-outline
+        #     href: https://keel.{{HOMEPAGE_VAR_DOMAIN}}
+        #     siteMonitor: http://keel.keel:9300
+        #     description: K8S image updater
+    - Comic/Manga:
+        - Suwayomi:
+            icon: sh-suwayomi-dark
+            href: https://suwayomi.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://suwayomi.suwayomi
+            description: Self-hosted manga server
+            widget:
+              type: suwayomi
+              url: http://suwayomi.suwayomi
+        - Komga:
+            icon: komga.svg
+            href: https://komga.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://komga.komga:25600
+            description: Online Comic/Manga reader
+            widget:
+              type: komga
+              url: http://komga.komga:25600
+              username: {{HOMEPAGE_VAR_KOMGA_USERNAME}}
+              password: {{HOMEPAGE_VAR_KOMGA_PASSWORD}}
+    - System:
+        - NUC:
+            icon: mdi-server
+            href: {{HOMEPAGE_VAR_GLANCES_NUC_URL}}
+            siteMonitor: {{HOMEPAGE_VAR_GLANCES_NUC_PING}}
+            widget:
+              type: glances
+              url: {{HOMEPAGE_VAR_GLANCES_NUC_PING}}
+              version: 4
+              metric: info
+        - AMD:
+            icon: mdi-server
+            href: {{HOMEPAGE_VAR_GLANCES_AMD_URL}}
+            siteMonitor: {{HOMEPAGE_VAR_GLANCES_AMD_PING}}
+            widget:
+              type: glances
+              url: {{HOMEPAGE_VAR_GLANCES_AMD_PING}}
+              version: 4
+              metric: info
+        - PI-2:
+            icon: mdi-raspberry-pi
+            href: {{HOMEPAGE_VAR_GLANCES_PI_2_URL}}
+            siteMonitor: {{HOMEPAGE_VAR_GLANCES_PI_2_PING}}
+            widget:
+              type: glances
+              url: {{HOMEPAGE_VAR_GLANCES_PI_2_PING}}
+              version: 4
+              metric: info
+        - PI-3:
+            icon: mdi-raspberry-pi
+            href: {{HOMEPAGE_VAR_GLANCES_PI_3_URL}}
+            siteMonitor: {{HOMEPAGE_VAR_GLANCES_PI_3_PING}}
+            widget:
+              type: glances
+              url: {{HOMEPAGE_VAR_GLANCES_PI_3_PING}}
+              version: 4
+              metric: info
+        - VM:
+            icon: mdi-cloud
+            href: {{HOMEPAGE_VAR_GLANCES_VM_URL}}
+            siteMonitor: {{HOMEPAGE_VAR_GLANCES_VM_PING}}
+            widget:
+              type: glances
+              url: {{HOMEPAGE_VAR_GLANCES_VM_PING}}
+              version: 4
+              metric: info
+        - NAS:
+            icon: mdi-nas
+            href: {{HOMEPAGE_VAR_GLANCES_NAS_URL}}
+            siteMonitor: {{HOMEPAGE_VAR_GLANCES_NAS_PING}}
+            widget:
+              type: glances
+              url: {{HOMEPAGE_VAR_GLANCES_NAS_PING}}
+              version: 4
+              metric: info
+    - Calendar:
+        - Calendar:
+            icon: nextcloud-calendar
+            description: Calendar widget for Arr media
+            widget:
+              type: calendar
+              integrations:
+                - type: sonarr
+                  service_group: Widgets
+                  service_name: Sonarr
+                  color: teal
+                  params:
+                    unmonitored: true
+                - type: radarr
+                  service_group: Widgets
+                  service_name: Radarr
+                  color: emerald
+                  params:
+                    unmonitored: true
+  bookmarks: |
+    - Links:
+        - Github:
+            - abbr: GH
+              href: https://github.com/rem1niscence
+        - Grafana Explore:
+            - abbr: GF
+              href: https://grafana.{{HOMEPAGE_VAR_DOMAIN}}/explore
+
+  widgets: |
+    - kubernetes:
+        cluster:
+          show: true
+          cpu: true
+          memory: true
+          showLabel: true
+          label: "cluster"
+        nodes:
+          show: true
+          cpu: true
+          memory: true
+          showLabel: true
+    - resources:
+        backend: resources
+        expanded: true
+        # network: default
+        cpu: true
+        memory: true
+        uptime: true
+    - longhorn:
+        expanded: true
+        total: true
+        labels: true
+        nodes: false
+    - search:
+        provider: custom
+        url: https://searxng.{{HOMEPAGE_VAR_DOMAIN}}/search?q=
+        target: _self
+        suggestionUrl: http://searxng.searxng/autocompleter?q=
+        showSearchSuggestions: true
+    - openmeteo:
+        latitude: 40.4168
+        longitude: -3.703790
+        units: metric
+        cache: 5

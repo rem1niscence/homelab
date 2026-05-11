@@ -1,0 +1,28 @@
+---
+- name: install helm on k3s servers
+  hosts: server
+  tasks:
+    - name: check if helm is already installed
+      ansible.builtin.stat:
+        path: /usr/local/bin/helm
+      register: helm_binary
+
+    - name: download helm install script
+      ansible.builtin.get_url:
+        url: https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+        dest: /tmp/get-helm-3.sh
+        mode: "0700"
+      when: not helm_binary.stat.exists
+
+    - name: install helm
+      ansible.builtin.command: /tmp/get-helm-3.sh
+      environment:
+        DESIRED_VERSION: "{{ helm_version }}"
+      when: not helm_binary.stat.exists
+      changed_when: true
+
+    - name: remove helm install script
+      ansible.builtin.file:
+        path: /tmp/get-helm-3.sh
+        state: absent
+      when: not helm_binary.stat.exists

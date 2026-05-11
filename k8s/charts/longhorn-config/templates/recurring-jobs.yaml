@@ -1,0 +1,16 @@
+{{- range .Values.recurringJobs }}
+---
+apiVersion: longhorn.io/v1beta2
+kind: RecurringJob
+metadata:
+  name: {{ .name }}
+spec:
+  cron: "{{ .cron }}"
+  task: {{ .task }}
+  retain: {{ .retain | default 0 }}
+  concurrency: {{ .concurrency | default 1 }}
+  groups:
+    {{- range .groups }}
+    - {{ . }}
+    {{- end }}
+{{- end }}

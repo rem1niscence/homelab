@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: n8n
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: https://community-charts.github.io/helm-charts
+      chart: n8n
+      targetRevision: 1.16.39
+      helm:
+        valueFiles:
+          - $repo/k8s/values/services/n8n/values.yml
+    - repoURL: git@github.com:rem1niscence/homelab.git
+      targetRevision: deploy
+      ref: repo
+    - repoURL: git@github.com:rem1niscence/homelab.git
+      targetRevision: deploy
+      path: k8s/values/services/n8n/manifests
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: n8n
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

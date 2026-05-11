@@ -1,0 +1,33 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: longhorn-config
+  namespace: argocd
+  labels:
+    type: system
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+spec:
+  project: default
+  sources:
+    - repoURL: git@github.com:rem1niscence/homelab.git
+      targetRevision: deploy
+      path: k8s/charts/longhorn-config
+      helm:
+        valueFiles:
+          - $repo/k8s/values/system/longhorn-config/values.yml
+    - repoURL: git@github.com:rem1niscence/homelab.git
+      targetRevision: deploy
+      ref: repo
+    - repoURL: git@github.com:rem1niscence/homelab.git
+      targetRevision: deploy
+      path: k8s/values/system/longhorn-config/manifests
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: longhorn-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false

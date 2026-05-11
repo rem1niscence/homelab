@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: victoria-logs
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: https://victoriametrics.github.io/helm-charts
+      chart: victoria-logs-single
+      targetRevision: 0.12.2
+      helm:
+        valueFiles:
+          - $repo/k8s/values/system/victoria-logs.yml
+    - repoURL: git@github.com:rem1niscence/homelab.git
+      targetRevision: deploy
+      ref: repo
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: logging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

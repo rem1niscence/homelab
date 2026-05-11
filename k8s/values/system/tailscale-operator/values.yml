@@ -1,0 +1,11 @@
+# OAuth credentials — pre-created as SealedSecret "operator-oauth" in
+# tailscale namespace
+# Keys: client_id, client_secret
+oauth: {}
+
+operatorConfig:
+  logging: info
+
+apiServerProxyConfig:
+  # https://tailscale.com/docs/features/kubernetes-operator/how-to/api-server-proxy
+  mode: "true"

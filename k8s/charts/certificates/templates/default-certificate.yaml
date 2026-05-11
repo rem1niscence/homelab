@@ -1,0 +1,19 @@
+{{- if .Values.defaultCertificate.enabled }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ .Values.defaultCertificate.name }}
+  namespace: {{ .Values.defaultCertificate.namespace }}
+spec:
+  secretName: {{ .Values.defaultCertificate.secretName }}
+  issuerRef:
+    name: {{ .Values.defaultCertificate.issuerName }}
+    kind: ClusterIssuer
+  dnsNames:
+    - {{ .Values.defaultCertificate.baseDomain | quote }}
+    - {{ printf "*.%s" .Values.defaultCertificate.baseDomain | quote }}
+    {{- range .Values.defaultCertificate.extraSans }}
+    - {{ . | quote }}
+    {{- end }}
+{{- end }}

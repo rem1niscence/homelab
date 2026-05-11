@@ -1,0 +1,4 @@
+---
+# k3s-ansible entrypoint. Handles install, update, and adding new nodes automatically
+- name: Install k3s cluster, add new nodes
+  ansible.builtin.import_playbook: k3s.orchestration.site

@@ -1,0 +1,138 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: syncthing
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: syncthing
+  name: syncthing
+  labels:
+    app: syncthing
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: syncthing
+  template:
+    metadata:
+      labels:
+        app: syncthing
+    spec:
+      nodeSelector:
+        platform.io/type: pi
+      containers:
+        - name: syncthing
+          image: linuxserver/syncthing:latest
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TZ
+              value: "Etc/UTC"
+          ports:
+            - containerPort: 8384
+            - containerPort: 22000
+            - containerPort: 21027
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: config
+              mountPath: /config
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data-pvc
+        - name: config
+          persistentVolumeClaim:
+            claimName: config-pvc
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: syncthing-data-pv
+spec:
+  capacity:
+    storage: 3T
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 192.168.0.95
+    path: /mnt/ssd_2tb/sync
+  storageClassName: local-path
+  mountOptions:
+    - vers=4.0
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: syncthing
+  name: data-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 3T
+  volumeName: syncthing-data-pv
+  storageClassName: local-path
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: syncthing
+  name: config-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5100Mi
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: syncthing
+  name: syncthing
+spec:
+  selector:
+    app: syncthing
+  ports:
+    - name: web
+      protocol: TCP
+      port: 80
+      targetPort: 8384
+    - name: tcp1
+      protocol: TCP
+      port: 22000
+      targetPort: 22000
+    - name: udp1
+      protocol: UDP
+      port: 22000
+      targetPort: 22000
+    - name: udp2
+      protocol: UDP
+      port: 21027
+      targetPort: 21027
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: syncthing
+  namespace: syncthing
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`syncthing.rvserver.online`)
+      kind: Rule
+      services:
+        - name: syncthing
+          port: 80

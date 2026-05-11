@@ -1,0 +1,33 @@
+db:
+  type: postgresdb
+
+postgresql:
+  enabled: true
+  auth:
+    database: n8n
+    username: n8n
+    existingSecret: n8n-postgresql
+  primary:
+    persistence:
+      enabled: true
+      storageClass: longhorn-local
+      size: 5Gi
+
+existingEncryptionKeySecret: n8n-key
+
+main:
+  persistence:
+    enabled: true
+    storageClass: longhorn-local
+    size: 2Gi
+
+ingress:
+  enabled: true
+  className: traefik
+  hosts:
+    - host: n8n.rvserver.online
+      paths:
+        - path: /
+          pathType: Prefix
+
+timezone: America/New_York

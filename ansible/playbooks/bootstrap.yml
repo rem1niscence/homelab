@@ -1,0 +1,13 @@
+---
+- name: run pre-install checks and configuration
+  ansible.builtin.import_playbook: longhorn-pre-install.yml
+- name: update and upgrade all cluster nodes
+  ansible.builtin.import_playbook: update.yml
+- name: harden all cluster nodes
+  ansible.builtin.import_playbook: security.yml
+- name: install docker on all servers
+  ansible.builtin.import_playbook: docker.yml
+- name: run k3s site bootstrap
+  ansible.builtin.import_playbook: site.yml
+- name: install helm
+  ansible.builtin.import_playbook: helm.yml

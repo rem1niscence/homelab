@@ -1,0 +1,11 @@
+---
+# List of iSCSI mounts to configure on this host.
+# Hosts with no entry  are skipped entirely.
+#
+# iscsi_mounts:
+#   - name: longhorn          # used as the systemd service suffix
+#     ip: "192.168.0.95"
+#     target: "iqn.YYYY-MM.reverse.domain:target"
+#     mount_path: "/var/lib/longhorn"
+#     format: "false"
+iscsi_mounts: []

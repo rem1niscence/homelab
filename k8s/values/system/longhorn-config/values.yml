@@ -1,0 +1,55 @@
+storageClasses:
+  - name: longhorn-local
+    replicas: 2
+    nodeSelector: "local"
+    diskSelector: "local"
+    reclaimPolicy: Delete
+    recurringJobSelector:
+      - name: longhorn-local
+        isGroup: true
+  - name: longhorn-remote
+    replicas: 1
+    reclaimPolicy: Delete
+    nodeSelector: "remote"
+    diskSelector: "remote"
+    dataLocality: best-effort
+    recurringJobSelector:
+      - name: longhorn-local
+        isGroup: true
+  - name: longhorn-single
+    replicas: 1
+    reclaimPolicy: Delete
+    nodeSelector: "local"
+    diskSelector: "local"
+    recurringJobSelector:
+      - name: longhorn-single
+        isGroup: true
+
+recurringJobs:
+  - name: trim
+    task: filesystem-trim
+    cron: "0 * * * *"
+    concurrency: 3
+    groups:
+      - default
+      - longhorn-local
+      - longhorn-remote
+      - longhorn-single
+  - name: backup
+    task: backup
+    cron: "0 */6 * * *"
+    retain: 2
+    concurrency: 3
+    groups:
+      - default
+      - longhorn-local
+  - name: snapshot
+    task: snapshot
+    cron: "30 */2 * * *"
+    retain: 2
+    concurrency: 3
+    groups:
+      - longhorn-local
+
+ingress:
+  host: longhorn.rvserver.online

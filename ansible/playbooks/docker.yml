@@ -1,0 +1,8 @@
+- name: Install Docker and Docker Compose
+  hosts: all
+  become: true
+  vars:
+    docker_users:
+      - "{{ ansible_user | default('ubuntu') }}"
+  roles:
+    - role: geerlingguy.docker

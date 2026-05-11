@@ -1,0 +1,25 @@
+nameOverride: vls
+
+server:
+  # nodeSelector:
+  #   node-role.kubernetes.io/control-plane: "true"
+
+  persistentVolume:
+    enabled: true
+    storageClassName: longhorn-single
+    size: 10Gi
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 512Mi
+
+  # log retention
+  extraArgs:
+    retentionPeriod: 7d
+
+  # enable metrics
+  vmServiceScrape:
+    enabled: true

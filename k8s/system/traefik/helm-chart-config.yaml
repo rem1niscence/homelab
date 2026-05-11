@@ -1,0 +1,17 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChartConfig
+metadata:
+  name: traefik
+  namespace: kube-system
+spec:
+  valuesContent: |-
+    api:
+      insecure: true
+
+    metrics:
+      prometheus: {}
+
+    ports:
+      metrics:
+        expose:
+          default: true

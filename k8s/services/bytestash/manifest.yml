@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bytestash
+  labels:
+    app: bytestash
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bytestash
+  template:
+    metadata:
+      labels:
+        app: bytestash
+    spec:
+      nodeSelector:
+        platform.io/pi: pi-2
+      containers:
+        - name: bytestash
+          image: ghcr.io/jordan-dalby/bytestash
+          ports:
+            - containerPort: 5000
+          env:
+            - name: BASE_PATH
+              value: ""
+            - name: JWT_SECRET
+              value: "b2643c7753836c3c5ec3f14ea52909e456cfa92d94a6032dd412d41409ab9f1e"
+            - name: TOKEN_EXPIRY
+              value: "72h"
+            - name: ALLOW_NEW_ACCOUNTS
+              value: "true"
+            - name: DEBUG
+              value: "false"
+            - name: DISABLE_ACCOUNTS
+              value: "false"
+            - name: DISABLE_INTERNAL_ACCOUNTS
+              value: "false"
+          volumeMounts:
+            - name: data
+              mountPath: /data/snippets
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1100Mi
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bytestash
+spec:
+  ports:
+    - port: 80
+      targetPort: 5000
+  selector:
+    app: bytestash
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: bytestash
+
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`bytestash.rvserver.online`)
+      kind: Rule
+      services:
+        - name: bytestash
+          port: 80

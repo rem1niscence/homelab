@@ -1,5 +1,8 @@
 # Homelab Cluster
 
+> Notice: This README, although short, is pretty outadated and will be reworked in the future. For now, disregard
+any information presented here as it may not be accurate.
+
 My homelab K3s cluster configuration
 
 ## 💻 Hardware

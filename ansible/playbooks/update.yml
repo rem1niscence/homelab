@@ -1,0 +1,17 @@
+---
+- name: update all nodes
+  hosts: all
+  tasks:
+    - name: update and upgrade packages (debian-based)
+      ansible.builtin.apt:
+        update_cache: true
+        upgrade: dist
+        cache_valid_time: 3600
+      when: ansible_os_family == "Debian"
+
+    - name: update and upgrade packages (rhel-based)
+      ansible.builtin.dnf:
+        name: "*"
+        state: latest
+        update_cache: true
+      when: ansible_os_family == "RedHat"

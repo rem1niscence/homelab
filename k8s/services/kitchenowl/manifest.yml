@@ -1,0 +1,104 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: front
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: front
+  template:
+    metadata:
+      labels:
+        app: front
+    spec:
+      nodeSelector:
+        platform.io/pi: pi-3
+      containers:
+        - name: front
+          image: tombursch/kitchenowl-web:latest
+          ports:
+            - containerPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: back
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: back
+  template:
+    metadata:
+      labels:
+        app: back
+    spec:
+      nodeSelector:
+        platform.io/type: main
+      containers:
+        - name: back
+          image: tombursch/kitchenowl:latest
+          ports:
+            - containerPort: 5000
+          env:
+            - name: JWT_SECRET_KEY
+              value: c729ca5bf305e7faea4129f7ebd382d3ec14e887b0c1f813ba8109123a339cfe
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1G
+  storageClassName: longhorn
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: front
+
+spec:
+  selector:
+    app: front
+  ports:
+    - port: 80
+      targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: back
+
+spec:
+  selector:
+    app: back
+  ports:
+    - port: 5000
+      targetPort: 5000
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: kitchenowl
+
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host("kitchenowl.rvserver.online")
+      kind: Rule
+      services:
+        - name: front
+          port: 80

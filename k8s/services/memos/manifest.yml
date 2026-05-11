@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: memos
+  labels:
+    app: memos
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: memos
+  template:
+    metadata:
+      labels:
+        app: memos
+    spec:
+      nodeSelector:
+        platform.io/type: pi
+      containers:
+        - name: memos
+          image: ghcr.io/usememos/memos:latest
+          ports:
+            - containerPort: 5230
+          volumeMounts:
+            - name: data
+              mountPath: /var/opt/memos
+          env:
+            - name: MEMOS_PORT
+              value: "5230"
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: memos
+spec:
+  ports:
+    - port: 80
+      targetPort: 5230
+  selector:
+    app: memos
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: memos
+  annotations:
+    argocd.argoproj.io/sync-options: Ignore=true
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`memos.rvserver.online`)
+      kind: Rule
+      services:
+        - name: memos
+          port: 80

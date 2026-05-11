@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: omnitools
+  labels:
+    app: omnitools
+  annotations:
+    keel.sh/policy: all
+    keel.sh/pollSchedule: "@every 1h"
+    keel.sh/trigger: poll
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: omnitools
+  template:
+    metadata:
+      labels:
+        app: omnitools
+    spec:
+      nodeSelector:
+        platform.io/type: pi
+      containers:
+        - name: omnitools
+          image: iib0011/omni-tools
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: omnitools
+spec:
+  selector:
+    app: omnitools
+  ports:
+    - port: 80
+      targetPort: 80
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: omnitools
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`omnitools.rvserver.online`)
+      kind: Rule
+      services:
+        - name: omnitools
+          port: 80

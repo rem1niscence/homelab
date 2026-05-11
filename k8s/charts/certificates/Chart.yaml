@@ -1,0 +1,5 @@
+apiVersion: v2
+name: certificates
+description: Certificate resources for cert-manager
+version: 0.1.0
+type: application

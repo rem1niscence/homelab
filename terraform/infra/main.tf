@@ -46,7 +46,7 @@ resource "ansible_host" "vm" {
     ts_extra_args           = "--accept-routes"
     extra_agent_args = join(" ", [
       "--node-label platform.io/type=vm",
-      "--node-label platform.io/remote-storage=true",
+      "--node-label platform.io/vm-storage=true",
       "--node-ip=${local.server_vm.ts_ip}"
     ])
   }

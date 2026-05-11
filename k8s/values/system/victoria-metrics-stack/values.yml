@@ -46,6 +46,9 @@ vmagent:
       requests:
         cpu: 50m
         memory: 128Mi
+    extraArgs:
+      promscrape.streamParse: "true"
+      promscrape.maxScrapeSize: "33554432"
 
 vmalert:
   enabled: true

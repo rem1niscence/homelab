@@ -16,10 +16,10 @@ spec:
         app: frpc
     spec:
       nodeSelector:
-        platformio/type: main
+        platform.io/type: main
       containers:
         - name: frpc
-          image: ghcr.io/fatedier/frpc:v0.63.0
+          image: ghcr.io/fatedier/frpc:v0.68.1
           args: ["-c", "/etc/frp/frpc.toml"]
           envFrom:
             - secretRef:
@@ -38,7 +38,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  namespace: canopy
+  namespace: frp
   name: frp
 spec:
   ports:
@@ -54,7 +54,7 @@ spec:
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  namespace: canopy
+  namespace: frp
   name: main
 spec:
   entryPoints:
@@ -74,7 +74,7 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  namespace: canopy
+  namespace: frp
   name: frpc
 data:
   client: |
@@ -85,12 +85,13 @@ data:
     method = "token"
     token = "{{ .Envs.FRP_SERVER_TOKEN }}"
 
+    # TODO: Remove, only for testing
     # [[proxies]]
-    # name = "example-1"
+    # name = "seerr"
     # type = "tcp"
-    # localIP = "svc-1"
-    # localPort = 50001
-    # remotePort = 50001
+    # localIP = "seerr.jellyfin"
+    # localPort = 5055
+    # remotePort = 5055
 
     [webServer]
     addr = "0.0.0.0"
@@ -102,7 +103,6 @@ data:
     name = "frps-dashboard-visitor"
     type = "stcp"
 
-    # must match the provider's proxy name
     serverName = "frps-dashboard-stcp"
     secretKey = "{{ .Envs.FRPS_VISITOR_KEY }}"
 

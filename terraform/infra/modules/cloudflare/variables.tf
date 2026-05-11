@@ -4,12 +4,7 @@ variable "account_id" {
   sensitive   = true
 }
 
-variable "domain" {
-  description = "Domain to be used over the cluster"
-  type        = string
-}
-
-variable "server_ip" {
-  description = "IP address for the wildcard DNS record"
-  type        = string
+variable "domains" {
+  description = "Map of domains to their IP addresses"
+  type        = map(string)
 }

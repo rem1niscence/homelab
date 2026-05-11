@@ -1,23 +1,29 @@
 resource "cloudflare_zone" "main" {
+  for_each = var.domains
+
   account = {
     id = var.account_id
   }
-  name = var.domain
+  name = each.key
   type = "full"
 }
 
 resource "cloudflare_dns_record" "wildcard_record" {
-  zone_id = cloudflare_zone.main.id
+  for_each = var.domains
+
+  zone_id = cloudflare_zone.main[each.key].id
   name    = "*"
   type    = "A"
-  content = var.server_ip
+  content = each.value
   ttl     = 3600
 }
 
 resource "cloudflare_dns_record" "apex_record" {
-  zone_id = cloudflare_zone.main.id
+  for_each = var.domains
+
+  zone_id = cloudflare_zone.main[each.key].id
   name    = "@"
   type    = "A"
-  content = var.server_ip
+  content = each.value
   ttl     = 3600
 }

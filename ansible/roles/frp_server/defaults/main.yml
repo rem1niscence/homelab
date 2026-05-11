@@ -18,16 +18,13 @@ frp_extra_ports: []
 frp_caddy_enabled: false
 frp_caddy_image: caddy:2
 
-# Base domain used to build virtual host names (e.g. "example.com")
-frp_caddy_domain: ""
-
 # List of routes Caddy will expose.  Each entry is a dict with:
-#   subdomain:    left-most label added to frp_caddy_domain
+#   domain:       full domain name (e.g. "blog.example.com")
 #   backend_port: port on the frps container to proxy to
 # Example:
 #   frp_caddy_routes:
-#     - subdomain: subdomain
+#     - domain: blog.example.com
 #       backend_port: 50001
-#     - subdomain: subdomain.nested
+#     - domain: other.example.com
 #       backend_port: 40001
-frp_caddy_routes: []
+frp_caddy_routes:

@@ -23,9 +23,9 @@ config:
       System:
         style: row
         columns: 4
-      # Blog:
-      #   style: row
-      #   columns: 2
+      Blog:
+        style: row
+        columns: 2
       Canopy:
         style: row
         columns: 4
@@ -473,6 +473,17 @@ config:
               url: {{HOMEPAGE_VAR_GLANCES_NAS_PING}}
               version: 4
               metric: info
+    - Blog:
+        - remini.dev:
+            icon: mdi-post-outline
+            href: https://remini.dev
+            siteMonitor: http://blog.blog
+            description: Personal blog
+        - Umami:
+            icon: umami
+            href: https://analytics.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://umami.blog
+            description: Blog analytics
     - Canopy:
         - Wallet 1:
             icon: mdi-wallet
@@ -521,7 +532,6 @@ config:
         - Grafana Explore:
             - abbr: GF
               href: https://grafana.{{HOMEPAGE_VAR_DOMAIN}}/explore
-
   widgets: |
     - kubernetes:
         cluster:

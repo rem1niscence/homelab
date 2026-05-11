@@ -126,6 +126,8 @@ resource "ansible_host" "oracle_vm" {
     frp_dashboard_password   = var.frp_dashboard_password
     frp_dashboard_secret_key = var.frp_dashboard_secret_key
     frp_extra_ports          = var.frp_extra_ports
+    frp_caddy_enabled        = var.frp_caddy_enabled
+    frp_caddy_routes         = var.frp_caddy_routes
   }
 }
 

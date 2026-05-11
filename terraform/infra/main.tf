@@ -25,8 +25,7 @@ locals {
 module "cloudflare" {
   source     = "./modules/cloudflare"
   account_id = data.sops_file.secrets.data["cloudflare.account_id"]
-  domain     = nonsensitive(data.sops_file.secrets.data["server.domain"])
-  server_ip  = nonsensitive(data.sops_file.secrets.data["server.ip"])
+  domains    = nonsensitive(yamldecode(data.sops_file.secrets.raw)["server"]["domains"])
 }
 
 module "hetzner" {
@@ -67,4 +66,12 @@ module "ansible" {
   frp_dashboard_password   = data.sops_file.secrets.data["tunnel.frp.dashboard_password"]
   frp_dashboard_secret_key = data.sops_file.secrets.data["tunnel.frp.dashboard_secret_key"]
   frp_extra_ports          = []
+  frp_caddy_enabled        = true
+  frp_caddy_routes = [{
+    domain       = "remini.dev"
+    backend_port = "8080"
+    }, {
+    domain       = "analytics.remini.dev"
+    backend_port = "8081"
+  }]
 }

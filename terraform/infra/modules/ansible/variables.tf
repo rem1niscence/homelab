@@ -89,7 +89,22 @@ variable "frp_dashboard_secret_key" {
 }
 
 variable "frp_extra_ports" {
-  description = "List of extra ports to expose via FRP. Dockr port expose format"
+  description = "List of extra ports to expose via FRP. Docker port expose format"
   type        = list(string)
   default     = []
+}
+
+variable "frp_caddy_enabled" {
+  description = "Enable cappy for FRP"
+  type        = bool
+  default     = false
+}
+
+variable "frp_caddy_routes" {
+  description = "List of Caddy routes to configure for FRP"
+  type = list(object({
+    domain       = string,
+    backend_port = number
+  }))
+  default = []
 }

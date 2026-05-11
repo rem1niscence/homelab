@@ -1,13 +1,9 @@
 # Managed by Ansible — do not edit manually.
 
 {% for route in frp_caddy_routes %}
-{{ route.subdomain }}.{{ frp_caddy_domain }} {
+{{ route.domain }} {
 	encode gzip
 	reverse_proxy frps-{{ frp_network_name }}:{{ route.backend_port }}
 }
 
 {% endfor %}
-# Catch-all for main domain
-*.{{ frp_caddy_domain }} {
-	respond "404 - Not Found" 404
-}

@@ -38,6 +38,7 @@ resource "oci_core_instance" "instance" {
 
   metadata = {
     ssh_authorized_keys = join("\n", values(var.ssh_keys))
+    user_data           = base64encode(var.user_data)
   }
 }
 

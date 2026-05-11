@@ -1,4 +1,4 @@
-output "hetzner_server" {
+output "hetzner_instance" {
   value = module.hetzner.server
 }
 

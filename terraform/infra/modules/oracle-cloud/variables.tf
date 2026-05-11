@@ -22,3 +22,10 @@ variable "display_name" {
   description = "Display name of the instance"
   type        = string
 }
+
+variable "user_data" {
+  description = "Cloud-init user data script to run on server first boot"
+  type        = string
+  sensitive   = true
+  default     = null
+}

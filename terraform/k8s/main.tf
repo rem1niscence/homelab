@@ -27,7 +27,7 @@ module "argocd" {
   sealed_secrets_crt = data.sops_file.secrets.data["sealed_secrets.tls_crt"]
   sealed_secrets_key = data.sops_file.secrets.data["sealed_secrets.tls_key"]
   admin_password     = data.sops_file.secrets.data["argocd.admin_password_hash"]
-  target_revision    = "v2"
+  target_revision    = "deploy"
   depends_on         = [module.cilium]
 }
 

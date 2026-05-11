@@ -13,7 +13,7 @@ spec:
         valueFiles:
           - $repo/k8s/values/system/victoria-logs.yml
     - repoURL: git@github.com:rem1niscence/homelab.git
-      targetRevision: v2
+      targetRevision: deploy
       ref: repo
   destination:
     server: https://kubernetes.default.svc

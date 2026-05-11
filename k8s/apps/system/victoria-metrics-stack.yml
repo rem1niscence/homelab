@@ -13,10 +13,10 @@ spec:
         valueFiles:
           - $repo/k8s/values/system/victoria-metrics-stack/values.yml
     - repoURL: git@github.com:rem1niscence/homelab.git
-      targetRevision: v2
+      targetRevision: deploy
       ref: repo
     - repoURL: git@github.com:rem1niscence/homelab.git
-      targetRevision: v2
+      targetRevision: deploy
       path: k8s/values/system/victoria-metrics-stack/manifests
   destination:
     server: https://kubernetes.default.svc

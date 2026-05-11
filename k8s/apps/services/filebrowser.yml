@@ -9,7 +9,7 @@ spec:
   project: default
   source:
     repoURL: git@github.com:rem1niscence/homelab.git
-    targetRevision: v2
+    targetRevision: deploy
     path: k8s/services/filebrowser
   destination:
     server: https://kubernetes.default.svc

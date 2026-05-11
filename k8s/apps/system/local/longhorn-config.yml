@@ -11,16 +11,16 @@ spec:
   project: default
   sources:
     - repoURL: git@github.com:rem1niscence/homelab.git
-      targetRevision: v2
+      targetRevision: deploy
       path: k8s/charts/longhorn-config
       helm:
         valueFiles:
           - $repo/k8s/values/system/longhorn-config/values.yml
     - repoURL: git@github.com:rem1niscence/homelab.git
-      targetRevision: v2
+      targetRevision: deploy
       ref: repo
     - repoURL: git@github.com:rem1niscence/homelab.git
-      targetRevision: v2
+      targetRevision: deploy
       path: k8s/values/system/longhorn-config/manifests
   destination:
     server: https://kubernetes.default.svc

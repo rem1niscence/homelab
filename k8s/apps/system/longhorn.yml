@@ -18,7 +18,7 @@ spec:
           preUpgradeChecker:
             jobEnabled: false
     - repoURL: git@github.com:rem1niscence/homelab.git
-      targetRevision: v2
+      targetRevision: deploy
       ref: repo
   destination:
     server: https://kubernetes.default.svc

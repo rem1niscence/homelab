@@ -11,16 +11,16 @@ spec:
   project: default
   sources:
     - repoURL: git@github.com:rem1niscence/homelab.git
-      targetRevision: v2
+      targetRevision: deploy
       path: k8s/charts/certificates
       helm:
         valueFiles:
           - $repo/k8s/values/system/certificates/values.yml
     - repoURL: git@github.com:rem1niscence/homelab.git
-      targetRevision: v2
+      targetRevision: deploy
       ref: repo
     - repoURL: git@github.com:rem1niscence/homelab.git
-      targetRevision: v2
+      targetRevision: deploy
       path: k8s/values/system/certificates/manifests
   destination:
     server: https://kubernetes.default.svc

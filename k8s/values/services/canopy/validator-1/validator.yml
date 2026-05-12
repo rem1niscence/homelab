@@ -1,26 +1,33 @@
 # Validator key is in a SealedSecret
-# named "sentinel-1-key" in the canopy namespace.
+# named "validator-1-key" in the canopy namespace.
 
-name: sentinel-1
+name: validator-1
 
 image:
   repository: canopynetwork/canopy-test
   tag: main
 
+p2p:
+  enabled: true
+  port: 9001
+  serviceType: ClusterIP
+
 routes:
   domain: rvserver.online
-  validatorPrefix: sentinel-1
+  validatorPrefix: validator-1
 
 storage:
-  size: 15Gi
-  storageClassName: longhorn-remote
+  size: 12Gi
+  storageClassName: "longhorn-vm"
   accessModes:
-    # must be accessible by multiple validators across multiple
-    # hosts to support backup restoration
     - ReadWriteOnce
 
 nodeSelector:
   platform.io/type: "vm"
+
+restore:
+  enabled: true
+  backupClaimName: "chain-data-sentinel-1-0"
 
 metrics:
   chain: 1
@@ -33,6 +40,10 @@ resources:
     memory: 1Gi
   limits:
     memory: 2Gi
+
+env:
+  - name: GOMEMLIMIT
+    value: "1700MiB"
 
 config:
   config:
@@ -51,8 +62,8 @@ config:
       "explorerPort": "50001",
       "rpcPort": "50002",
       "adminPort": "50003",
-      "rpcURL": "https://sentinel-1-rpc.rvserver.online",
-      "adminRPCUrl": "https://sentinel-1-admin-rpc.rvserver.online",
+      "rpcURL": "https://validator-1-rpc.rvserver.online",
+      "adminRPCUrl": "https://validator-1-admin-rpc.rvserver.online",
       "timeoutS": 3,
       "dataDirPath": "/root/.canopy",
       "dbName": "canopy",
@@ -61,7 +72,7 @@ config:
       "listenAddress": "0.0.0.0:9001",
       "externalAddress": "",
       "maxInbound": 21,
-      "maxOutbound": 50,
+      "maxOutbound": 7,
       "trutedPeersIDs": null,
       "dialPeers":
         [
@@ -88,8 +99,8 @@ config:
       "dropPercentage": 35,
       "metricsEnabled": true,
       "prometheusAddress": "0.0.0.0:9090",
-      "backupInterval": 50,
-      "lazyMempoolCheckFrequencyS": 0,
+      "lssCompactionInterval": 0,
+      "lazyMempoolCheckFrequencyS": 10,
     }
   genesis:
     {
@@ -231,41 +242,5 @@ config:
               "deleteOrderFee": 10000,
             },
           "governance": { "daoRewardPercentage": 5 },
-        },
-    }
-  keystore:
-    {
-      "addressMap":
-        {
-          "02cd4e5eb53ea665702042a6ed6d31d616054dc5":
-            {
-              "publicKey": "98d45087a99bcbfde91993502e77dde869d4485c3778fe46513958320da560823d56a0108f4cf3513393f4d561bc489b",
-              "salt": "74f0112bcffc91215b6f6266acec38ca",
-              "encrypted": "183444bb69d2693a892e90ef7ebca9167719113488e4e803f8e87603ea84ccb40c423bc72db7303e81d7d216368ed763",
-              "keyAddress": "02cd4e5eb53ea665702042a6ed6d31d616054dc5",
-              "keyNickname": "node_2",
-            },
-          "6f94783856d5ce46d24dd5946215086211d70776":
-            {
-              "publicKey": "abda38eb50fbe53db9e9c3b141c6a1ec54ad40a4840e34784c975da4ee175eb4c5dd10b6d759ae8fdf8bc22511bbd97b",
-              "salt": "cfbafc41835a47660f822ee26112d2c6",
-              "encrypted": "f18135d9509b41b5edc42e74d22396cba3f11fd8a5acae008a49b6e8bd3540a48f74c0d9e65872b922091286a531eee7",
-              "keyAddress": "6f94783856d5ce46d24dd5946215086211d70776",
-              "keyNickname": "node_3",
-            },
-          "851e90eaef1fa27debaee2c2591503bdeec1d123":
-            {
-              "publicKey": "b88a5928e54cbf0a36e0b98f5bcf02de9a9a1deba6994739f9160181a609f516eb702936a0cbf4c1f2e7e6be5b8272f2",
-              "salt": "3bff15134210c811e308eaa9b7b6024c",
-              "encrypted": "8b757090dfc98bfbff4f5972f0ae4bb0339a82a753f633cd37aa921955d76cda6a5f521120e7559eb57f497e88f7f555",
-              "keyAddress": "851e90eaef1fa27debaee2c2591503bdeec1d123",
-              "keyNickname": "node_1",
-            },
-        },
-      "nicknameMap":
-        {
-          "node_1": "851e90eaef1fa27debaee2c2591503bdeec1d123",
-          "node_2": "02cd4e5eb53ea665702042a6ed6d31d616054dc5",
-          "node_3": "6f94783856d5ce46d24dd5946215086211d70776",
         },
     }

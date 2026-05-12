@@ -81,20 +81,6 @@ data:
     method = "token"
     token = "{{ .Envs.FRP_SERVER_TOKEN }}"
 
-    [[proxies]]
-    name = "blog"
-    type = "tcp"
-    localIP = "blog.blog"
-    localPort = 80
-    remotePort = 8080
-
-    [[proxies]]
-    name = "umami"
-    type = "tcp"
-    localIP = "umami.blog"
-    localPort = 80
-    remotePort = 8081
-
     [webServer]
     addr = "0.0.0.0"
     port = 7500
@@ -110,3 +96,33 @@ data:
 
     bindAddr = "0.0.0.0"
     bindPort = 7501
+
+    # ---- Blog ----
+    [[proxies]]
+    name = "blog"
+    type = "tcp"
+    localIP = "blog.blog"
+    localPort = 80
+    remotePort = 8080
+
+    [[proxies]]
+    name = "umami"
+    type = "tcp"
+    localIP = "umami.blog"
+    localPort = 80
+    remotePort = 8081
+
+    # ---- Validators ----
+    [[proxies]]
+    name = "validator-1"
+    type = "tcp"
+    localIP = "validator-1-p2p.canopy"
+    localPort = 9001
+    remotePort = 9001
+
+    [[proxies]]
+    name = "validator-2"
+    type = "tcp"
+    localIP = "validator-2-p2p.canopy"
+    localPort = 9002
+    remotePort = 9002

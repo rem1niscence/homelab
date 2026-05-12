@@ -54,7 +54,7 @@ p2p:
   enabled: false
   port: 9001
   hostname: ""
-  externalTrafficPolicy: Cluster
+  externalTrafficPolicy: ""
 
 # Profiling (pprof)
 profiling:

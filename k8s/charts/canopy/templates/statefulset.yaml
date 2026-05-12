@@ -130,10 +130,12 @@ spec:
               mountPath: {{ .Values.configs.mountPath }}/config.json
               subPath: config.json
               readOnly: true
+            {{- if .Values.config.keystore }}
             - name: config
               mountPath: {{ .Values.configs.mountPath }}/keystore.json
               subPath: keystore.json
               readOnly: true
+            {{- end }}
             - name: secrets
               mountPath: {{ .Values.secrets.mountPath }}/validator_key.json
               subPath: validator_key.json

@@ -49,8 +49,10 @@ metadata:
       external-dns.alpha.kubernetes.io/hostname: "{{ .Values.p2p.hostname }},{{ .Values.routes.validatorPrefix }}.{{ .Values.p2p.hostname }}"
   {{- end }}
 spec:
-  type: LoadBalancer
-  externalTrafficPolicy: {{ .Values.p2p.externalTrafficPolicy | default "Cluster" }}
+  type: {{ .Values.p2p.serviceType | default "LoadBalancer" }}
+  {{- if .Values.p2p.externalTrafficPolicy }}
+  externalTrafficPolicy: {{ .Values.p2p.externalTrafficPolicy }}
+  {{- end }}
   selector:
     {{- include "validator.selectorLabels" . | nindent 4 }}
   ports:

@@ -1,7 +1,7 @@
 # Validator key is in a SealedSecret
-# named "validator-1-key" in the canopy namespace.
+# named "validator-2-key" in the canopy namespace.
 
-name: validator-1
+name: validator-2
 
 image:
   repository: canopynetwork/canopy-test
@@ -9,34 +9,35 @@ image:
 
 p2p:
   enabled: true
-  port: 9001
-  externalTrafficPolicy: Local
+  port: 9002
+  serviceType: ClusterIP
 
 routes:
   domain: rvserver.online
-  validatorPrefix: validator-1
+  validatorPrefix: validator-2
 
 storage:
-  size: 12Gi
-  storageClassName: "longhorn-remote"
+  size: 8Gi
+  storageClassName: "longhorn-vm"
   accessModes:
     - ReadWriteOnce
 
 nodeSelector:
-  platform.io/type: "secondary"
+  platform.io/type: "vm"
 
 restore:
   enabled: true
-  backupClaimName: "chain-data-sentinel-1-0"
+  backupClaimName: "chain-data-sentinel-2-0"
 
 metrics:
-  chain: 1
+  chain: 2
 
 profiling:
   enabled: true
 
 resources:
   requests:
+    cpu: 75m
     memory: 1Gi
   limits:
     memory: 2Gi
@@ -48,13 +49,15 @@ env:
 config:
   config:
     {
-      "logStructured": false,
-      "logJSON": false,
       "logLevel": "debug",
-      "chainId": 1,
+      "chainId": 2,
       "sleepUntil": 0,
-      "rootChain": ["chainId": 1, "url": "http://localhost:50002"],
-      "runVDF": true,
+      "rootChain":
+        [
+          { "chainId": 1, "url": "http://validator-1:50002" },
+          { "chainId": 2, "url": "http://localhost:50002" },
+        ],
+      "runVDF": false,
       "headless": false,
       "autoUpdate": false,
       "runningAutoUpdate": false,
@@ -62,24 +65,31 @@ config:
       "explorerPort": "50001",
       "rpcPort": "50002",
       "adminPort": "50003",
-      "rpcURL": "https://validator-1-rpc.rvserver.online",
-      "adminRPCUrl": "https://validator-1-admin-rpc.rvserver.online",
+      "rpcURL": "https://validator-2-rpc.rvserver.online",
+      "adminRPCUrl": "https://validator-2-admin-rpc.rvserver.online",
       "timeoutS": 3,
       "dataDirPath": "/root/.canopy",
       "dbName": "canopy",
       "inMemory": false,
       "networkID": 1,
-      "listenAddress": "0.0.0.0:9031",
+      "listenAddress": "0.0.0.0:9002",
       "externalAddress": "",
       "maxInbound": 21,
       "maxOutbound": 7,
-      "trutedPeersIDs": null,
+      "trustedPeerIDs": null,
       "dialPeers":
         [
-          "a81e8a9dfd9a510054a0c11649e6697ea1710bbc7a61757d5a1f77e886497a9a01d79b1af4d88192fea167148df48db3@tcp://canopy.stakely.io",
-          "b6563858d1de41877e1494d8dde6f8450b20928e3d980c5a9b6fe2f1fdd6a43ff63dbf5c800c5d91962e0a646d96b413@tcp://circle9.xyz",
-          "99348365ca73c1ea15abff01060184931b40ab1d6434148d75c603c33103598af06e254afce39f754eead7b98dfb2874@tcp://canoliq.org",
-          "91614594c943c218a47e92bcfda68d0c90ead6a40c4ffd852bb0bfa9f338d2c6f24bdfc6c116666e737812d4dc37f499@tcp://canopy.1xp.vc",
+          "90703d453dfa70af3c85f3605e6cc8222d01d68d439ee5a9ade10be631572b330e1793206c8d417d9693be1d5af417fe@tcp://cnpy.network:9010",
+          "89c592a8a27bc2ba3783048ebad2ee77b67ce8db1d3706d19135fac44e71d459870791d8face14dde4df6262a6445a27@tcp://minerstellar.com:9020",
+          "b1891c2a38b553279b46452a4ecc49fa42ecb7c71a27f39efa5b3f817481b443cb44da9be251fa571d1ac43dd5ef7fd9@tcp://agentofthecrown.com:9030",
+          "b338f09135994130bee5da939513241b5d01ba5e73c409ed5ecea597b86a8b9c05fd27fb5e47a7296350fbae6262a484@tcp://cnpynetwork.com:9040",
+          "8794c211342dc0da348b16e4e5903ffd7f913c390bd29dbfad0c44b891b08a99d74bc90546d89b54098ac7c0c5331550@tcp://dun3waves.xyz:9050",
+          "99e38bdc8b7c7f9f8a67151da78994a2616ac127518d4dd8f5a08ad760921758269fcb5172713b9585ec7007f60cb6fe@tcp://canopynode.cam:9060",
+          "a329a705dab85db2fd950cef9ffd87e27ff4b91b929d5ab26e6efb40b1b3b45e74f7d8162822c49b9909893e6461cc8d@tcp://uem44.com:9070",
+          "b17d4eb3938957e710bacc9f09d2a9aa79a568fcdf1f8fc565bdb5de3f334295e929e4b086b9c8e9610654155fb0452b@tcp://canopycoin.xyz:9080",
+          "ab4fe218bb09a27908c6181fc799b8371d895f13173fed5b924af60235a548cd882ba97f911c08d9bda34c46a7dab359@tcp://cryptoicp.com:9090",
+          "b346ad1f1809adc64d4a06e5be4d9960a018faada129d659623fd97846d5127de550218929ec9de4af9d9cbd1ec52d46@tcp://lava-9.com:9100",
+          "9174b24ba27fe8a0f8616bf1a382d81428ef8a94b7ff70916bb9b266c9070bd848e49a0c33a1c17553416c949ea3409a@tcp://cleanmarro.com:9110",
         ],
       "bannedPeerIDs": null,
       "bannedIPs": null,
@@ -88,7 +98,7 @@ config:
       "electionTimeoutMS": 1500,
       "electionVoteTimeoutMS": 1500,
       "proposeTimeoutMS": 2500,
-      "proposeVoteTimeoutMS": 4000,
+      "proposeVoteTimeoutMS": 3000,
       "precommitTimeoutMS": 2000,
       "precommitVoteTimeoutMS": 2000,
       "commitTimeoutMS": 2000,
@@ -109,7 +119,7 @@ config:
           {
             "address": "9c51a2b9b9234865a61cd43aae7f899441ae6271",
             "publicKey": "8ad02e9b05e418f198e89179685a48b227f1c2bc266d4db002f24f8155c5119cbb9387146319b5dc4a260184f20d5d4f",
-            "committees": [1, 2],
+            "committees": [2],
             "netAddress": "tcp://cnpy.xyz",
             "stakedAmount": 1,
             "output": "cf228862bd36016c0154e789d5fabe584da31c7e",
@@ -117,15 +127,15 @@ config:
           {
             "address": "5bc4bd9a3468889febdc6a73df0090b12a263eb4",
             "publicKey": "90703d453dfa70af3c85f3605e6cc8222d01d68d439ee5a9ade10be631572b330e1793206c8d417d9693be1d5af417fe",
-            "committees": [1, 2],
-            "netAddress": "tcp://cnpy.network",
+            "committees": [2],
+            "netAddress": "tcp://cnpy.xyz",
             "stakedAmount": 1,
             "output": "faef35fb62796dfd6dfb9b19ea3d4be130a97257",
           },
           {
             "address": "997634c57ad60414116dc59417db6829c209f1df",
             "publicKey": "89c592a8a27bc2ba3783048ebad2ee77b67ce8db1d3706d19135fac44e71d459870791d8face14dde4df6262a6445a27",
-            "committees": [1, 2],
+            "committees": [2],
             "netAddress": "tcp://minerstellar.com",
             "stakedAmount": 1,
             "output": "12ee25b30f3016e3427983c1fb75eabab025a2d5",
@@ -133,7 +143,7 @@ config:
           {
             "address": "ac2c2eb9aa04b99ec9a523b09ca844a77826c291",
             "publicKey": "b1891c2a38b553279b46452a4ecc49fa42ecb7c71a27f39efa5b3f817481b443cb44da9be251fa571d1ac43dd5ef7fd9",
-            "committees": [1, 2],
+            "committees": [2],
             "netAddress": "tcp://agentofthecrown.com",
             "stakedAmount": 1,
             "output": "330d139fd014ec84c15b9786f9934a5a95a02d25",
@@ -141,7 +151,7 @@ config:
           {
             "address": "a843153e432b2b3052e50cfb37bbd021e9cbd34c",
             "publicKey": "b338f09135994130bee5da939513241b5d01ba5e73c409ed5ecea597b86a8b9c05fd27fb5e47a7296350fbae6262a484",
-            "committees": [1, 2],
+            "committees": [2],
             "netAddress": "tcp://cnpynetwork.com",
             "stakedAmount": 1,
             "output": "1202c3f3ac5e4876f9b35774858ca16e129ceba1",
@@ -149,7 +159,7 @@ config:
           {
             "address": "5946f3adf4965295b816a40b719ff79e9fd1dba2",
             "publicKey": "8794c211342dc0da348b16e4e5903ffd7f913c390bd29dbfad0c44b891b08a99d74bc90546d89b54098ac7c0c5331550",
-            "committees": [1, 2],
+            "committees": [2],
             "netAddress": "tcp://dun3waves.xyz",
             "stakedAmount": 1,
             "output": "3b7d461b533ff5b7ec28d172656b8049f29e5b11",
@@ -157,7 +167,7 @@ config:
           {
             "address": "51f334c0e137b99aa8fc9eae3a71064c2ccf8208",
             "publicKey": "99e38bdc8b7c7f9f8a67151da78994a2616ac127518d4dd8f5a08ad760921758269fcb5172713b9585ec7007f60cb6fe",
-            "committees": [1, 2],
+            "committees": [2],
             "netAddress": "tcp://canopynode.cam",
             "stakedAmount": 1,
             "output": "3dad3f4dcb6e0411a6acfc66c3d8850aff9789e4",
@@ -165,7 +175,7 @@ config:
           {
             "address": "8b243551a78f5380d6ba5b1e84fee34b23f6e757",
             "publicKey": "a329a705dab85db2fd950cef9ffd87e27ff4b91b929d5ab26e6efb40b1b3b45e74f7d8162822c49b9909893e6461cc8d",
-            "committees": [1, 2],
+            "committees": [2],
             "netAddress": "tcp://uem44.com",
             "stakedAmount": 1,
             "output": "b70bd2f4a87a43597c9c78d65dc3192090fdaa6f",
@@ -173,7 +183,7 @@ config:
           {
             "address": "fc5cdb5c0b6a6df41b92976bbdf2b6832855446f",
             "publicKey": "b17d4eb3938957e710bacc9f09d2a9aa79a568fcdf1f8fc565bdb5de3f334295e929e4b086b9c8e9610654155fb0452b",
-            "committees": [1, 2],
+            "committees": [2],
             "netAddress": "tcp://canopycoin.xyz",
             "stakedAmount": 1,
             "output": "a59917b6d045327d4a39736fea81b72e1891692e",
@@ -181,7 +191,7 @@ config:
           {
             "address": "4e2ce94661e2e3fd3af02e21898803c4d74e84ba",
             "publicKey": "ab4fe218bb09a27908c6181fc799b8371d895f13173fed5b924af60235a548cd882ba97f911c08d9bda34c46a7dab359",
-            "committees": [1, 2],
+            "committees": [2],
             "netAddress": "tcp://cryptoicp.com",
             "stakedAmount": 1,
             "output": "bc01362a7bd2613a3786ce32007452fd51f2bf1b",
@@ -189,7 +199,7 @@ config:
           {
             "address": "33e14ef6b87fb688b829c5e29618bb549dc7b4cd",
             "publicKey": "b346ad1f1809adc64d4a06e5be4d9960a018faada129d659623fd97846d5127de550218929ec9de4af9d9cbd1ec52d46",
-            "committees": [1, 2],
+            "committees": [2],
             "netAddress": "tcp://lava-9.com",
             "stakedAmount": 1,
             "output": "b587ddd8b58134c61ec52e5b1e88a27a5e07be82",
@@ -197,7 +207,7 @@ config:
           {
             "address": "b9c6c2dfa9d049e480c8cec9c29463abf078a594",
             "publicKey": "9174b24ba27fe8a0f8616bf1a382d81428ef8a94b7ff70916bb9b266c9070bd848e49a0c33a1c17553416c949ea3409a",
-            "committees": [1, 2],
+            "committees": [2],
             "netAddress": "tcp://cleanmarro.com",
             "stakedAmount": 1,
             "output": "8f5633ac35fc17fe113b8ecaa2060289607c0352",
@@ -221,7 +231,7 @@ config:
               "minimumOrderSize": 1000000000,
               "stakePercentForSubsidizedCommittee": 33,
               "maxSlashPerCommittee": 15,
-              "delegateRewardPercentage": 0,
+              "delegateRewardPercentage": 10,
               "buyDeadlineBlocks": 60,
               "lockOrderFeeMultiplier": 2,
             },
@@ -243,19 +253,4 @@ config:
             },
           "governance": { "daoRewardPercentage": 5 },
         },
-    }
-  keystore:
-    {
-      "addressMap":
-        {
-          "02cd4e5eb53ea665702042a6ed6d31d616054dc5":
-            {
-              "publicKey": "98d45087a99bcbfde91993502e77dde869d4485c3778fe46513958320da560823d56a0108f4cf3513393f4d561bc489b",
-              "salt": "74f0112bcffc91215b6f6266acec38ca",
-              "encrypted": "183444bb69d2693a892e90ef7ebca9167719113488e4e803f8e87603ea84ccb40c423bc72db7303e81d7d216368ed763",
-              "keyAddress": "02cd4e5eb53ea665702042a6ed6d31d616054dc5",
-              "keyNickname": "do_not_use",
-            },
-        },
-      "nicknameMap": { "do_not_use": "851e90eaef1fa27debaee2c2591503bdeec1d123" },
     }

@@ -65,8 +65,11 @@ module "ansible" {
   frp_dashboard_username   = data.sops_file.secrets.data["tunnel.frp.dashboard_username"]
   frp_dashboard_password   = data.sops_file.secrets.data["tunnel.frp.dashboard_password"]
   frp_dashboard_secret_key = data.sops_file.secrets.data["tunnel.frp.dashboard_secret_key"]
-  frp_extra_ports          = []
-  frp_caddy_enabled        = true
+  frp_extra_ports = [
+    "9001:9001/tcp",
+    "9002:9002/tcp",
+  ]
+  frp_caddy_enabled = true
   frp_caddy_routes = [{
     domain       = "remini.dev"
     backend_port = "8080"

@@ -10,22 +10,6 @@ resource "hcloud_firewall" "k8s_firewall" {
   }
 
   rule {
-    # HTTP
-    direction  = "in"
-    protocol   = "tcp"
-    port       = "80"
-    source_ips = ["0.0.0.0/0", "::/0"]
-  }
-
-  rule {
-    # HTTPS
-    direction  = "in"
-    protocol   = "tcp"
-    port       = "443"
-    source_ips = ["0.0.0.0/0", "::/0"]
-  }
-
-  rule {
     # ICMP for cluster ping, health checks, and diagnostics
     direction  = "in"
     protocol   = "icmp"

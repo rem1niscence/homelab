@@ -66,22 +66,32 @@ spec:
           env:
             - name: LOG_LEVEL
               value: "info"
-              # - name: gluetun
-              #   image: qmcgaw/gluetun:latest
-              #   securityContext:
-              #     capabilities:
-              #       add: ["NET_ADMIN"]
-              #     privileged: true
-              #   envFrom:
-              #     - secretRef:
-              #         name: gluetun
-              #   env:
-              #     - name: TZ
-              #       value: Etc/UTC
-              #     - name: VPN_TYPE
-              #       value: wireguard
-              #     - name: DNS_KEEP_NAMESERVER
-              #       value: "on"
+        - name: gluetun
+          image: qmcgaw/gluetun:latest
+          securityContext:
+            capabilities:
+              add: ["NET_ADMIN"]
+            privileged: true
+          envFrom:
+            - secretRef:
+                name: gluetun
+          env:
+            - name: TZ
+              value: Etc/UTC
+            - name: VPN_TYPE
+              value: wireguard
+            - name: DNS_KEEP_NAMESERVER
+              value: "on"
+            - name: FIREWALL_OUTBOUND_SUBNETS
+              value: "10.42.0.0/15"
+            - name: FIREWALL_VPN_INPUT_PORTS
+              value: "4567,8191"
+            - name: FIREWALL_INPUT_PORTS
+              value: "4567,8191"
+            - name: HEALTH_SERVER_ADDRESS
+              value: "0.0.0.0:9999"
+            - name: FIREWALL
+              value: "off"
       volumes:
         - name: config
           persistentVolumeClaim:

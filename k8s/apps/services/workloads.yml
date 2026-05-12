@@ -1,0 +1,36 @@
+# Auto-discovers services by scanning k8s/workloads/.
+# Each subdirectory becomes a separate ArgoCD Application deployed
+# into a namespace matching the directory name.
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: workloads
+  namespace: argocd
+spec:
+  generators:
+    - git:
+        repoURL: git@github.com:rem1niscence/homelab.git
+        revision: deploy
+        directories:
+          - path: k8s/workloads/*
+  template:
+    metadata:
+      name: "{{path.basename}}"
+      namespace: argocd
+      labels:
+        type: service
+    spec:
+      project: default
+      source:
+        repoURL: git@github.com:rem1niscence/homelab.git
+        targetRevision: deploy
+        path: "{{path}}"
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: "{{path.basename}}"
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true

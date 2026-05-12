@@ -13,11 +13,11 @@ routes:
 
 storage:
   size: 10Gi
-  storageClassName: longhorn-single
+  storageClassName: longhorn-remote
   accessModes:
     # must be accessible by multiple validators across multiple
     # hosts to support backup restoration
-    - ReadWriteMany
+    - ReadWriteOnce
 
 nodeSelector:
   platform.io/type: "vm"

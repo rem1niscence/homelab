@@ -16,3 +16,8 @@ resource "hcloud_server" "server" {
     role       = "worker"
   }
 }
+
+resource "hcloud_firewall_attachment" "main" {
+  firewall_id = hcloud_firewall.k8s_firewall.id
+  server_ids  = [hcloud_server.server.id]
+}

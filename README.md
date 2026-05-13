@@ -40,32 +40,46 @@ flowchart TD
     R2 --> TF_K8S
 
     TF_INFRA["terraform/infra"]
-    TF_INFRA -->|provisions| INFRA_RESOURCES["DNS · Ansible Inventory"]
-    TF_K8S["terraform/k8s"] --> |provisions| K8S_RESOURCES["Cilium · ArgoCD"]
+    TF_INFRA -->|provisions| INFRA_RESOURCES["Ansible Inventory"]
+    
+    TF_INFRA -->|provisions| INFRA_DNS["DNS"]
+    INFRA_DNS -->|cluster domain| WG_PEER["🔒 WireGuard peer IP"] -.-|VPN required| INTERNET
 
     TUNNEL_VM["☁️ Tunnel VM"]
     INTERNET["🌐 Internet"]
 
     TF_INFRA -->|provisions| CLOUD_VM
-    TF_INFRA -->|provisions| TUNNEL_VM
     TF_INFRA -.->|registers| LOCAL
+    TF_INFRA -->|provisions| TUNNEL_VM
+
+    INFRA_DNS -->|tunnel domain| TUNNEL_VM
+
 
     INFRA_RESOURCES -->|consumed by| ANSIBLE["Ansible"]
-    ANSIBLE -->|manages| ANSIBLE_RESOURCES["K3S install · Server setup"]
+    ANSIBLE -->|manages| ANSIBLE_RESOURCES["Server setup · CronJobs"]
+    ANSIBLE --->|creates| CLUSTER
     ANSIBLE -->|manages| TUNNEL_VM
-    K8S_RESOURCES -->|bootstraps| CLUSTER
+
+    ANSIBLE_RESOURCES -->|applies to| CLOUD_VM
+    ANSIBLE_RESOURCES -->|applies to| LOCAL
 
     subgraph CLUSTER["k3s cluster"]
         subgraph NODES["Nodes"]
-            CLOUD_VM["☁️ Cloud VM (via WireGuard mesh)"]
-            LOCAL["🏠 Local nodes (NUC · Beelink · RPis)"]
+            CLOUD_VM["☁️ Cloud VM"]
+            LOCAL <.->|Wireguard mesh| CLOUD_VM
+            LOCAL["🏠 Local nodes"]
         end
         ARGOCD["ArgoCD"]
         ARGOCD -->|deploys to| NODES
+        CILIUM["Cilium"]
     end
 
+    TF_K8S["terraform/k8s"]
+    TF_K8S -->|bootstraps| ARGOCD
+    TF_K8S --->|bootstraps| CILIUM
+
     CLUSTER -->|tunnels| TUNNEL_VM
-    TUNNEL_VM -->|exposes| INTERNET
+    TUNNEL_VM --- |exposes| INTERNET
 ```
 
 ## Credits to:
@@ -74,3 +88,4 @@ flowchart TD
 - [Terraform](https://www.terraform.io) by [HashiCorp](https://www.hashicorp.com/)
 - [Ansible](https://www.ansible.com) by [RedHat](https://www.redhat.com/)
 - [Argocd](https://argoproj.github.io/cd/) by [Argo Project](https://github.com/argoproj)
+

@@ -38,6 +38,7 @@ flowchart TD
 
     R2 --> TF_INFRA
     R2 --> TF_K8S
+    
 
     TF_INFRA["terraform/infra"]
     TF_INFRA -->|provisions| INFRA_RESOURCES["Ansible Inventory"]
@@ -53,7 +54,6 @@ flowchart TD
     TF_INFRA -->|provisions| TUNNEL_VM
 
     INFRA_DNS -->|tunnel domain| TUNNEL_VM
-
 
     INFRA_RESOURCES -->|consumed by| ANSIBLE["Ansible"]
     ANSIBLE -->|manages| ANSIBLE_RESOURCES["Server setup · CronJobs"]
@@ -74,6 +74,10 @@ flowchart TD
         CILIUM["Cilium"]
     end
 
+    NAS["💾 NAS"]
+    CLOUD_VM -.->|storage through wireguard| NAS
+    LOCAL -->|local storage| NAS
+
     TF_K8S["terraform/k8s"]
     TF_K8S -->|bootstraps| ARGOCD
     TF_K8S --->|bootstraps| CILIUM
@@ -82,10 +86,10 @@ flowchart TD
     TUNNEL_VM --- |exposes| INTERNET
 ```
 
-## Credits to:
+## Credits to
+
 - [K3S](https://k3s.io) by [Rancher](https://rancher.com/)
 - [Tailscale](https://github.com/tailscale/tailscale) by [Tailscale](https://tailscale.com/)
 - [Terraform](https://www.terraform.io) by [HashiCorp](https://www.hashicorp.com/)
 - [Ansible](https://www.ansible.com) by [RedHat](https://www.redhat.com/)
 - [Argocd](https://argoproj.github.io/cd/) by [Argo Project](https://github.com/argoproj)
-

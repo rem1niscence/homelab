@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: update-lists
+  namespace: pihole
+spec:
+  schedule: "25 */12 * * *"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          nodeSelector:
+            platform.io/type: main
+          containers:
+            - name: pihole-update
+              image: pihole/pihole:latest
+              command: ["/bin/sh", "-c", "pihole -g"]
+              args: []
+              volumeMounts:
+                - name: config
+                  mountPath: /etc/pihole
+          volumes:
+            - name: config
+              persistentVolumeClaim:
+                claimName: config-pvc
+          restartPolicy: Never

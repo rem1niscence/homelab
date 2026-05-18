@@ -42,6 +42,7 @@ recurringJobs:
       - longhorn-local
       - longhorn-remote
       - longhorn-single
+      - longhorn-vm
   - name: backup
     task: backup
     cron: "0 */6 * * *"

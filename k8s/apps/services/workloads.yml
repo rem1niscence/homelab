@@ -7,6 +7,11 @@ metadata:
   name: workloads
   namespace: argocd
 spec:
+  ignoreApplicationDifferences:
+    # Allows ImageUpdater to update the image tag in the kustomization.yaml
+    # without ArgoCD marking the app as OutOfSync.
+    - jsonPointers:
+        - /spec/source/kustomize/images
   generators:
     - git:
         repoURL: git@github.com:rem1niscence/homelab.git

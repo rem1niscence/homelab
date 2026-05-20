@@ -4,10 +4,6 @@ metadata:
   name: jellyfin
   labels:
     app: jellyfin
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -65,10 +61,6 @@ metadata:
   name: seerr
   labels:
     app: seerr
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -315,5 +307,7 @@ spec:
   applicationRefs:
     - namePattern: "jellyfin"
       images:
-        - alias: "tracearr"
-          imageName: "ghcr.io/connorgallopo/tracearr:latest"
+        - alias: tracearr
+          imageName: ghcr.io/connorgallopo/tracearr:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"

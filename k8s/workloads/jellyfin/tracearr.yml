@@ -47,10 +47,6 @@ kind: Deployment
 metadata:
   name: timescale
   namespace: jellyfin
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 30m"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -107,10 +103,6 @@ metadata:
   name: redis
   labels:
     app: redis
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 30m"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:

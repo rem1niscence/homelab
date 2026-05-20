@@ -311,3 +311,19 @@ spec:
           imageName: ghcr.io/connorgallopo/tracearr:latest
           commonUpdateSettings:
             updateStrategy: "digest"
+        - alias: jellyfin
+          imageName: lscr.io/linuxserver/jellyfin:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"
+        - alias: seerr
+          imageName: ghcr.io/seerr-team/seerr:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"
+        - alias: timescale
+          imageName: timescale/timescaledb-ha:pg18
+          commonUpdateSettings:
+            updateStrategy: "digest"
+        - alias: amd-gpu
+          imageName: rocm/k8s-device-plugin:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"

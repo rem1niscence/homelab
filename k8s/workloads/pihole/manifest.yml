@@ -2,10 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: pihole
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -26,7 +22,6 @@ spec:
             capabilities:
               add:
                 - NET_ADMIN
-          # image: pihole/pihole:2024.07.0
           image: pihole/pihole:latest
           ports:
             - containerPort: 80
@@ -124,7 +119,20 @@ data:
 
     # Optional: Enable strict order for these domains
     strict-order
-
+---
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: pihole
+  namespace: argocd
+spec:
+  applicationRefs:
+    - namePattern: "pihole"
+      images:
+        - alias: pihole
+          imageName: pihole/pihole:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"
 # Blocklists
 # https://blocklistproject.github.io/Lists/tracking.txt
 # https://github.com/fabriziosalmi/blacklists/releases/download/latest/blacklist.txt

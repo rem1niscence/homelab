@@ -5,9 +5,6 @@ metadata:
   labels:
     app: suwayomi
   annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -166,3 +163,25 @@ spec:
       services:
         - name: suwayomi
           port: 80
+---
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: suwayomi
+  namespace: argocd
+spec:
+  applicationRefs:
+    - namePattern: "suwayomi"
+      images:
+        - alias: suwayomi
+          imageName: ghcr.io/suwayomi/suwayomi-server:preview
+          commonUpdateSettings:
+            updateStrategy: "digest"
+        - alias: flaresolverr
+          imageName: ghcr.io/flaresolverr/flaresolverr:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"
+        - alias: gluetun
+          imageName: qmcgaw/gluetun:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"

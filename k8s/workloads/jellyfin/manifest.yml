@@ -305,3 +305,15 @@ spec:
   tls:
     - hosts:
         - seerr
+---
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: jellyfin
+  namespace: argocd
+spec:
+  applicationRefs:
+    - namePattern: "jellyfin"
+      images:
+        - alias: "tracearr"
+          imageName: "ghcr.io/connorgallopo/tracearr:latest"

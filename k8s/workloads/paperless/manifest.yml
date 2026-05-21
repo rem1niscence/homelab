@@ -192,3 +192,21 @@ spec:
       services:
         - name: paperless
           port: 80
+---
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: paperless
+  namespace: argocd
+spec:
+  applicationRefs:
+    - namePattern: "paperless"
+      images:
+        - alias: paperless
+          imageName: paperlessngx/paperless-ngx:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"
+        - alias: redis
+          imageName: redis:7-alpine
+          commonUpdateSettings:
+            updateStrategy: "digest"

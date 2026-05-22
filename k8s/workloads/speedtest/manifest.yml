@@ -5,10 +5,6 @@ metadata:
   name: speedtest
   labels:
     app: speedtest
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -61,10 +57,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: postgres
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 30m"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -163,3 +155,21 @@ spec:
       services:
         - name: speedtest
           port: 80
+---
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: speedtest
+  namespace: argocd
+spec:
+  applicationRefs:
+    - namePattern: "speedtest"
+      images:
+        - alias: speedtest
+          imageName: lscr.io/linuxserver/speedtest-tracker:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"
+        - alias: postgres
+          imageName: postgres:16-alpine
+          commonUpdateSettings:
+            updateStrategy: "digest"

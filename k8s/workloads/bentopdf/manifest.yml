@@ -2,13 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: bentopdf
-
   labels:
     app: bentopdf
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -42,7 +37,6 @@ apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: bentopdf
-
 spec:
   entryPoints:
     - websecure
@@ -52,3 +46,17 @@ spec:
       services:
         - name: bentopdf
           port: 80
+---
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: bentopdf
+  namespace: argocd
+spec:
+  applicationRefs:
+    - namePattern: "bentopdf"
+      images:
+        - alias: bentopdf
+          imageName: ghcr.io/alam00000/bentopdf:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"

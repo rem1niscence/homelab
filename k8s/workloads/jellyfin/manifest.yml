@@ -323,6 +323,10 @@ spec:
           imageName: timescale/timescaledb-ha:pg18
           commonUpdateSettings:
             updateStrategy: "digest"
+        - alias: redis
+          imageName: redis:7-alpine
+          commonUpdateSettings:
+            updateStrategy: "digest"
         - alias: amd-gpu
           imageName: rocm/k8s-device-plugin:latest
           commonUpdateSettings:

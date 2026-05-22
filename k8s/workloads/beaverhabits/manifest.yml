@@ -4,10 +4,6 @@ metadata:
   name: beaverhabits
   labels:
     app: beaverhabits
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -27,7 +23,7 @@ spec:
           securityContext:
             runAsUser: 1000
             runAsGroup: 1000
-          image: daya0576/beaverhabits
+          image: daya0576/beaverhabits:latest
           ports:
             - containerPort: 8080
           env:
@@ -86,3 +82,17 @@ spec:
       services:
         - name: beaverhabits
           port: 80
+---
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: beaverhabits
+  namespace: argocd
+spec:
+  applicationRefs:
+    - namePattern: "beaverhabits"
+      images:
+        - alias: beaverhabits
+          imageName: daya0576/beaverhabits:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"

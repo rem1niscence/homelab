@@ -89,7 +89,8 @@ config:
       "metricsEnabled": true,
       "prometheusAddress": "0.0.0.0:9090",
       "backupInterval": 50,
-      "lazyMempoolCheckFrequencyS": 0,
+      "lssCompactionInterval": 20000,
+      "lazyMempoolCheckFrequencyS": 10,
     }
   genesis:
     {

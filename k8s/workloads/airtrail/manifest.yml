@@ -4,10 +4,6 @@ metadata:
   name: airtrail
   labels:
     app: airtrail
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -140,3 +136,21 @@ spec:
       services:
         - name: airtrail
           port: 80
+---
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: airtrail
+  namespace: argocd
+spec:
+  applicationRefs:
+    - namePattern: "airtrail"
+      images:
+        - alias: airtrail
+          imageName: johly/airtrail:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"
+        - alias: postgres
+          imageName: postgres:16-alpine
+          commonUpdateSettings:
+            updateStrategy: "digest"

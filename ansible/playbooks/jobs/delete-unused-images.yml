@@ -5,7 +5,7 @@
   tasks:
     - name: copy cleanup script
       ansible.builtin.copy:
-        dest: /usr/local/bin/delete-unused-images.sh
+        dest: /usr/local/bin/delete-unused-images
         mode: "0755"
         content: |
           #!/bin/bash
@@ -32,6 +32,6 @@
     - name: schedule daily cron job
       ansible.builtin.cron:
         name: delete unused k3s images
-        job: /usr/local/bin/delete-unused-images.sh >> /var/log/delete-unused-images.log 2>&1
+        job: /usr/local/bin/delete-unused-images >> /var/log/delete-unused-images.log 2>&1
         hour: "3"
         minute: "0"

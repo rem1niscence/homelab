@@ -59,6 +59,8 @@ module "ansible" {
   server_pi_3        = local.server_pi_3
   k3s_token          = data.sops_file.secrets.data["ansible.k3s_token"]
   tailscale_auth_key = data.sops_file.secrets.data["ansible.tailscale.auth_key"]
+  dockerhub_username = data.sops_file.secrets.data["ansible.dockerhub.username"]
+  dockerhub_password = data.sops_file.secrets.data["ansible.dockerhub.password"]
 
   # Tunnel configuration
   frp_token                = data.sops_file.secrets.data["tunnel.frp.token"]

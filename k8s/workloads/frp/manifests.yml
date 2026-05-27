@@ -18,7 +18,7 @@ spec:
         platform.io/type: main
       containers:
         - name: frpc
-          image: ghcr.io/fatedier/frpc:v0.68.1
+          image: ghcr.io/fatedier/frpc:v0.69.0
           args: ["-c", "/etc/frp/frpc.toml"]
           envFrom:
             - secretRef:

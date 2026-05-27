@@ -7,13 +7,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: searxng
-
   labels:
     app: searxng
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -28,7 +23,7 @@ spec:
         platform.io/type: main
       containers:
         - name: searxng
-          image: ghcr.io/searxng/searxng
+          image: ghcr.io/searxng/searxng:latest
           ports:
             - containerPort: 8080
           env:
@@ -70,10 +65,6 @@ metadata:
   name: redis
   labels:
     app: redis
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -118,7 +109,6 @@ spec:
   ports:
     - port: 80
       targetPort: 8080
----
 ---
 apiVersion: v1
 kind: Service
@@ -175,3 +165,21 @@ data:
         engine: karmasearch
         shortcut: ka
         disabled: true
+---
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: searxng
+  namespace: argocd
+spec:
+  applicationRefs:
+    - namePattern: "searxng"
+      images:
+        - alias: searxng
+          imageName: ghcr.io/searxng/searxng:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"
+        - alias: valkey
+          imageName: valkey/valkey:9-alpine
+          commonUpdateSettings:
+            updateStrategy: "digest"

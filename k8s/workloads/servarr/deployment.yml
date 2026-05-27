@@ -117,7 +117,7 @@ spec:
         io.cilium.proxy-visibility: "<Ingress/9696/TCP>,<Ingress/8191/TCP>"
     spec:
       nodeSelector:
-        platform.io/type: secondary
+        platform.io/type: main
       initContainers:
         - name: gluetun
           image: qmcgaw/gluetun:latest

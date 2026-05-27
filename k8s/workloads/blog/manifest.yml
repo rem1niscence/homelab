@@ -52,10 +52,6 @@ metadata:
   name: blog
   labels:
     app: blog
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 2
   selector:
@@ -145,3 +141,25 @@ spec:
       services:
         - name: blog
           port: 80
+---
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: blog
+  namespace: argocd
+spec:
+  applicationRefs:
+    - namePattern: "blog"
+      images:
+        - alias: blog
+          imageName: golang:1.26-alpine
+          commonUpdateSettings:
+            updateStrategy: "digest"
+        - alias: umami
+          imageName: ghcr.io/umami-software/umami:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"
+        - alias: postgres
+          imageName: postgres:16-alpine
+          commonUpdateSettings:
+            updateStrategy: "digest"

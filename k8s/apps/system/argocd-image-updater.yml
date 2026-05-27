@@ -9,9 +9,11 @@ spec:
     - repoURL: https://argoproj.github.io/argo-helm
       chart: argocd-image-updater
       targetRevision: 1.2.1
-    - repoURL: git@github.com:rem1niscence/homelab.git
-      targetRevision: deploy
-      ref: repo
+      helm:
+        values: |
+          extraArgs:
+            - --interval
+            - 60m
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd

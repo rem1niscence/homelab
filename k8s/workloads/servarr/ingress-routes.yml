@@ -31,3 +31,26 @@ spec:
       services:
         - name: monitarr
           port: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: monitarr-ts
+  annotations:
+    tailscale.com/hostname: monitarr
+    tailscale.com/funnel: "true"
+spec:
+  ingressClassName: tailscale
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: monitarr
+                port:
+                  number: 5678
+  tls:
+    - hosts:
+        - monitarr

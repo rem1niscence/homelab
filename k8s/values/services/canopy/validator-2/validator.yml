@@ -26,7 +26,7 @@ nodeSelector:
   platform.io/type: "vm"
 
 restore:
-  enabled: true
+  enabled: false
   backupClaimName: "chain-data-sentinel-2-0"
 
 metrics:

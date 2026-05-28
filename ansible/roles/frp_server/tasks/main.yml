@@ -47,6 +47,8 @@
     command: ["-c", "/etc/frp/frps.toml"]
     networks:
       - name: "{{ frp_network_name }}"
+    labels:
+      wud.watch: "true"
 
 - name: Deploy frpc server container
   community.docker.docker_container:
@@ -61,6 +63,8 @@
     command: ["-c", "/etc/frp/frpc.toml"]
     networks:
       - name: "{{ frp_network_name }}"
+    labels:
+      wud.watch: "true"
 
 - name: Template Caddyfile
   ansible.builtin.template:
@@ -85,4 +89,22 @@
       - "443:443"
     networks:
       - name: "{{ frp_network_name }}"
+    labels:
+      wud.watch: "true"
+      # match only "2" tag
+      wud.tag.include: ^2$
   when: frp_caddy_enabled
+
+- name: Deploy what's up docker container
+  community.docker.docker_container:
+    name: whatsupdocker
+    image: ghcr.io/getwud/wud
+    state: started
+    restart_policy: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    env:
+      WUD_WATCHER_LOCAL_WATCHBYDEFAULT: "false"
+      WUD_WATCHER_LOCAL_WATCHALL: "false"
+      WUD_TRIGGER_DOCKER_LOCAL_PRUNE: "true"
+      WUD_TRIGGER_DISCORD_UPDATE_URL: "{{ wud_discord_webhook_url }}"

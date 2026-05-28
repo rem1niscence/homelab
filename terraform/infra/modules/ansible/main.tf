@@ -128,6 +128,7 @@ resource "ansible_host" "oracle_vm" {
     frp_extra_ports          = var.frp_extra_ports
     frp_caddy_enabled        = var.frp_caddy_enabled
     frp_caddy_routes         = var.frp_caddy_routes
+    wud_discord_webhook_url  = var.wud_discord_webhook_url
   }
 }
 

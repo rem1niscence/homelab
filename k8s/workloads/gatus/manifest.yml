@@ -4,10 +4,6 @@ metadata:
   name: gatus
   labels:
     app: gatus
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -68,6 +64,20 @@ spec:
         - name: gatus
           port: 80
 ---
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: gatus
+  namespace: argocd
+spec:
+  applicationRefs:
+    - namePattern: "gatus"
+      images:
+        - alias: gatus
+          imageName: twinproduction/gatus:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -116,12 +126,6 @@ data:
           - type: discord
       - name: Seerr
         url: "http://seerr.jellyfin:5055"
-        conditions:
-          - "[STATUS] == 200"
-        alerts:
-          - type: discord
-      - name: Keel.sh
-        url: "http://keel.keel:9300"
         conditions:
           - "[STATUS] == 200"
         alerts:

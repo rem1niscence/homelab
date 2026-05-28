@@ -4,10 +4,6 @@ metadata:
   name: radarr
   labels:
     app: radarr
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -51,10 +47,6 @@ metadata:
   name: sonarr
   labels:
     app: sonarr
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -98,10 +90,6 @@ metadata:
   name: prowlarr
   labels:
     app: prowlarr
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -198,10 +186,6 @@ metadata:
   name: bazarr
   labels:
     app: bazarr
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -245,10 +229,6 @@ metadata:
   name: monitarr
   labels:
     app: monitarr
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -283,3 +263,41 @@ spec:
                   name: monitarr
                   key: RADARR_API_KEY
                   optional: false
+---
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: servarr
+  namespace: argocd
+spec:
+  applicationRefs:
+    - namePattern: "servarr"
+      images:
+        - alias: radarr
+          imageName: lscr.io/linuxserver/radarr:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"
+        - alias: sonarr
+          imageName: lscr.io/linuxserver/sonarr:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"
+        - alias: bazarr
+          imageName: lscr.io/linuxserver/bazarr:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"
+        - alias: monitarr
+          imageName: ghcr.io/nickshanks347/monitarr:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"
+        - alias: prowlarr
+          imageName: lscr.io/linuxserver/prowlarr:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"
+        - alias: flaresolverr
+          imageName: ghcr.io/flaresolverr/flaresolverr:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"
+        - alias: gluetun
+          imageName: qmcgaw/gluetun:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"

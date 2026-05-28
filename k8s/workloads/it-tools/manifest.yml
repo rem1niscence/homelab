@@ -52,3 +52,17 @@ spec:
       services:
         - name: it-tools
           port: 80
+---
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: it-tools
+  namespace: argocd
+spec:
+  applicationRefs:
+    - namePattern: "it-tools"
+      images:
+        - alias: it-tools
+          imageName: ghcr.io/sharevb/it-tools:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"

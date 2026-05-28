@@ -4,10 +4,6 @@ metadata:
   name: bytestash
   labels:
     app: bytestash
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -22,7 +18,7 @@ spec:
         platform.io/pi: pi-2
       containers:
         - name: bytestash
-          image: ghcr.io/jordan-dalby/bytestash
+          image: ghcr.io/jordan-dalby/bytestash:latest
           ports:
             - containerPort: 5000
           env:
@@ -85,3 +81,17 @@ spec:
       services:
         - name: bytestash
           port: 80
+---
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: bystestash
+  namespace: argocd
+spec:
+  applicationRefs:
+    - namePattern: "bystestash"
+      images:
+        - alias: bystestash
+          imageName: ghcr.io/jordan-dalby/bytestash:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"

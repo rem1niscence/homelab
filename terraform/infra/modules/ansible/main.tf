@@ -16,7 +16,7 @@ resource "ansible_host" "vm" {
 
 resource "ansible_host" "amd" {
   name   = var.server_amd.ip
-  groups = ["agent", "tailscale"]
+  groups = ["agent", "tailscale", "amd"]
 
   variables = {
     ansible_user            = var.server_amd.username
@@ -131,6 +131,10 @@ resource "ansible_host" "oracle_vm" {
   }
 }
 
+resource "ansible_group" "amd" {
+  name = "amd"
+}
+
 resource "ansible_group" "server" {
   name = "server"
 }
@@ -150,6 +154,16 @@ resource "ansible_group" "k3s_cluster" {
     k3s_version     = "v1.35.4+k3s1"
     helm_version    = "v3.20.2"
     user_kubectl    = true
+    registries_config_yaml = yamlencode({
+      configs = {
+        "registry-1.docker.io" = {
+          auth = {
+            username = var.dockerhub_username
+            password = var.dockerhub_password
+          }
+        }
+      }
+    })
   }
 }
 

@@ -171,7 +171,8 @@ resource "ansible_group" "tailscale" {
   name = "tailscale"
 
   variables = {
-    tailscale_auth_key = var.tailscale_auth_key
+    tailscale_auth_key      = var.tailscale_auth_key
+    wud_discord_webhook_url = var.wud_discord_webhook_url
   }
 }
 

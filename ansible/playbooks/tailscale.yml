@@ -37,3 +37,19 @@
         volumes:
           - /var/lib/tailscale:/var/lib/tailscale
         env: "{{ _ts_base_env | combine(_ts_routes_env) }}"
+        labels:
+          wud.watch: "true"
+
+    - name: Run what's up docker container
+      community.docker.docker_container:
+        name: whatsupdocker
+        image: ghcr.io/getwud/wud
+        state: started
+        restart_policy: unless-stopped
+        volumes:
+          - /var/run/docker.sock:/var/run/docker.sock
+        env:
+          WUD_WATCHER_LOCAL_WATCHBYDEFAULT: "false"
+          WUD_WATCHER_LOCAL_WATCHALL: "false"
+          WUD_TRIGGER_DOCKER_LOCAL_PRUNE: "true"
+          WUD_TRIGGER_DISCORD_UPDATE_URL: "{{ wud_discord_webhook_url }}"

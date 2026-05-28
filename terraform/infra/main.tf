@@ -48,19 +48,20 @@ module "oracle" {
 module "ansible" {
   source = "./modules/ansible"
 
-  hetzner_ip         = values(module.hetzner.server)[0].ip
-  oracle_ip          = values(module.oracle.instance)[0].ip
-  hetzner_vm         = local.server_vm
-  oracle_vm          = local.oracle_vm
-  server_nuc         = local.server_nuc
-  server_amd         = local.server_amd
-  server_pi_1        = local.server_pi_1
-  server_pi_2        = local.server_pi_2
-  server_pi_3        = local.server_pi_3
-  k3s_token          = data.sops_file.secrets.data["ansible.k3s_token"]
-  tailscale_auth_key = data.sops_file.secrets.data["ansible.tailscale.auth_key"]
-  dockerhub_username = data.sops_file.secrets.data["ansible.dockerhub.username"]
-  dockerhub_password = data.sops_file.secrets.data["ansible.dockerhub.password"]
+  hetzner_ip              = values(module.hetzner.server)[0].ip
+  oracle_ip               = values(module.oracle.instance)[0].ip
+  hetzner_vm              = local.server_vm
+  oracle_vm               = local.oracle_vm
+  server_nuc              = local.server_nuc
+  server_amd              = local.server_amd
+  server_pi_1             = local.server_pi_1
+  server_pi_2             = local.server_pi_2
+  server_pi_3             = local.server_pi_3
+  k3s_token               = data.sops_file.secrets.data["ansible.k3s_token"]
+  tailscale_auth_key      = data.sops_file.secrets.data["ansible.tailscale.auth_key"]
+  dockerhub_username      = data.sops_file.secrets.data["ansible.dockerhub.username"]
+  dockerhub_password      = data.sops_file.secrets.data["ansible.dockerhub.password"]
+  wud_discord_webhook_url = data.sops_file.secrets.data["ansible.wud_discord_webhook_url"]
 
   # Tunnel configuration
   frp_token                = data.sops_file.secrets.data["tunnel.frp.token"]

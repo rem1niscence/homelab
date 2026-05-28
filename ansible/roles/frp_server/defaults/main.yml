@@ -1,5 +1,5 @@
 ---
-frp_version: "v0.68.1"
+frp_version: "v0.69.0"
 frp_bind_port: 7000
 frp_dashboard_port: 7500
 frp_config_dir: /opt/frp

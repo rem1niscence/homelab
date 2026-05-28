@@ -74,6 +74,12 @@ variable "tailscale_auth_key" {
   sensitive   = true
 }
 
+variable "wud_discord_webhook_url" {
+  description = "Discord webhook URL for WUD notifications"
+  type        = string
+  sensitive   = true
+}
+
 # Tunnel
 
 variable "frp_token" {

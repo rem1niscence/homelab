@@ -20,6 +20,7 @@ spec:
       containers:
         - name: paperless
           image: paperlessngx/paperless-ngx:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8000
           livenessProbe:
@@ -91,6 +92,7 @@ spec:
       containers:
         - name: redis
           image: redis:7-alpine
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 6379
           livenessProbe:

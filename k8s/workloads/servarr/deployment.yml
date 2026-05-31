@@ -16,10 +16,10 @@ spec:
     spec:
       nodeSelector:
         platform.io/type: secondary
-        imagePullPolicy: IfNotPresent
       containers:
         - name: radarr
           image: lscr.io/linuxserver/radarr:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 7878
           env:
@@ -60,10 +60,10 @@ spec:
     spec:
       nodeSelector:
         platform.io/type: secondary
-        imagePullPolicy: IfNotPresent
       containers:
         - name: sonarr
           image: lscr.io/linuxserver/sonarr:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8989
           env:

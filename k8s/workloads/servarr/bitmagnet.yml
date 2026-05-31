@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bitmagnet-caddy
+  namespace: servarr
+data:
+  Caddyfile: |
+    :3333 {
+        rewrite * /torznab/api{path}
+        reverse_proxy {$BITMAGNET_URL} {
+            header_up Host {upstream_hostport}
+        }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bitmagnet
+  namespace: servarr
+  labels:
+    app: bitmagnet
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bitmagnet
+  template:
+    metadata:
+      labels:
+        app: bitmagnet
+    spec:
+      nodeSelector:
+        platform.io/type: main
+      containers:
+        - name: bitmagnet
+          image: caddy:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3333
+          envFrom:
+            - secretRef:
+                name: bitmagnet
+          volumeMounts:
+            - name: caddyfile
+              mountPath: /etc/caddy/Caddyfile
+              subPath: Caddyfile
+      volumes:
+        - name: caddyfile
+          configMap:
+            name: bitmagnet-caddy
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: servarr
+  name: bitmagnet
+spec:
+  selector:
+    app: bitmagnet
+  ports:
+    - protocol: TCP
+      port: 3333
+      targetPort: 3333

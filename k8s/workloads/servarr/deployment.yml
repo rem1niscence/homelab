@@ -308,3 +308,7 @@ spec:
           imageName: qmcgaw/gluetun:latest
           commonUpdateSettings:
             updateStrategy: "digest"
+        - alias: bitmagnet
+          imageName: caddy:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"

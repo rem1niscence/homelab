@@ -106,12 +106,6 @@ data:
           - "[STATUS] == 200"
         alerts:
           - type: discord
-      - name: Firefly III
-        url: "http://firefly.firefly"
-        conditions:
-          - "[STATUS] == 200"
-        alerts:
-          - type: discord
       - name: IT Tools
         url: "http://it-tools.it-tools"
         conditions:
@@ -316,6 +310,18 @@ data:
           - "[STATUS] == 200"
         alerts:
               - type: discord
+      - name: Sure
+        url: "http://sure.sure"
+        conditions:
+          - "[STATUS] == 200"
+        alerts:
+              - type: discord
+      # - name: Firefly III
+      #   url: "http://firefly.firefly"
+      #   conditions:
+      #     - "[STATUS] == 200"
+      #   alerts:
+      #     - type: discord
       # - name: Container Registry
       #   url: "http://registry.registry"
       #   conditions:

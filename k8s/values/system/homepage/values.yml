@@ -269,10 +269,10 @@ config:
             href: https://syncthing.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://syncthing.syncthing
             description: File synchronization across devices
-        - Firefly III:
-            icon: firefly
-            href: https://firefly.{{HOMEPAGE_VAR_DOMAIN}}
-            siteMonitor: http://firefly.firefly
+        - Sure:
+            icon: sh-sure-finance
+            href: https://sure.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://sure.sure
             description: Personal finance manager
         - SearNXG:
             icon: searxng.svg

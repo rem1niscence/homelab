@@ -1,0 +1,307 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: sure
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sure
+  labels:
+    app: sure
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sure
+  template:
+    metadata:
+      labels:
+        app: sure
+    spec:
+      nodeSelector:
+        platform.io/type: secondary
+      containers:
+        - name: sure
+          image: ghcr.io/we-promise/sure:stable
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: sure
+              containerPort: 3000
+              protocol: TCP
+          env:
+            - name: PORT
+              value: "3000"
+            - name: SELF_HOSTED
+              value: "true"
+            - name: RAILS_FORCE_SSL
+              value: "false"
+            - name: RAILS_ASSUME_SSL
+              value: "false"
+            - name: DB_HOST
+              value: "postgres"
+            - name: DB_PORT
+              value: "5432"
+            - name: REDIS_URL
+              value: "redis://redis:6379/1"
+            - name: YAHOO_FINANCE_IPV6
+              value: "false"
+          envFrom:
+            - secretRef:
+                name: sure
+          volumeMounts:
+            - name: data
+              mountPath: /rails/storage
+              subPath: storage
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: sure-data
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+  labels:
+    app: worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      labels:
+        app: worker
+    spec:
+      nodeSelector:
+        platform.io/type: secondary
+      containers:
+        - name: sure
+          image: ghcr.io/we-promise/sure:stable
+          imagePullPolicy: IfNotPresent
+          command: ["bundle", "exec", "sidekiq"]
+          env:
+            - name: PORT
+              value: "3000"
+            - name: SELF_HOSTED
+              value: "true"
+            - name: RAILS_FORCE_SSL
+              value: "false"
+            - name: RAILS_ASSUME_SSL
+              value: "false"
+            - name: DB_HOST
+              value: "postgres"
+            - name: DB_PORT
+              value: "5432"
+            - name: REDIS_URL
+              value: "redis://redis:6379/1"
+            - name: YAHOO_FINANCE_IPV6
+              value: "false"
+          envFrom:
+            - secretRef:
+                name: sure
+          volumeMounts:
+            - name: data
+              mountPath: /rails/storage
+              subPath: storage
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: sure-data
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: sure
+  labels:
+    app: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      restartPolicy: Always
+      nodeSelector:
+        platform.io/type: pi
+      containers:
+        - name: redis
+          image: valkey/valkey:9-alpine
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: redis
+              containerPort: 6379
+              protocol: TCP
+          livenessProbe:
+            exec:
+              command:
+                - valkey-cli
+                - ping
+            initialDelaySeconds: 15
+            timeoutSeconds: 5
+          readinessProbe:
+            exec:
+              command:
+                - valkey-cli
+                - ping
+            initialDelaySeconds: 15
+            timeoutSeconds: 5
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      nodeSelector:
+        platform.io/type: main
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: postgres
+              containerPort: 5432
+              protocol: TCP
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: sure
+                  key: POSTGRES_DB
+                  optional: false
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: sure
+                  key: POSTGRES_USER
+                  optional: false
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: sure
+                  key: POSTGRES_PASSWORD
+                  optional: false
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          volumeMounts:
+            - name: db
+              mountPath: /var/lib/postgresql/data
+              subPath: postgres
+      volumes:
+        - name: db
+          persistentVolumeClaim:
+            claimName: sure-postgres
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sure
+spec:
+  selector:
+    app: sure
+  ports:
+    - port: 80
+      targetPort: sure
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+spec:
+  ports:
+    - port: 6379
+      targetPort: redis
+  selector:
+    app: redis
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+spec:
+  ports:
+    - port: 5432
+      targetPort: postgres
+  selector:
+    app: postgres
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sure-postgres
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1G
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sure-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1G
+  storageClassName: longhorn-local
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: sure
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`sure.rvserver.online`)
+      kind: Rule
+      services:
+        - name: sure
+          port: 80
+---
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: sure
+  namespace: argocd
+spec:
+  applicationRefs:
+    - namePattern: "sure"
+      images:
+        - alias: sure
+          imageName: ghcr.io/we-promise/sure:stable
+          commonUpdateSettings:
+            updateStrategy: "digest"
+        - alias: valkey
+          imageName: valkey/valkey:9-alpine
+          commonUpdateSettings:
+            updateStrategy: "digest"
+        - alias: postgres
+          imageName: postgres:16-alpine
+          commonUpdateSettings:
+            updateStrategy: "digest"

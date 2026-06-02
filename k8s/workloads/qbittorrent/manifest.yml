@@ -170,3 +170,21 @@ spec:
       services:
         - name: qbittorrent
           port: 8080
+---
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: qbittorrent
+  namespace: argocd
+spec:
+  applicationRefs:
+    - namePattern: "qbittorrent"
+      images:
+        - alias: qbittorrent
+          imageName: linuxserver/qbittorrent:5.2.0-libtorrentv1
+          commonUpdateSettings:
+            updateStrategy: "digest"
+        - alias: gluetun
+          imageName: qmcgaw/gluetun:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"

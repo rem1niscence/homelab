@@ -22,7 +22,8 @@ spec:
         platform.io/type: main
       containers:
         - name: vaultwarden
-          image: vaultwarden/server:alpine
+          image: ghcr.io/dani-garcia/vaultwarden:alpine
+          imagePullPolicy: IfNotPresent
           envFrom:
             - secretRef:
                 name: vaultwarden
@@ -72,3 +73,21 @@ spec:
       services:
         - name: vaultwarden
           port: 80
+---
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: vaultwarden
+  namespace: argocd
+spec:
+  applicationRefs:
+    - namePattern: "vaultwarden"
+      images:
+        - alias: vaultwarden
+          imageName: ghcr.io/dani-garcia/vaultwarden:alpine
+          commonUpdateSettings:
+            updateStrategy: "digest"
+        - alias: portal
+          imageName: reaper0x1/bitwarden-portal:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"

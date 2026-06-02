@@ -22,7 +22,8 @@ spec:
         platform.io/type: main
       containers:
         - name: backup
-          image: reaper0x1/bitwarden-portal
+          image: reaper0x1/bitwarden-portal:latest
+          imagePullPolicy: IfNotPresent
           envFrom:
             - secretRef:
                 name: backup

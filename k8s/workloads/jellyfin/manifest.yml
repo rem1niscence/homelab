@@ -19,6 +19,7 @@ spec:
       containers:
         - name: jellyfin
           image: lscr.io/linuxserver/jellyfin:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8096
           resources:
@@ -78,6 +79,7 @@ spec:
       containers:
         - name: seerr
           image: ghcr.io/seerr-team/seerr:latest
+          imagePullPolicy: IfNotPresent
           env:
             - name: TZ
               value: "Etc/UTC"
@@ -91,35 +93,107 @@ spec:
           persistentVolumeClaim:
             claimName: seerr-config-pvc
 ---
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: jellyfin
-
+  name: jellysweep
+  labels:
+    app: jellysweep
 spec:
-  entryPoints:
-    - websecure
-  routes:
-    - match: Host(`jellyfin.rvserver.online`)
-      kind: Rule
-      services:
-        - name: jellyfin
-          port: 8096
+  replicas: 0
+  selector:
+    matchLabels:
+      app: jellysweep
+  template:
+    metadata:
+      labels:
+        app: jellysweep
+    spec:
+      nodeSelector:
+        platform.io/pi: pi-2
+      containers:
+        - name: jellysweep
+          image: ghcr.io/jon4hz/jellysweep:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: JELLYSWEEP_CLEANUP_SCHEDULE
+              value: "0 */12 * * *"
+            - name: JELLYSWEEP_DRY_RUN
+              value: "true"
+            - name: JELLYSWEEP_JELLYSEERR_URL
+              value: "https://seerr:5055"
+            - name: JELLYSWEEP_JELLYFIN_URL
+              value: "http://jellyfin:8096"
+            - name: JELLYSWEEP_SONARR_URL
+              value: "http://sonarr.servarr:8989"
+            - name: JELLYSWEEP_RADARR_URL
+              value: "http://radarr.servarr:7878"
+          envFrom:
+            - secretRef:
+                name: jellysweep
+          ports:
+            - name: jellysweep
+              containerPort: 3002
+              protocol: TCP
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: app-config
+              mountPath: /app/data
+              subPath: jellysweep
+            - name: config
+              mountPath: /app
+              readOnly: true
+      volumes:
+        - name: app-config
+          persistentVolumeClaim:
+            claimName: seerr-config-pvc
+        - name: config
+          configMap:
+            name: jellysweep-config
+            items:
+              - key: config.yml
+                path: config.yml
+        - name: data
+          persistentVolumeClaim:
+            claimName: data-pvc
 ---
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
+apiVersion: v1
+kind: ConfigMap
 metadata:
-  name: jellyfin-lan
-
-spec:
-  entryPoints:
-    - web
-  routes:
-    - match: Host(`jellyfin.home`)
-      kind: Rule
-      services:
-        - name: jellyfin
-          port: 8096
+  name: jellysweep-config
+data:
+  config.yml: |
+    libraries:
+      # Name must match the Library name in Jellyfin
+      "Movies":
+        enabled: true
+        cleanup_delay: 60
+        protection_period: 90 # Protect requested content for 90 days
+        # Filter configuration
+        filter:
+          content_age_threshold: 120 # Content must be at least 120 days old
+          last_stream_threshold: 90 # Last watched at least 90 days ago
+          content_size_threshold: 1073741824 # 1GB minimum (0 = no minimum)
+          tunarr_enabled: false
+          exclude_tags:
+            - "jellysweep-exclude"
+            - "keep"
+            - "favorites"
+      "Shows":
+        enabled: true
+        cleanup_delay: 60
+        protection_period: 90
+        # Filter configuration
+        filter:
+          content_age_threshold: 120
+          last_stream_threshold: 90
+          content_size_threshold: 2147483648 # 2GB minimum
+          tunarr_enabled: false
+          exclude_tags:
+            - "jellysweep-exclude"
+            - "ongoing"
+            - "keep"
 ---
 apiVersion: v1
 kind: Service
@@ -156,6 +230,17 @@ spec:
     - protocol: TCP
       port: 5055
       targetPort: 5055
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jellysweep
+spec:
+  selector:
+    app: jellysweep
+  ports:
+    - port: 80
+      targetPort: jellysweep
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -243,16 +328,26 @@ spec:
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: seerr
+  name: jellyfin
 spec:
   entryPoints:
     - websecure
   routes:
+    - match: Host(`jellyfin.rvserver.online`)
+      kind: Rule
+      services:
+        - name: jellyfin
+          port: 8096
     - match: Host(`seerr.rvserver.online`)
       kind: Rule
       services:
         - name: seerr
           port: 5055
+    - match: Host(`jellysweep.rvserver.online`)
+      kind: Rule
+      services:
+        - name: jellysweep
+          port: 80
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -329,5 +424,9 @@ spec:
             updateStrategy: "digest"
         - alias: amd-gpu
           imageName: rocm/k8s-device-plugin:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"
+        - alias: jellysweep
+          imageName: ghcr.io/jon4hz/jellysweep:latest
           commonUpdateSettings:
             updateStrategy: "digest"

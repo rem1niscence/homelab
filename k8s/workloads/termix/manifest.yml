@@ -72,3 +72,17 @@ spec:
       services:
         - name: termix
           port: 80
+---
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: termix
+  namespace: argocd
+spec:
+  applicationRefs:
+    - namePattern: "termix"
+      images:
+        - alias: termix
+          imageName: ghcr.io/lukegus/termix:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"

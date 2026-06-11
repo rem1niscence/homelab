@@ -4,10 +4,6 @@ metadata:
   name: komga
   labels:
     app: komga
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -23,6 +19,7 @@ spec:
       containers:
         - name: komga
           image: gotson/komga
+          imagePullPolicy: IfNotPresent
           volumeMounts:
             - name: data
               mountPath: /comics
@@ -138,3 +135,17 @@ spec:
       services:
         - name: komga
           port: 25600
+---
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: komga
+  namespace: argocd
+spec:
+  applicationRefs:
+    - namePattern: "komga"
+      images:
+        - alias: komga
+          imageName: gotson/komga
+          commonUpdateSettings:
+            updateStrategy: "digest"

@@ -4,10 +4,6 @@ metadata:
   name: pdfding
   labels:
     app: pdfding
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -28,6 +24,7 @@ spec:
             runAsUser: 1000
             runAsGroup: 1000
           image: mrmn/pdfding:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
           env:
@@ -124,3 +121,17 @@ spec:
           port: 80
 # Command to promote an user to admin
 # python pdfding/manage.py make_admin -e user@email.com
+---
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: pdfding
+  namespace: argocd
+spec:
+  applicationRefs:
+    - namePattern: "pdfding"
+      images:
+        - alias: pdfding
+          imageName: mrmn/pdfding:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"

@@ -10,10 +10,6 @@ metadata:
   namespace: immich
   labels:
     app: immich
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -29,7 +25,7 @@ spec:
       containers:
         - name: immich
           image: ghcr.io/immich-app/immich-server:release
-          # imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 2283
           env:
@@ -80,10 +76,6 @@ metadata:
   namespace: immich
   labels:
     app: immich-machine-learning
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -99,6 +91,7 @@ spec:
       containers:
         - name: immich-machine-learning
           image: ghcr.io/immich-app/immich-machine-learning:release
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3003
           env:
@@ -133,6 +126,7 @@ spec:
       containers:
         - name: postgres
           image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5432
           env:
@@ -179,10 +173,6 @@ metadata:
   name: redis
   labels:
     app: redis
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -199,6 +189,7 @@ spec:
       containers:
         - name: redis
           image: redis:7-alpine
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 6379
           livenessProbe:
@@ -321,3 +312,30 @@ spec:
       services:
         - name: immich
           port: 80
+---
+---
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: immich
+  namespace: argocd
+spec:
+  applicationRefs:
+    - namePattern: "immich"
+      images:
+        - alias: immich
+          imageName: ghcr.io/immich-app/immich-server:release
+          commonUpdateSettings:
+            updateStrategy: "digest"
+        - alias: immich-ml
+          imageName: ghcr.io/immich-app/immich-machine-learning:release
+          commonUpdateSettings:
+            updateStrategy: "digest"
+        - alias: postgres
+          imageName: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0
+          commonUpdateSettings:
+            updateStrategy: "digest"
+        - alias: redis
+          imageName: redis:7-alpine
+          commonUpdateSettings:
+            updateStrategy: "digest"

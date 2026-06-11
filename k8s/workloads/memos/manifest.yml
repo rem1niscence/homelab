@@ -4,10 +4,6 @@ metadata:
   name: memos
   labels:
     app: memos
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -23,6 +19,7 @@ spec:
       containers:
         - name: memos
           image: ghcr.io/usememos/memos:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5230
           volumeMounts:
@@ -74,3 +71,17 @@ spec:
       services:
         - name: memos
           port: 80
+---
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: memos
+  namespace: argocd
+spec:
+  applicationRefs:
+    - namePattern: "memos"
+      images:
+        - alias: memos
+          imageName: ghcr.io/usememos/memos:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"

@@ -4,10 +4,6 @@ metadata:
   name: wallos
   labels:
     app: wallos
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -23,6 +19,7 @@ spec:
       containers:
         - name: wallos
           image: bellamy/wallos:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 80
           env:
@@ -76,3 +73,17 @@ spec:
       services:
         - name: wallos
           port: 80
+---
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: wallos
+  namespace: argocd
+spec:
+  applicationRefs:
+    - namePattern: "wallos"
+      images:
+        - alias: wallos
+          imageName: bellamy/wallos:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"

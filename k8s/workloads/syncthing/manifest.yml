@@ -10,10 +10,6 @@ metadata:
   name: syncthing
   labels:
     app: syncthing
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -29,6 +25,7 @@ spec:
       containers:
         - name: syncthing
           image: linuxserver/syncthing:latest
+          imagePullPolicy: IfNotPresent
           env:
             - name: PUID
               value: "1000"
@@ -136,3 +133,17 @@ spec:
       services:
         - name: syncthing
           port: 80
+---
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: syncthing
+  namespace: argocd
+spec:
+  applicationRefs:
+    - namePattern: "syncthing"
+      images:
+        - alias: syncthing
+          imageName: linuxserver/syncthing:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"

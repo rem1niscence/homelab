@@ -4,10 +4,6 @@ metadata:
   name: omnitools
   labels:
     app: omnitools
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -23,6 +19,7 @@ spec:
       containers:
         - name: omnitools
           image: iib0011/omni-tools
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 80
 ---
@@ -50,3 +47,17 @@ spec:
       services:
         - name: omnitools
           port: 80
+---
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: omnitools
+  namespace: argocd
+spec:
+  applicationRefs:
+    - namePattern: "omnitools"
+      images:
+        - alias: omnitools
+          imageName: iib0011/omni-tools
+          commonUpdateSettings:
+            updateStrategy: "digest"

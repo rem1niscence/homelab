@@ -10,10 +10,6 @@ metadata:
   namespace: homebox
   labels:
     app: homebox
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -29,6 +25,7 @@ spec:
       containers:
         - name: homebox
           image: ghcr.io/sysadminsmedia/homebox
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 7745
           env:
@@ -81,3 +78,17 @@ spec:
       services:
         - name: homebox
           port: 80
+---
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: homebox
+  namespace: argocd
+spec:
+  applicationRefs:
+    - namePattern: "homebox"
+      images:
+        - alias: homebox
+          imageName: ghcr.io/sysadminsmedia/homebox
+          commonUpdateSettings:
+            updateStrategy: "digest"

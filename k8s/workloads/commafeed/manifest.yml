@@ -4,10 +4,6 @@ metadata:
   name: commafeed
   labels:
     app: commafeed
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -23,6 +19,7 @@ spec:
       containers:
         - name: commafeed
           image: athou/commafeed:latest-postgresql-jvm
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8082
           env:
@@ -46,10 +43,6 @@ metadata:
   name: db
   labels:
     app: db
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -63,6 +56,7 @@ spec:
       containers:
         - name: db
           image: postgres:16-alpine
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5432
           env:
@@ -148,3 +142,21 @@ spec:
       services:
         - name: commafeed
           port: 80
+---
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: commafeed
+  namespace: argocd
+spec:
+  applicationRefs:
+    - namePattern: "commafeed"
+      images:
+        - alias: commafeed
+          imageName: athou/commafeed:latest-postgresql-jvm
+          commonUpdateSettings:
+            updateStrategy: "digest"
+        - alias: db
+          imageName: postgres:16-alpine
+          commonUpdateSettings:
+            updateStrategy: "digest"

@@ -5,10 +5,6 @@ metadata:
   name: fileflows-intel
   labels:
     app: fileflows-intel
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -24,7 +20,7 @@ spec:
       hostname: nuc
       containers:
         - name: fileflows-intel
-          image: revenz/fileflows
+          image: revenz/fileflows:latest
           # image: revenz/fileflows:25.05
           securityContext:
             privileged: true

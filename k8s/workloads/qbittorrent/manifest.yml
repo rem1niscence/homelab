@@ -4,10 +4,6 @@ metadata:
   name: qbittorrent
   labels:
     app: qbittorrent
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 30m"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:

@@ -4,10 +4,6 @@ metadata:
   name: cyberchef
   labels:
     app: cyberchef
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -23,6 +19,7 @@ spec:
       containers:
         - name: cyberchef
           image: mpepping/cyberchef
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8000
 ---
@@ -52,3 +49,17 @@ spec:
       services:
         - name: cyberchef
           port: 80
+---
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: cyberchef
+  namespace: argocd
+spec:
+  applicationRefs:
+    - namePattern: "cyberchef"
+      images:
+        - alias: cyberchef
+          imageName: ghcr.io/sharevb/cyberchef:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"

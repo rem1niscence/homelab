@@ -4,10 +4,6 @@ metadata:
   name: kapowarr
   labels:
     app: kapowarr
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -23,6 +19,7 @@ spec:
       containers:
         - name: kapowarr
           image: mrcas/kapowarr
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5656
           volumeMounts:
@@ -108,3 +105,17 @@ spec:
       services:
         - name: kapowarr
           port: 80
+---
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: kapowarr
+  namespace: argocd
+spec:
+  applicationRefs:
+    - namePattern: "kapowarr"
+      images:
+        - alias: kapowarr
+          imageName: mrcas/kapowarr
+          commonUpdateSettings:
+            updateStrategy: "digest"

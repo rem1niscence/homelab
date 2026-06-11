@@ -4,10 +4,6 @@ metadata:
   name: termix
   labels:
     app: termix
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -23,6 +19,7 @@ spec:
       containers:
         - name: termix
           image: ghcr.io/lukegus/termix:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
           env:

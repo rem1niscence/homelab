@@ -4,10 +4,6 @@ metadata:
   name: it-tools
   labels:
     app: it-tools
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:

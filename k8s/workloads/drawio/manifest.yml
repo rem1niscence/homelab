@@ -4,10 +4,6 @@ metadata:
   name: drawio
   labels:
     app: drawio
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -22,7 +18,8 @@ spec:
         platform.io/type: pi
       containers:
         - name: drawio
-          image: jgraph/drawio
+          image: jgraph/drawio:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
 ---
@@ -52,3 +49,17 @@ spec:
       services:
         - name: drawio
           port: 80
+---
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: drawio
+  namespace: argocd
+spec:
+  applicationRefs:
+    - namePattern: "drawio"
+      images:
+        - alias: drawio
+          imageName: jgraph/drawio:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"

@@ -5,10 +5,6 @@ metadata:
   namespace: discount-bandit
   labels:
     app: discount-bandit
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -23,7 +19,8 @@ spec:
         platform.io/type: main
       containers:
         - name: discount-bandit
-          image: cybrarist/discount-bandit:v4.0.2
+          image: cybrarist/discount-bandit:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
           volumeMounts:
@@ -98,3 +95,17 @@ spec:
       services:
         - name: discount-bandit
           port: 80
+---
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: discount-bandit
+  namespace: argocd
+spec:
+  applicationRefs:
+    - namePattern: "discount-bandit"
+      images:
+        - alias: discount-bandit
+          imageName: cybrarist/discount-bandit:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"

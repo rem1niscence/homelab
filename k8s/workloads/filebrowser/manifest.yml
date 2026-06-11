@@ -4,10 +4,6 @@ metadata:
   name: filebrowser
   labels:
     app: filebrowser
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -23,6 +19,7 @@ spec:
       containers:
         - name: filebrowser
           image: filebrowser/filebrowser:s6
+          imagePullPolicy: IfNotPresent
           volumeMounts:
             - name: data
               mountPath: /srv
@@ -192,17 +189,6 @@ spec:
   selector:
     app: filebrowser
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: filebrowser
-spec:
-  ports:
-    - port: 80
-      targetPort: 80
-  selector:
-    app: filebrowser
----
 # apiVersion: v1
 # kind: Service
 # metadata:
@@ -223,10 +209,6 @@ metadata:
   name: webdav
   labels:
     app: webdav
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -242,6 +224,7 @@ spec:
       containers:
         - name: webdav
           image: hacdias/webdav:latest
+          imagePullPolicy: IfNotPresent
           args: ["-c", "/config/config.yml"]
           ports:
             - containerPort: 6060
@@ -314,3 +297,21 @@ spec:
       services:
         - name: webdav
           port: 80
+---
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: filebrowser
+  namespace: argocd
+spec:
+  applicationRefs:
+    - namePattern: "filebrowser"
+      images:
+        - alias: filebrowser
+          imageName: filebrowser/filebrowser:s6
+          commonUpdateSettings:
+            updateStrategy: "digest"
+        - alias: webdav
+          imageName: hacdias/webdav:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"

@@ -5,10 +5,6 @@ metadata:
   name: fileflows
   labels:
     app: fileflows
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -24,6 +20,7 @@ spec:
       containers:
         - name: fileflows
           image: revenz/fileflows
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5000
           env:
@@ -119,3 +116,17 @@ spec:
       services:
         - name: fileflows
           port: 80
+---
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: fileflows
+  namespace: argocd
+spec:
+  applicationRefs:
+    - namePattern: "fileflows"
+      images:
+        - alias: fileflows
+          imageName: revenz/fileflows:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"

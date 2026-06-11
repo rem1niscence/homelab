@@ -394,11 +394,6 @@ config:
         #     href: https://registry-ui.{{HOMEPAGE_VAR_DOMAIN}}
         #     siteMonitor: http://registry.registry
         #     description: Private container registry
-        # - Keel.sh:
-        #     icon: mdi-alpha-k-box-outline
-        #     href: https://keel.{{HOMEPAGE_VAR_DOMAIN}}
-        #     siteMonitor: http://keel.keel:9300
-        #     description: K8S image updater
     - Comic/Manga:
         - Suwayomi:
             icon: sh-suwayomi-dark

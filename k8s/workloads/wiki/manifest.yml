@@ -4,10 +4,6 @@ metadata:
   name: wiki
   labels:
     app: wiki
-  annotations:
-    keel.sh/policy: all
-    keel.sh/pollSchedule: "@every 1h"
-    keel.sh/trigger: poll
 spec:
   replicas: 1
   selector:
@@ -24,6 +20,7 @@ spec:
         - name: wiki
           # https://otterwiki.com/
           image: redimp/otterwiki:2
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
           env:
@@ -76,3 +73,17 @@ spec:
       services:
         - name: wiki
           port: 80
+---
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: wiki
+  namespace: argocd
+spec:
+  applicationRefs:
+    - namePattern: "wiki"
+      images:
+        - alias: wiki
+          imageName: redimp/otterwiki:2
+          commonUpdateSettings:
+            updateStrategy: "digest"

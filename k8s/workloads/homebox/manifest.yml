@@ -31,6 +31,8 @@ spec:
           env:
             - name: TZ
               value: "Etc/UTC"
+            - name: "HBOX_AUTH_API_KEY_PEPPER"
+              value: "Qx4xZtJOB67Esbvb99d+lLz/azJ2WAFPHSQSs5keuighcYW0o5cwGTaOyskB5+dZ"
           volumeMounts:
             - name: data
               mountPath: /data

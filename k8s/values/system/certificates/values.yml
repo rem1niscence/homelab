@@ -8,7 +8,7 @@ clusterIssuers:
 
 defaultCertificate:
   enabled: true
-  baseDomain: rvserver.online
+  baseDomain: remini.site
 
 tlsStore:
   enabled: true

@@ -129,7 +129,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`searxng.rvserver.online`)
+    - match: Host(`searxng.remini.site`)
       kind: Rule
       services:
         - name: searxng

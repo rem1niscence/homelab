@@ -278,7 +278,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`sure.rvserver.online`)
+    - match: Host(`sure.remini.site`)
       kind: Rule
       services:
         - name: sure

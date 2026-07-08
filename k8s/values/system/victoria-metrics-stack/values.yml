@@ -206,7 +206,7 @@ grafana:
     enabled: true
     ingressClassName: traefik
     hosts:
-      - grafana.rvserver.online
+      - grafana.remini.site
 
   admin:
     # use external secret for admin credentials

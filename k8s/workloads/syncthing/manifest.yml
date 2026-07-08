@@ -128,7 +128,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`syncthing.rvserver.online`)
+    - match: Host(`syncthing.remini.site`)
       kind: Rule
       services:
         - name: syncthing

@@ -333,17 +333,17 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`jellyfin.rvserver.online`)
+    - match: Host(`jellyfin.remini.site`)
       kind: Rule
       services:
         - name: jellyfin
           port: 8096
-    - match: Host(`seerr.rvserver.online`)
+    - match: Host(`seerr.remini.site`)
       kind: Rule
       services:
         - name: seerr
           port: 5055
-    - match: Host(`jellysweep.rvserver.online`)
+    - match: Host(`jellysweep.remini.site`)
       kind: Rule
       services:
         - name: jellysweep

@@ -77,7 +77,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`beaverhabits.rvserver.online`)
+    - match: Host(`beaverhabits.remini.site`)
       kind: Rule
       services:
         - name: beaverhabits

@@ -68,7 +68,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`wiki.rvserver.online`)
+    - match: Host(`wiki.remini.site`)
       kind: Rule
       services:
         - name: wiki

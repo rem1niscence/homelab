@@ -181,7 +181,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host("paperless.rvserver.online")
+    - match: Host("paperless.remini.site")
       kind: Rule
       services:
         - name: paperless

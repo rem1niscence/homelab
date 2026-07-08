@@ -25,7 +25,7 @@ ingress:
   enabled: true
   className: traefik
   hosts:
-    - host: n8n.rvserver.online
+    - host: n8n.remini.site
       paths:
         - path: /
           pathType: Prefix

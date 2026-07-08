@@ -57,12 +57,12 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host("frpc.rvserver.online")
+    - match: Host("frpc.remini.site")
       kind: Rule
       services:
         - name: frp
           port: 80
-    - match: Host("frps.rvserver.online")
+    - match: Host("frps.remini.site")
       kind: Rule
       services:
         - name: frp

@@ -41,7 +41,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`pdf.rvserver.online`)
+    - match: Host(`pdf.remini.site`)
       kind: Rule
       services:
         - name: bentopdf

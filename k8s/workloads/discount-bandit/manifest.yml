@@ -44,7 +44,7 @@ spec:
                   key: APP_KEY
                   optional: false
             - name: ASSET_URL
-              value: https://discount.rvserver.online
+              value: https://discount.remini.site
             - name: EXCHANGE_RATE_API_KEY
               valueFrom:
                 secretKeyRef:
@@ -90,7 +90,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`discount.rvserver.online`)
+    - match: Host(`discount.remini.site`)
       kind: Rule
       services:
         - name: discount-bandit

@@ -161,7 +161,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`torrent.rvserver.online`)
+    - match: Host(`torrent.remini.site`)
       kind: Rule
       services:
         - name: qbittorrent

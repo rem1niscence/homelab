@@ -24,7 +24,7 @@ spec:
             - containerPort: 3000
           env:
             - name: ORIGIN
-              value: "https://airtrail.rvserver.online"
+              value: "https://airtrail.remini.site"
             - name: DB_URL
               value: "postgres://airtrail:XfPd4Ja3sm00@postgres:5432/airtrail"
             - name: DB_DATABASE_NAME
@@ -131,7 +131,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`airtrail.rvserver.online`)
+    - match: Host(`airtrail.remini.site`)
       kind: Rule
       services:
         - name: airtrail

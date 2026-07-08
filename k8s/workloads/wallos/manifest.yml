@@ -68,7 +68,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`wallos.rvserver.online`)
+    - match: Host(`wallos.remini.site`)
       kind: Rule
       services:
         - name: wallos

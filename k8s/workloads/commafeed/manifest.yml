@@ -137,7 +137,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`commafeed.rvserver.online`)
+    - match: Host(`commafeed.remini.site`)
       kind: Rule
       services:
         - name: commafeed

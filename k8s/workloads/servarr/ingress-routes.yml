@@ -6,27 +6,27 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`radarr.rvserver.online`)
+    - match: Host(`radarr.remini.site`)
       kind: Rule
       services:
         - name: radarr
           port: 7878
-    - match: Host(`prowlarr.rvserver.online`)
+    - match: Host(`prowlarr.remini.site`)
       kind: Rule
       services:
         - name: prowlarr
           port: 9696
-    - match: Host(`sonarr.rvserver.online`)
+    - match: Host(`sonarr.remini.site`)
       kind: Rule
       services:
         - name: sonarr
           port: 8989
-    - match: Host(`bazarr.rvserver.online`)
+    - match: Host(`bazarr.remini.site`)
       kind: Rule
       services:
         - name: bazarr
           port: 6767
-    - match: Host(`monitarr.rvserver.online`)
+    - match: Host(`monitarr.remini.site`)
       kind: Rule
       services:
         - name: monitarr

@@ -64,7 +64,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`vaultwarden.rvserver.online`)
+    - match: Host(`vaultwarden.remini.site`)
       kind: Rule
       services:
         - name: vaultwarden

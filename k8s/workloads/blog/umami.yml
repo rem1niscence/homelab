@@ -114,7 +114,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`analytics.rvserver.online`)
+    - match: Host(`analytics.remini.site`)
       kind: Rule
       services:
         - name: umami

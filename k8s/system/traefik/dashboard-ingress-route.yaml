@@ -22,12 +22,12 @@ spec:
     - websecure
   routes:
     - kind: Rule
-      match: Host(`traefik.rvserver.online`)
+      match: Host(`traefik.remini.site`)
       services:
         - name: api@internal
           kind: TraefikService
     - kind: Rule
-      match: Host(`traefik.rvserver.online`) && PathPrefix(`/api`)
+      match: Host(`traefik.remini.site`) && PathPrefix(`/api`)
       services:
         - name: api@internal
           kind: TraefikService

@@ -100,7 +100,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`kapowarr.rvserver.online`)
+    - match: Host(`kapowarr.remini.site`)
       kind: Rule
       services:
         - name: kapowarr

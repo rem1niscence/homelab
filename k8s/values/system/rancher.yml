@@ -1,4 +1,4 @@
-hostname: rancher.rvserver.online
+hostname: rancher.remini.site
 replicas: 1
 
 ingress:

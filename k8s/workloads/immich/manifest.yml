@@ -307,7 +307,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`immich.rvserver.online`)
+    - match: Host(`immich.remini.site`)
       kind: Rule
       services:
         - name: immich

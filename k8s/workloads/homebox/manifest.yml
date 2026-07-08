@@ -75,7 +75,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`homebox.rvserver.online`)
+    - match: Host(`homebox.remini.site`)
       kind: Rule
       services:
         - name: homebox

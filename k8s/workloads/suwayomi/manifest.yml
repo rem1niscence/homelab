@@ -158,7 +158,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`suwayomi.rvserver.online`)
+    - match: Host(`suwayomi.remini.site`)
       kind: Rule
       services:
         - name: suwayomi

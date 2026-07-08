@@ -27,7 +27,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`truenas.rvserver.online`)
+    - match: Host(`truenas.remini.site`)
       kind: Rule
       services:
         - name: truenas
@@ -55,7 +55,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`router.rvserver.online`)
+    - match: Host(`router.remini.site`)
       kind: Rule
       services:
         - name: router

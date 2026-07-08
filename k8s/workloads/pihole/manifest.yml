@@ -95,7 +95,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`pihole.rvserver.online`)
+    - match: Host(`pihole.remini.site`)
       kind: Rule
       services:
         - name: pihole

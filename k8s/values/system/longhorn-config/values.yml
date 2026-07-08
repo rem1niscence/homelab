@@ -60,4 +60,4 @@ recurringJobs:
       - longhorn-local
 
 ingress:
-  host: longhorn.rvserver.online
+  host: longhorn.remini.site

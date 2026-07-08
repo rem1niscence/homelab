@@ -33,7 +33,7 @@ spec:
             - name: DEFAULT_THEME_COLOR
               value: "green"
             - name: HOST_NAME
-              value: "pdfding.rvserver.online"
+              value: "pdfding.remini.site"
             - name: SECRET_KEY
               value: "7710e578ba674e6da5a7abbe96d974d93"
             - name: CSRF_COOKIE_SECURE
@@ -114,7 +114,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`pdfding.rvserver.online`)
+    - match: Host(`pdfding.remini.site`)
       kind: Rule
       services:
         - name: pdfding

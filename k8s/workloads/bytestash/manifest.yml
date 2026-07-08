@@ -76,7 +76,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`bytestash.rvserver.online`)
+    - match: Host(`bytestash.remini.site`)
       kind: Rule
       services:
         - name: bytestash

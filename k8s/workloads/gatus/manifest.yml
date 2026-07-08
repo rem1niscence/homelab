@@ -58,7 +58,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`gatus.rvserver.online`)
+    - match: Host(`gatus.remini.site`)
       kind: Rule
       services:
         - name: gatus

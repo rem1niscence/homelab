@@ -42,7 +42,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`omnitools.rvserver.online`)
+    - match: Host(`omnitools.remini.site`)
       kind: Rule
       services:
         - name: omnitools

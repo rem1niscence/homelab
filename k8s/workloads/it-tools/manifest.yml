@@ -43,7 +43,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`it-tools.rvserver.online`)
+    - match: Host(`it-tools.remini.site`)
       kind: Rule
       services:
         - name: it-tools

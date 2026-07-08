@@ -13,7 +13,7 @@ p2p:
   serviceType: ClusterIP
 
 routes:
-  domain: rvserver.online
+  domain: remini.site
   validatorPrefix: validator-2
 
 storage:
@@ -65,8 +65,8 @@ config:
       "explorerPort": "50001",
       "rpcPort": "50002",
       "adminPort": "50003",
-      "rpcURL": "https://validator-2-rpc.rvserver.online",
-      "adminRPCUrl": "https://validator-2-admin-rpc.rvserver.online",
+      "rpcURL": "https://validator-2-rpc.remini.site",
+      "adminRPCUrl": "https://validator-2-admin-rpc.remini.site",
       "timeoutS": 3,
       "dataDirPath": "/root/.canopy",
       "dbName": "canopy",

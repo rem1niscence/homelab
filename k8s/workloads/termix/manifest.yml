@@ -64,7 +64,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`termix.rvserver.online`)
+    - match: Host(`termix.remini.site`)
       kind: Rule
       services:
         - name: termix

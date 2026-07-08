@@ -1,6 +1,6 @@
 ingress:
   description: "Homelab homepage"
-  host: "rvserver.online"
+  host: "remini.site"
 
 envFrom:
   - secretRef:
@@ -261,7 +261,7 @@ config:
             description: Kubernetes management platform
         - Hubble:
             icon: sh-cilium-hubble
-            href: https://hubble.rvserver.online
+            href: https://hubble.remini.site
             siteMonitor: http://hubble-ui.kube-system
             description: Cilium's network observability tool
         - Syncthing:

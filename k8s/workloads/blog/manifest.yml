@@ -136,7 +136,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`blog.rvserver.online`)
+    - match: Host(`blog.remini.site`)
       kind: Rule
       services:
         - name: blog

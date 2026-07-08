@@ -97,7 +97,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host("kitchenowl.rvserver.online")
+    - match: Host("kitchenowl.remini.site")
       kind: Rule
       services:
         - name: front

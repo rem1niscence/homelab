@@ -194,7 +194,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host("tracearr.rvserver.online")
+    - match: Host("tracearr.remini.site")
       kind: Rule
       services:
         - name: tracearr

@@ -44,7 +44,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`cyberchef.rvserver.online`)
+    - match: Host(`cyberchef.remini.site`)
       kind: Rule
       services:
         - name: cyberchef

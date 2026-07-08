@@ -130,7 +130,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`komga.rvserver.online`)
+    - match: Host(`komga.remini.site`)
       kind: Rule
       services:
         - name: komga

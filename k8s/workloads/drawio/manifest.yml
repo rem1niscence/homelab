@@ -44,7 +44,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`drawio.rvserver.online`)
+    - match: Host(`drawio.remini.site`)
       kind: Rule
       services:
         - name: drawio

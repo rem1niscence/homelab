@@ -189,20 +189,6 @@ spec:
   selector:
     app: filebrowser
 ---
-# apiVersion: v1
-# kind: Service
-# metadata:
-#
-#   name: filebrowser-lb
-# spec:
-#   type: LoadBalancer
-#   ports:
-#     - port: 9050
-#       targetPort: 80
-#   selector:
-#     app: filebrowser
-# ----- WebDav Setup -----
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -337,3 +323,16 @@ spec:
   tls:
     - hosts:
         - filebrowser
+---
+apiVersion: v1
+kind: Service
+metadata:
+
+  name: filebrowser-lb
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 9050
+      targetPort: 80
+  selector:
+    app: filebrowser

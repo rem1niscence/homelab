@@ -23,7 +23,7 @@ spec:
         - name: suwayomi
           securityContext:
             runAsUser: 1000
-          image: ghcr.io/suwayomi/suwayomi-server:preview
+          image: ghcr.io/suwayomi/suwayomi-server:stable
           imagePullPolicy: Always
           ports:
             - containerPort: 4567
@@ -174,7 +174,7 @@ spec:
     - namePattern: "suwayomi"
       images:
         - alias: suwayomi
-          imageName: ghcr.io/suwayomi/suwayomi-server:preview
+          imageName: ghcr.io/suwayomi/suwayomi-server:stable
           commonUpdateSettings:
             updateStrategy: "digest"
         - alias: flaresolverr

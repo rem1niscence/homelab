@@ -175,16 +175,6 @@ config:
               url: http://immich.immich
               key: {{HOMEPAGE_VAR_IMMICH_API_KEY}}
               version: 2
-        - File Browser:
-            icon: filebrowser
-            href: https://filebrowser.{{HOMEPAGE_VAR_DOMAIN}}
-            siteMonitor: http://filebrowser.filebrowser
-            description: Online file browser
-            widget:
-              type: filebrowser
-              url: http://filebrowser.filebrowser
-              username: {{HOMEPAGE_VAR_FILEBROWSER_USERNAME}}
-              password: {{HOMEPAGE_VAR_FILEBROWSER_PASSWORD}}
         - Wallos:
             icon: wallos
             href: https://wallos.{{HOMEPAGE_VAR_DOMAIN}}
@@ -264,6 +254,11 @@ config:
             href: https://hubble.remini.site
             siteMonitor: http://hubble-ui.kube-system
             description: Cilium's network observability tool
+        - File Browser:
+            icon: filebrowser
+            href: https://filebrowser.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://filebrowser.filebrowser
+            description: Online file browser
         - Syncthing:
             icon: syncthing.svg
             href: https://syncthing.{{HOMEPAGE_VAR_DOMAIN}}

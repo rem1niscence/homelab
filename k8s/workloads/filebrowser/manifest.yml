@@ -18,15 +18,19 @@ spec:
         platform.io/type: pi
       containers:
         - name: filebrowser
-          image: filebrowser/filebrowser:s6
+          image: gtstef/filebrowser:stable
           imagePullPolicy: IfNotPresent
           volumeMounts:
             - name: data
               mountPath: /srv
+            # Previous filebrowser config
             - name: db
               mountPath: /database
             - name: db
               mountPath: /config
+            # Current filebrwoser quantum config
+            # - name: db
+            #   mountPath: /home/filebrowser/data/
             - name: cloud
               mountPath: /srv/cloud
             - name: sync

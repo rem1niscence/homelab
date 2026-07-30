@@ -410,27 +410,27 @@ data:
         loginMethod: "password"               # login method to use: eg. password, proxy, oidc
         disableUpdateNotifications: false     # disable update notifications banner for admin users
 ---
-# apiVersion: networking.k8s.io/v1
-# kind: Ingress
-# metadata:
-#   name: filebrowser-ts
-#   annotations:
-#     tailscale.com/hostname: filebrowser
-# spec:
-#   ingressClassName: tailscale
-#   rules:
-#     - http:
-#         paths:
-#           - path: /
-#             pathType: Prefix
-#             backend:
-#               service:
-#                 name: filebrowser
-#                 port:
-#                   number: 80
-#   tls:
-#     - hosts:
-#         - filebrowser
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: filebrowser-ts
+  annotations:
+    tailscale.com/hostname: filebrowser
+spec:
+  ingressClassName: tailscale
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: filebrowser
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - filebrowser
 # ---
 # apiVersion: v1
 # kind: Service

@@ -17,7 +17,7 @@ routes:
   validatorPrefix: validator-1
 
 storage:
-  size: 15Gi
+  size: 12Gi
   storageClassName: "longhorn-vm"
   accessModes:
     - ReadWriteOnce

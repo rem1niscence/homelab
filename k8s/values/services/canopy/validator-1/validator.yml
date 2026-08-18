@@ -5,7 +5,7 @@ name: validator-1
 
 image:
   repository: canopynetwork/canopy-test
-  tag: main
+  tag: v0.1.21-beta-2
 
 p2p:
   enabled: true

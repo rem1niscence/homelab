@@ -5,7 +5,7 @@ name: sentinel-1
 
 image:
   repository: canopynetwork/canopy-test
-  tag: main
+  tag: v0.1.21-beta-2
 
 routes:
   domain: remini.site

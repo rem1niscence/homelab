@@ -56,13 +56,13 @@ spec:
             - name: data
               mountPath: /home/suwayomi/downloads
               subPath: manga
-        - name: flaresolverr
-          image: ghcr.io/flaresolverr/flaresolverr:latest
-          ports:
-            - containerPort: 8191
-          env:
-            - name: LOG_LEVEL
-              value: "info"
+        # - name: flaresolverr
+        #   image: ghcr.io/flaresolverr/flaresolverr:latest
+        #   ports:
+        #     - containerPort: 8191
+        #   env:
+        #     - name: LOG_LEVEL
+        #       value: "info"
         # - name: gluetun
         #   image: qmcgaw/gluetun:latest
         #   securityContext:

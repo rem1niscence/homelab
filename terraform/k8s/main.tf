@@ -21,7 +21,7 @@ module "cilium" {
 module "argocd" {
   source             = "./modules/argocd"
   domain             = data.sops_file.secrets.data["domain"]
-  argocd_version     = "9.5.12"
+  argocd_version     = "10.9.6"
   repo_url           = "git@github.com:rem1niscence/homelab.git"
   repo_deploy_key    = data.sops_file.secrets.data["argocd.deploy_key"]
   sealed_secrets_crt = data.sops_file.secrets.data["sealed_secrets.tls_crt"]

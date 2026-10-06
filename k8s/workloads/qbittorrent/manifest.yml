@@ -42,7 +42,7 @@ spec:
             - name: FIREWALL_INPUT_PORTS
               value: "8080"
         - name: qbittorrent
-          image: linuxserver/qbittorrent:5.2.0-libtorrentv1
+          image: linuxserver/qbittorrent:5.2.4-libtorrentv1
           command: ["sh", "-c", "sleep 10 && /init"]
           env:
             - name: PUID
@@ -177,7 +177,7 @@ spec:
     - namePattern: "qbittorrent"
       images:
         - alias: qbittorrent
-          imageName: linuxserver/qbittorrent:5.2.0-libtorrentv1
+          imageName: linuxserver/qbittorrent:5.2.4-libtorrentv1
           commonUpdateSettings:
             updateStrategy: "digest"
         - alias: gluetun

@@ -238,81 +238,6 @@ spec:
   selector:
     app: filebrowser
 ---
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: webdav
-  labels:
-    app: webdav
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: webdav
-  template:
-    metadata:
-      labels:
-        app: webdav
-    spec:
-      nodeSelector:
-        platform.io/type: pi
-      containers:
-        - name: webdav
-          image: hacdias/webdav:latest
-          imagePullPolicy: IfNotPresent
-          args: ["-c", "/config/config.yml"]
-          ports:
-            - containerPort: 6060
-          envFrom:
-            - secretRef:
-                name: webdav
-          volumeMounts:
-            - name: data
-              mountPath: /data
-            - name: cloud
-              mountPath: /data/cloud
-            - name: webdav
-              mountPath: /config
-      volumes:
-        - name: data
-          persistentVolumeClaim:
-            claimName: data-pvc
-        - name: cloud
-          persistentVolumeClaim:
-            claimName: cloud-pvc
-        - name: webdav
-          configMap:
-            name: webdav
-            items:
-              - key: config
-                path: config.yml
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: webdav
-data:
-  config: |
-    port: 6060
-    directory: /data
-    behindProxy: true
-    permissions: CRUD
-
-    users:
-      - username: "{env}USERNAME"
-        password: "{env}PASSWORD"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: webdav
-spec:
-  ports:
-    - port: 80
-      targetPort: 6060
-  selector:
-    app: webdav
----
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
@@ -327,11 +252,6 @@ spec:
       services:
         - name: filebrowser
           port: 80
-    - match: Host(`webdav.remini.site`)
-      kind: Rule
-      services:
-        - name: webdav
-          port: 80
 ---
 apiVersion: argocd-image-updater.argoproj.io/v1alpha1
 kind: ImageUpdater
@@ -344,10 +264,6 @@ spec:
       images:
         - alias: filebrowser
           imageName: gtstef/filebrowser:stable
-          commonUpdateSettings:
-            updateStrategy: "digest"
-        - alias: webdav
-          imageName: hacdias/webdav:latest
           commonUpdateSettings:
             updateStrategy: "digest"
 ---

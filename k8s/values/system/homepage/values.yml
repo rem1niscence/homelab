@@ -158,14 +158,14 @@ config:
             widget:
               type: gatus
               url: http://gatus.gatus
-        - Fileflows:
-            icon: fileflows.svg
-            href: https://fileflows.{{HOMEPAGE_VAR_DOMAIN}}
-            siteMonitor: http://fileflows.fileflows
-            description: File processing tool
-            widget:
-              type: fileflows
-              url: http://fileflows.fileflows
+        # - Fileflows:
+        #     icon: fileflows.svg
+        #     href: https://fileflows.{{HOMEPAGE_VAR_DOMAIN}}
+        #     siteMonitor: http://fileflows.fileflows
+        #     description: File processing tool
+        #     widget:
+        #       type: fileflows
+        #       url: http://fileflows.fileflows
         - Immich:
             icon: immich.svg
             href: https://immich.{{HOMEPAGE_VAR_DOMAIN}}

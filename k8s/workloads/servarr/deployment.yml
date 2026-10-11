@@ -15,7 +15,7 @@ spec:
         app: radarr
     spec:
       nodeSelector:
-        platform.io/type: secondary
+        platform.io/type: vm
       containers:
         - name: radarr
           image: lscr.io/linuxserver/radarr:latest

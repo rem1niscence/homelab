@@ -199,6 +199,15 @@ config:
               enableUser: true
               showEpisodeNumber: false
               expandOneStreamToTwoRows: false
+        - SparkyFitness:
+            icon: sh-sparkyfitness
+            href: https://fitness.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://sparkyfitness.sparkyfitness
+            description: Fitness & meal tracker
+            widget:
+              type: sparkyfitness
+              url: http://sparkyfitness.sparkyfitness
+              key: {{HOMEPAGE_VAR_SPARKYFITNESS_API_KEY}}
         - Grafana:
             icon: grafana.svg
             href: https://grafana.{{HOMEPAGE_VAR_DOMAIN}}

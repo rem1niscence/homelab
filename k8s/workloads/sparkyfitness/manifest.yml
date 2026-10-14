@@ -1,0 +1,256 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: sparkyfitness
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sparkyfitness-server
+  labels:
+    app: sparkyfitness-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sparkyfitness-server
+  template:
+    metadata:
+      labels:
+        app: sparkyfitness-server
+    spec:
+      nodeSelector:
+        platform.io/type: main
+      containers:
+        - name: sparkyfitness-server
+          image: codewithcj/sparkyfitness_server:latest
+          imagePullPolicy: Always
+          ports:
+            - name: server
+              containerPort: 3010
+              protocol: TCP
+          env:
+            - name: SPARKY_FITNESS_DB_HOST
+              value: "postgres"
+            - name: SPARKY_FITNESS_DB_PORT
+              value: "5432"
+            - name: SPARKY_FITNESS_FRONTEND_URL
+              value: "https://fitness.remini.site"
+            - name: SPARKY_FITNESS_SERVER_PORT
+              value: "3010"
+            - name: NODE_ENV
+              value: "production"
+            - name: TZ
+              value: "Europe/Madrid"
+            - name: SPARKY_FITNESS_LOG_LEVEL
+              value: "ERROR"
+            - name: SPARKY_FITNESS_DISABLE_SIGNUP
+              value: "false"
+          envFrom:
+            - secretRef:
+                name: sparkyfitness
+          volumeMounts:
+            - name: data
+              mountPath: /app/SparkyFitnessServer/backup
+              subPath: backup
+            - name: data
+              mountPath: /app/SparkyFitnessServer/uploads
+              subPath: uploads
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: sparkyfitness-data
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sparkyfitness-frontend
+  labels:
+    app: sparkyfitness-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sparkyfitness-frontend
+  template:
+    metadata:
+      labels:
+        app: sparkyfitness-frontend
+    spec:
+      nodeSelector:
+        platform.io/type: pi
+      containers:
+        - name: sparkyfitness-frontend
+          image: codewithcj/sparkyfitness:latest
+          imagePullPolicy: Always
+          ports:
+            - name: frontend
+              containerPort: 80
+              protocol: TCP
+          env:
+            - name: SPARKY_FITNESS_FRONTEND_URL
+              value: "https://fitness.remini.site"
+            - name: SPARKY_FITNESS_SERVER_HOST
+              value: "sparkyfitness-server"
+            - name: SPARKY_FITNESS_SERVER_PORT
+              value: "3010"
+            - name: NGINX_RATE_LIMIT
+              value: "5r/s"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  labels:
+    app: postgres
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      nodeSelector:
+        platform.io/type: main
+      containers:
+        - name: postgres
+          image: postgres:18.3-alpine
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: postgres
+              containerPort: 5432
+              protocol: TCP
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: sparkyfitness
+                  key: SPARKY_FITNESS_DB_NAME
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: sparkyfitness
+                  key: SPARKY_FITNESS_DB_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: sparkyfitness
+                  key: SPARKY_FITNESS_DB_PASSWORD
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          volumeMounts:
+            - name: db
+              mountPath: /var/lib/postgresql
+              subPath: postgres
+      volumes:
+        - name: db
+          persistentVolumeClaim:
+            claimName: sparkyfitness-postgres
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sparkyfitness
+spec:
+  selector:
+    app: sparkyfitness-frontend
+  ports:
+    - port: 80
+      targetPort: frontend
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sparkyfitness-server
+spec:
+  selector:
+    app: sparkyfitness-server
+  ports:
+    - port: 3010
+      targetPort: server
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+spec:
+  selector:
+    app: postgres
+  ports:
+    - port: 5432
+      targetPort: postgres
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sparkyfitness-postgres
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1G
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sparkyfitness-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1G
+  storageClassName: longhorn-local
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: sparkyfitness
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`fitness.remini.site`)
+      kind: Rule
+      services:
+        - name: sparkyfitness
+          port: 80
+---
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: sparkyfitness
+  namespace: argocd
+spec:
+  applicationRefs:
+    - namePattern: "sparkyfitness"
+      images:
+        - alias: server
+          imageName: codewithcj/sparkyfitness_server:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"
+        - alias: frontend
+          imageName: codewithcj/sparkyfitness:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"

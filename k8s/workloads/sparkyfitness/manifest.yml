@@ -115,8 +115,6 @@ spec:
       labels:
         app: postgres
     spec:
-      nodeSelector:
-        platform.io/type: main
       containers:
         - name: postgres
           image: postgres:18.3-alpine

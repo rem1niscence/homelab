@@ -143,9 +143,9 @@ data:
         alerts:
           - type: discord
       - name: Pihole
-        url: "http://pihole.pihole"
+        url: "http://pihole.pihole/admin/login"
         conditions:
-          - "[STATUS] == 403"
+          - "[STATUS] == 200"
         alerts:
           - type: discord
       - name: Prowlarr

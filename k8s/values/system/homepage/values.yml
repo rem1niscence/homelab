@@ -65,7 +65,7 @@ config:
         - Pi-hole:
             icon: pi-hole.svg
             href: https://pihole.{{HOMEPAGE_VAR_DOMAIN}}/admin
-            siteMonitor: http://pihole.pihole
+            siteMonitor: http://pihole.pihole/admin/login
             description: Network-wide ad blocker
             widget:
               type: pihole

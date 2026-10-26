@@ -85,3 +85,26 @@ spec:
           imageName: ghcr.io/usememos/memos:latest
           commonUpdateSettings:
             updateStrategy: "digest"
+---
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: memos-ts
+#   annotations:
+#     tailscale.com/hostname: memos
+#     tailscale.com/funnel: "true"
+# spec:
+#   ingressClassName: tailscale
+#   rules:
+#     - http:
+#         paths:
+#           - path: /
+#             pathType: Prefix
+#             backend:
+#               service:
+#                 name: memos
+#                 port:
+#                   number: 80
+#   tls:
+#     - hosts:
+#         - memos

@@ -286,12 +286,6 @@ data:
           - "[STATUS] == 200"
         alerts:
               - type: discord
-      - name: Wallos
-        url: "http://wallos.wallos"
-        conditions:
-          - "[STATUS] == 200"
-        alerts:
-              - type: discord
       - name: Discount Bandit
         url: "http://discount-bandit.discount-bandit"
         conditions:

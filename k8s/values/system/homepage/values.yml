@@ -176,16 +176,6 @@ config:
               url: http://immich.immich
               key: {{HOMEPAGE_VAR_IMMICH_API_KEY}}
               version: 2
-        - Wallos:
-            icon: wallos
-            href: https://wallos.{{HOMEPAGE_VAR_DOMAIN}}
-            siteMonitor: http://wallos.wallos
-            description: Subscriptions tracker & analytics
-            widget:
-              type: wallos
-              fields: ["activeSubscriptions", "previousMonthlyCost", "thisMonthlyCost", "nextMonthlyCost"]
-              url: http://wallos.wallos
-              key: {{HOMEPAGE_VAR_WALLOS_API_KEY}}
         - Tracearr:
             icon: sh-tracearr
             href: https://tracearr.{{HOMEPAGE_VAR_DOMAIN}}

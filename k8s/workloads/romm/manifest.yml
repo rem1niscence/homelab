@@ -1,0 +1,251 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: romm
+  labels:
+    app: romm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: romm
+  template:
+    metadata:
+      labels:
+        app: romm
+    spec:
+      # the "romm" service makes k8s inject ROMM_PORT=tcp://<ip>:8080, which
+      # romm reads as its listen port and breaks the nginx config
+      enableServiceLinks: false
+      nodeSelector:
+        platform.io/type: main
+      containers:
+        - name: romm
+          image: rommapp/romm:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: TZ
+              value: "Etc/UTC"
+            - name: DB_HOST
+              value: "romm-db"
+            - name: DB_NAME
+              value: "romm"
+            - name: DB_USER
+              value: "romm-user"
+            - name: DB_PASSWD
+              valueFrom:
+                secretKeyRef:
+                  name: romm
+                  key: DB_PASSWD
+                  optional: false
+            - name: ROMM_AUTH_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: romm
+                  key: ROMM_AUTH_SECRET_KEY
+                  optional: false
+            - name: SCREENSCRAPER_USER
+              valueFrom:
+                secretKeyRef:
+                  name: romm
+                  key: SCREENSCRAPER_USER
+            - name: SCREENSCRAPER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: romm
+                  key: SCREENSCRAPER_PASSWORD
+            - name: RETROACHIEVEMENTS_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: romm
+                  key: RETROACHIEVEMENTS_API_KEY
+            - name: STEAMGRIDDB_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: romm
+                  key: STEAMGRIDDB_API_KEY
+            - name: HASHEOUS_API_ENABLED
+              value: "true"
+          volumeMounts:
+            - name: data
+              mountPath: /romm/resources
+              subPath: resources
+            - name: data
+              mountPath: /romm/library
+              subPath: library
+            - name: data
+              mountPath: /romm/assets
+              subPath: assets
+            - name: data
+              mountPath: /romm/config
+              subPath: config
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: romm-db
+  labels:
+    app: romm-db
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: romm-db
+  template:
+    metadata:
+      labels:
+        app: romm-db
+    spec:
+      nodeSelector:
+        platform.io/type: main
+      containers:
+        - name: mariadb
+          image: mariadb:latest
+          ports:
+            - containerPort: 3306
+          env:
+            - name: TZ
+              value: "Etc/UTC"
+            - name: MARIADB_DATABASE
+              value: "romm"
+            - name: MARIADB_USER
+              value: "romm-user"
+            - name: MARIADB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: romm
+                  key: DB_PASSWD
+                  optional: false
+            - name: MARIADB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: romm
+                  key: MARIADB_ROOT_PASSWORD
+                  optional: false
+          startupProbe:
+            exec:
+              command: ["healthcheck.sh", "--connect", "--innodb_initialized"]
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 30
+          readinessProbe:
+            exec:
+              command: ["healthcheck.sh", "--connect", "--innodb_initialized"]
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 5
+          livenessProbe:
+            exec:
+              command: ["healthcheck.sh", "--connect", "--innodb_initialized"]
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 5
+          volumeMounts:
+            - name: db
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: db
+          persistentVolumeClaim:
+            claimName: db-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: db-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: romm-data-pv
+spec:
+  capacity:
+    storage: 1T
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 192.168.0.95
+    path: /mnt/main_drive/data/romm
+  storageClassName: local-path
+  mountOptions:
+    - vers=4.0
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1T
+  volumeName: romm-data-pv
+  storageClassName: local-path
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: romm
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: romm
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: romm-db
+spec:
+  ports:
+    - port: 3306
+      targetPort: 3306
+  selector:
+    app: romm-db
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: romm
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`romm.remini.site`)
+      kind: Rule
+      services:
+        - name: romm
+          port: 8080
+---
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: romm
+  namespace: argocd
+spec:
+  applicationRefs:
+    - namePattern: "romm"
+      images:
+        - alias: romm
+          imageName: rommapp/romm:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"
+        - alias: mariadb
+          imageName: mariadb:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"

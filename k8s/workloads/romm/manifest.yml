@@ -18,7 +18,7 @@ spec:
       # romm reads as its listen port and breaks the nginx config
       enableServiceLinks: false
       nodeSelector:
-        platform.io/type: main
+        platform.io/type: secondary
       containers:
         - name: romm
           image: rommapp/romm:latest

@@ -28,10 +28,153 @@ spec:
           env:
             - name: MEMOS_PORT
               value: "5230"
+        # logs every request coming through the tailscale ingress, used for alerting
+        - name: access-log
+          image: alpine:3
+          imagePullPolicy: IfNotPresent
+          # stock nginx images don't ship the geoip2 module, alpine's package does
+          command: ["/bin/sh", "/etc/nginx/memos/start.sh"]
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: access-log-config
+              mountPath: /etc/nginx/memos
+            - name: geoip
+              mountPath: /geoip
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              memory: 64Mi
+      initContainers:
+        # free DB-IP country/ASN databases (CC BY 4.0, https://db-ip.com) and datacenter ASN list, refreshed on every pod start
+        - name: geoip-download
+          image: alpine:3
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh", "/etc/nginx/memos/geoip-download.sh"]
+          volumeMounts:
+            - name: access-log-config
+              mountPath: /etc/nginx/memos
+            - name: geoip
+              mountPath: /geoip
       volumes:
         - name: data
           persistentVolumeClaim:
             claimName: data
+        - name: access-log-config
+          configMap:
+            name: memos-access-log
+        - name: geoip
+          emptyDir: {}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: memos-access-log
+data:
+  geoip-download.sh: |
+    # never fails the pod, missing data is logged as "unknown" and datacenter filtering is skipped
+    prev=$(date -d "@$(( $(date +%s) - 2764800 ))" +%Y-%m)
+
+    # db-ip publishes monthly, the current month may not be out yet on the 1st so fall back to the previous one
+    fetch_dbip() {
+      for m in $(date +%Y-%m) $prev; do
+        if wget -q -O /tmp/db.mmdb.gz "https://download.db-ip.com/free/dbip-$1-lite-$m.mmdb.gz" \
+          && gunzip -c /tmp/db.mmdb.gz > "/geoip/$1.mmdb"; then
+          echo "downloaded dbip-$1-lite-$m"
+          return 0
+        fi
+      done
+      rm -f "/geoip/$1.mmdb"
+      echo "dbip-$1 download failed"
+    }
+    fetch_dbip country
+    fetch_dbip asn
+
+    # hosting/cloud ASNs maintained by X4BNet (https://github.com/X4BNet/lists_vpn), turned into an nginx map
+    if wget -q -O /tmp/dc.txt https://raw.githubusercontent.com/X4BNet/lists_vpn/main/input/datacenter/ASN.txt; then
+      # the list has duplicates, which nginx map rejects
+      sed -n 's/^AS\([0-9][0-9]*\).*/\1 yes;/p' /tmp/dc.txt | sort -u > /geoip/datacenter-asn.map
+      echo "loaded $(wc -l < /geoip/datacenter-asn.map) datacenter ASNs"
+    else
+      rm -f /geoip/datacenter-asn.map
+      echo "datacenter ASN list download failed"
+    fi
+
+  start.sh: |
+    set -e
+    apk add --no-cache -q nginx nginx-mod-http-geoip2
+    rm -f /etc/nginx/http.d/*.conf
+    cp /etc/nginx/memos/default.conf /etc/nginx/http.d/default.conf
+
+    # build lookups from whatever the init container managed to download
+    conf=/etc/nginx/http.d/geoip.conf
+    if [ -s /geoip/country.mmdb ]; then
+      printf 'geoip2 /geoip/country.mmdb {\n  $country default=unknown source=$http_x_forwarded_for country iso_code;\n}\n' > $conf
+    else
+      echo 'map "" $country { default "unknown"; }' > $conf
+    fi
+    if [ -s /geoip/asn.mmdb ]; then
+      printf 'geoip2 /geoip/asn.mmdb {\n  $asn default=unknown source=$http_x_forwarded_for autonomous_system_number;\n  $asn_org default=unknown source=$http_x_forwarded_for autonomous_system_organization;\n}\n' >> $conf
+    else
+      echo 'map "" $asn { default "unknown"; }' >> $conf
+      echo 'map "" $asn_org { default "unknown"; }' >> $conf
+    fi
+    if [ -s /geoip/datacenter-asn.map ]; then
+      printf 'map $asn $datacenter {\n  default no;\n  include /geoip/datacenter-asn.map;\n}\n' >> $conf
+    else
+      echo 'map "" $datacenter { default "unknown"; }' >> $conf
+    fi
+    exec nginx -g 'daemon off; error_log /dev/stderr warn;'
+
+  default.conf: |
+    # tailscale serve sets X-Forwarded-For to the real client, and
+    # Tailscale-Funnel-Request on public funnel traffic, or Tailscale-User-Login on tailnet traffic
+    log_format access_json escape=json '{'
+      '"event":"memos_ts_access",'
+      '"client_ip":"$http_x_forwarded_for",'
+      '"country":"$country",'
+      '"asn":"$asn",'
+      '"asn_org":"$asn_org",'
+      '"datacenter":"$datacenter",'
+      '"funnel":"$http_tailscale_funnel_request",'
+      '"ts_user":"$http_tailscale_user_login",'
+      '"method":"$request_method",'
+      '"uri":"$request_uri",'
+      '"status":"$status",'
+      '"user_agent":"$http_user_agent"'
+    '}';
+
+    server {
+      listen 8080;
+      client_max_body_size 100m;
+      access_log /dev/stdout access_json;
+
+      location / {
+        proxy_pass http://127.0.0.1:5230;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $http_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $http_connection;
+        proxy_buffering off;
+        proxy_read_timeout 300s;
+      }
+    }
+---
+# only used by the tailscale ingress so traefik traffic is not logged
+apiVersion: v1
+kind: Service
+metadata:
+  name: memos-ts
+spec:
+  ports:
+    - port: 80
+      targetPort: 8080
+  selector:
+    app: memos
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -102,7 +245,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: memos
+                name: memos-ts
                 port:
                   number: 80
   tls:

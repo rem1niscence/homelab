@@ -57,6 +57,13 @@ vmalert:
     #   node-role.kubernetes.io/control-plane: "true"
     # pick up all VMRule resources
     selectAllByDefault: true
+    # except LogsQL rules, those are evaluated by the "logs" vmalert against VictoriaLogs
+    ruleNamespaceSelector: {}
+    ruleSelector:
+      matchExpressions:
+        - key: vmalert.datasource
+          operator: NotIn
+          values: ["vlogs"]
     # how often rules are checked
     evaluationInterval: 10s
 
@@ -130,6 +137,10 @@ alertmanager:
       # reminder of unresolved alerts
       repeat_interval: 1h
       routes:
+        # memos public funnel access goes to its own channel only
+        - matchers:
+            - alertname = MemosFunnelAccess
+          receiver: discord-memos
         - matchers:
             - severity = critical
           receiver: discord
@@ -167,6 +178,18 @@ alertmanager:
             #   **HighMemoryUsage** (critical)
             #   Memory usage is above 90% for node k3s-agent-0
             #   Node k3s-agent-0 memory usage is at 91.8%
+            message: |
+              {{ range .Alerts }}
+              **{{ .Labels.alertname }}** ({{ .Labels.severity }})
+              {{ .Annotations.summary }}
+              {{ .Annotations.description }}
+              {{ end }}
+      - name: discord-memos
+        discord_configs:
+          # dedicated webhook for memos funnel access, same sealed secret
+          - webhook_url_file: /etc/vm/secrets/alertmanager-discord/memos-webhook-url
+            send_resolved: true
+            title: '{{ if eq .Status "firing" }}🔥{{ else }}✅{{ end }} [{{ .Status | toUpper }}] {{ .GroupLabels.alertname }}'
             message: |
               {{ range .Alerts }}
               **{{ .Labels.alertname }}** ({{ .Labels.severity }})

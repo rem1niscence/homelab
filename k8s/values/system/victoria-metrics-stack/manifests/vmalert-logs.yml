@@ -1,0 +1,56 @@
+# second vmalert instance that evaluates LogsQL rules against VictoriaLogs,
+# the main vmalert only queries vmsingle so it can't run vlogs groups
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMAlert
+metadata:
+  name: logs
+  namespace: monitoring
+spec:
+  datasource:
+    url: http://victoria-logs-vls-server.logging.svc:9428
+  notifiers:
+    - url: http://vmalertmanager-victoria-metrics-vmks-0.vmalertmanager-victoria-metrics-vmks.monitoring.svc.cluster.local.:9093
+  evaluationInterval: 1m
+  selectAllByDefault: false
+  # only rules labeled for logs, from any namespace
+  ruleNamespaceSelector: {}
+  ruleSelector:
+    matchLabels:
+      vmalert.datasource: vlogs
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      memory: 128Mi
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMRule
+metadata:
+  name: memos-funnel-access
+  namespace: monitoring
+  labels:
+    vmalert.datasource: vlogs
+spec:
+  groups:
+    - name: memos-funnel-access
+      type: vlogs
+      interval: 1m
+      rules:
+        - alert: MemosFunnelAccess
+          # ignore desktop linux user agents and datacenter/cloud networks (scanners),
+          # android ua contains "Linux; Android" so phones still alert
+          expr: >-
+            kubernetes.pod_namespace:memos kubernetes.container_name:access-log
+            event:memos_ts_access funnel:="?1"
+            -user_agent:~"X11; Linux"
+            -datacenter:=yes
+            | stats by (client_ip, country, asn_org, user_agent) count() as requests
+          labels:
+            severity: warning
+            namespace: memos
+          annotations:
+            summary: "memos public funnel accessed from {{ $labels.client_ip }} ({{ $labels.country }}, {{ $labels.asn_org }})"
+            description: >-
+              {{ $value }} requests in the last minute.
+              user agent: {{ $labels.user_agent }}

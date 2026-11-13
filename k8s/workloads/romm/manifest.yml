@@ -212,7 +212,7 @@ metadata:
   name: romm
 spec:
   ports:
-    - port: 8080
+    - port: 80
       targetPort: 8080
   selector:
     app: romm
@@ -240,7 +240,7 @@ spec:
       kind: Rule
       services:
         - name: romm
-          port: 8080
+          port: 80
 ---
 apiVersion: argocd-image-updater.argoproj.io/v1alpha1
 kind: ImageUpdater

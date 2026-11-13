@@ -298,6 +298,7 @@ data:
 #   name: filebrowser-ts
 #   annotations:
 #     tailscale.com/hostname: filebrowser
+#     # tailscale.com/funnel: "true"
 # spec:
 #   ingressClassName: tailscale
 #   rules:

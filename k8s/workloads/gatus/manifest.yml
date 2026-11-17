@@ -310,6 +310,18 @@ data:
           - "[STATUS] == 200"
         alerts:
               - type: discord
+      - name: Romm
+        url: "http://romm.romm"
+        conditions:
+          - "[STATUS] == 200"
+        alerts:
+          - type: discord
+      - name: DayGLANCE
+        url: "http://dayglance.dayglance"
+        conditions:
+          - "[STATUS] == 200"
+        alerts:
+          - type: discord
       # - name: Firefly III
       #   url: "http://firefly.firefly"
       #   conditions:
@@ -406,10 +418,6 @@ data:
       #     - "[STATUS] == 200"
       #   alerts:
       #         - type: discord
-      # - name: Romm
-      #   url: "http://romm.romm"
-      #   conditions:
-      #     - "[STATUS] == 200"
       #   alerts:
       #         - type: discord
       # - name: Hemmelig

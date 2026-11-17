@@ -84,19 +84,20 @@ spec:
             - name: data
               mountPath: /romm/library
               subPath: library
-            - name: data
+            - name: config
               mountPath: /romm/config
               subPath: config
             # contains the game saves
-            - name: assets
+            - name: config
               mountPath: /romm/assets
+              subPath: assets
       volumes:
         - name: data
           persistentVolumeClaim:
             claimName: data-pvc
-        - name: assets
+        - name: config
           persistentVolumeClaim:
-            claimName: assets-pvc
+            claimName: config
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -210,33 +211,17 @@ spec:
   storageClassName: local-path
 ---
 apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: romm-assets-pv
-spec:
-  capacity:
-    storage: 1T
-  accessModes:
-    - ReadWriteMany
-  nfs:
-    server: 192.168.0.95
-    path: /mnt/main_drive/data/romm/assets
-  storageClassName: local-path
-  mountOptions:
-    - vers=4.0
----
-apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: assets-pvc
+  namespace: romm
+  name: config
 spec:
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
-      storage: 1T
-  volumeName: romm-assets-pv
-  storageClassName: local-path
+      storage: 1Gi
+  storageClassName: longhorn-local
 ---
 apiVersion: v1
 kind: Service

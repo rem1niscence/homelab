@@ -44,6 +44,8 @@ spec:
               mountPath: /srv/media
             - name: paperless
               mountPath: /srv/paperless
+            - name: dayglance
+              mountPath: /srv/containers/dayglance
       volumes:
         - name: data
           persistentVolumeClaim:
@@ -63,6 +65,9 @@ spec:
         - name: paperless
           persistentVolumeClaim:
             claimName: paperless-pvc
+        - name: dayglance
+          persistentVolumeClaim:
+            claimName: dayglance-pvc
         - name: config
           configMap:
             name: config
@@ -213,6 +218,35 @@ spec:
     requests:
       storage: 3T
   volumeName: filebrowser-paperless-pv
+  storageClassName: local-path
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: filebrowser-dayglance-pv
+spec:
+  capacity:
+    storage: 3T
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 192.168.0.95
+    path: /mnt/main_drive/data/containers/dayglance
+  storageClassName: local-path
+  mountOptions:
+    - vers=4.0
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: dayglance-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 3T
+  volumeName: filebrowser-dayglance-pv
   storageClassName: local-path
 ---
 apiVersion: v1

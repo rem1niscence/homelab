@@ -49,6 +49,8 @@ spec:
               value: "false"
             - name: PAPERLESS_OCR_USER_ARGS
               value: '{"invalidate_digital_signatures": true}'
+            - name: PAPERLESS_ALLOWED_HOSTS
+              value: 'paperless.paperless,paperless.remini.site'
           volumeMounts:
             - name: config
               mountPath: /usr/src/paperless/data

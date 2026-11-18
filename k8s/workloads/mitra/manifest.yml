@@ -25,6 +25,12 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /app/data
+          env:
+            # - name: MITRA_LOG_LEVEL
+            #   value: debug
+            - name: MITRA_VAPID_SUBJECT
+              value: https://mitra.remini.site
+
       volumes:
         - name: data
           persistentVolumeClaim:

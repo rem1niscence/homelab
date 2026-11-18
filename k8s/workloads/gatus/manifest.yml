@@ -316,8 +316,8 @@ data:
           - "[STATUS] == 200"
         alerts:
           - type: discord
-      - name: DayGLANCE
-        url: "http://dayglance.dayglance"
+      - name: Mitra
+        url: "http://Mitra.Mitra"
         conditions:
           - "[STATUS] == 200"
         alerts:

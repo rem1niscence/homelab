@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mitra
+  labels:
+    app: mitra
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mitra
+  template:
+    metadata:
+      labels:
+        app: mitra
+    spec:
+      nodeSelector:
+        platform.io/type: pi
+      containers:
+        - name: mitra
+          image: ghcr.io/a11delavar/mitra:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+            - name: data
+              mountPath: /app/data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1G
+  storageClassName: longhorn-local
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mitra
+spec:
+  ports:
+    - port: 80
+      targetPort: 3000
+  selector:
+    app: mitra
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: mitra
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`mitra.remini.site`)
+      kind: Rule
+      services:
+        - name: mitra
+          port: 80
+---
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: mitra
+  namespace: argocd
+spec:
+  applicationRefs:
+    - namePattern: "mitra"
+      images:
+        - alias: mitra
+          imageName: ghcr.io/a11delavar/mitra:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"

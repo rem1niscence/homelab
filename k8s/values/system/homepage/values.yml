@@ -383,10 +383,10 @@ config:
             href: https://n8n.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://n8n.n8n:5678
             description: Workflow automation tool
-        - DayGLANCE:
+        - Mitra:
             icon: sh-nextcloud-calendar
-            href: https://dayglance.{{HOMEPAGE_VAR_DOMAIN}}
-            siteMonitor: http://dayglance.dayglance
+            href: https://mitra.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://mitra.mitra
             description: Day and task Planner
         - FRP Client:
             icon: sh-haproxy

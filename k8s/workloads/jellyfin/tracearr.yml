@@ -41,6 +41,8 @@ spec:
               value: "*"
             - name: LOG_LEVEL
               value: "info"
+            - name: TIMESCALEDB_AUTO_UPDATE
+              value: "true"
 ---
 apiVersion: apps/v1
 kind: Deployment

@@ -1,0 +1,74 @@
+pod:
+  # chart default is a DaemonSet, a single replica is enough and required by sqlite
+  kind: Deployment
+  replicas: 1
+  # the RWO volume can't be attached to two pods during a rolling update
+  strategy:
+    type: Recreate
+  selectors:
+    nodeSelector:
+      platform.io/type: pi
+  resources:
+    requests:
+      cpu: 10m
+      memory: 64Mi
+    limits:
+      memory: 256Mi
+
+ingress:
+  enabled: true
+  traefikCRD:
+    enabled: true
+    entryPoints:
+      - websecure
+
+# holds the sqlite db and the filesystem notifier output
+persistence:
+  enabled: true
+  storageClass: longhorn
+  size: 200Mi
+
+secret:
+  # the chart generates secrets with helm lookup, which argocd doesn't support, so they would
+  # rotate on every sync. a sealed secret is used instead
+  existingSecret: authelia-secrets
+  additionalSecrets:
+    authelia-users: {}
+
+configMap:
+  theme: auto
+
+  totp:
+    issuer: remini.site
+
+  session:
+    inactivity: 1 day
+    expiration: 1 week
+    remember_me: 1 month
+    cookies:
+      - domain: remini.site
+        subdomain: auth
+
+  authentication_backend:
+    # the users file is a read-only secret mount and there is no smtp, so both are disabled
+    password_reset:
+      disable: true
+    password_change:
+      disable: true
+    file:
+      enabled: true
+      path: /secrets/authelia-users/users_database.yml
+      watch: true
+
+  access_control:
+    default_policy: two_factor
+
+  storage:
+    local:
+      enabled: true
+
+  # one-time codes for registering totp are written to /config/notification.txt
+  # check with: kubectl -n authelia exec deploy/authelia -- cat /config/notification.txt
+  notifier:
+    filesystem:
+      enabled: true

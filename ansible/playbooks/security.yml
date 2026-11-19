@@ -14,6 +14,11 @@
           # (created when a pod starts or restarts) inherits rp_filter=1 and
           # drops asymmetric return-path packets thus breaking ClusterIP routing.
           net.ipv4.conf.default.rp_filter: 0
+          # Ubuntu's default of 128 inotify instances per user is exhausted by
+          # pods that watch files (e.g. authelia, promtail, reloaders), which then
+          # crash with "too many open files".
+          fs.inotify.max_user_instances: 8192
+          fs.inotify.max_user_watches: 524288
         # The role defaults ufw's forward policy to DROP, which breaks
         # pod-to-pod traffic. Set to ACCEPT for Kubernetes nodes.
         ufw_default_forward_policy: ACCEPT

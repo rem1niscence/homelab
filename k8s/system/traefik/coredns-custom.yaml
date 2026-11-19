@@ -1,0 +1,9 @@
+# resolve this host to the traefik service in-cluster, since pods can't reach its tailscale IP
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: coredns-custom
+  namespace: kube-system
+data:
+  traefik-hairpin.override: |
+    rewrite name exact auth.remini.site traefik.kube-system.svc.cluster.local answer auto

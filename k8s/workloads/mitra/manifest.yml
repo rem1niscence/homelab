@@ -30,6 +30,10 @@ spec:
             #   value: debug
             - name: MITRA_VAPID_SUBJECT
               value: https://mitra.remini.site
+            - name: MITRA_URL
+              value: https://mitra.remini.site
+            - name: MITRA_NAME
+              value: "Personal Calendar"
 
       volumes:
         - name: data

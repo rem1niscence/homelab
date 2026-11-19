@@ -34,6 +34,8 @@ secret:
   existingSecret: authelia-secrets
   additionalSecrets:
     authelia-users: {}
+    # the chart only mounts known keys from existingSecret, so the signing key lives in its own secret
+    authelia-oidc-jwks: {}
 
 configMap:
   theme: auto
@@ -67,8 +69,36 @@ configMap:
     local:
       enabled: true
 
-  # one-time codes for registering totp are written to /config/notification.txt
+  # one-time codes for registering TOTP are written to /config/notification.txt
   # check with: kubectl -n authelia exec deploy/authelia -- cat /config/notification.txt
   notifier:
     filesystem:
       enabled: true
+
+  identity_providers:
+    oidc:
+      enabled: true
+      jwks:
+        - key_id: main
+          algorithm: RS256
+          use: sig
+          key:
+            path: /secrets/authelia-oidc-jwks/oidc.jwk.RS256.pem
+      clients:
+        - client_id: kitchenowl
+          client_name: KitchenOwl
+          # pbkdf2 digest of the secret, the plaintext lives in the kitchenowl sealed secret
+          client_secret:
+            value: '$pbkdf2-sha512$310000$cyHaR3MxP74.m9JiBXMTTQ$zLwXtZsw8g4/mm69uAq36f6CLxFdnbODIRXIgKJwFwi996QOq9IHqDrj0rDmz0jaU3bYzJQf3BQqSSganFo68Q'
+          public: false
+          authorization_policy: two_factor
+          consent_mode: implicit
+          redirect_uris:
+            - https://kitchenowl.remini.site/signin/redirect
+            - kitchenowl:/signin/redirect
+          scopes:
+            - openid
+            - email
+            - profile
+          token_endpoint_auth_method: client_secret_post
+          userinfo_signed_response_alg: none

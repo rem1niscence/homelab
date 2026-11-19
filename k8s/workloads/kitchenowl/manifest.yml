@@ -42,8 +42,17 @@ spec:
           ports:
             - containerPort: 5000
           env:
-            - name: JWT_SECRET_KEY
-              value: c729ca5bf305e7faea4129f7ebd382d3ec14e887b0c1f813ba8109123a339cfe
+            - name: FRONT_URL
+              value: https://kitchenowl.remini.site
+            - name: OIDC_ISSUER
+              value: https://auth.remini.site
+            - name: OIDC_CLIENT_ID
+              value: kitchenowl
+            - name: UWSGI_BUFFER_SIZE
+              value: "32768"
+          envFrom:
+            - secretRef:
+                name: kitchenowl
           volumeMounts:
             - name: data
               mountPath: /data
@@ -102,3 +111,21 @@ spec:
       services:
         - name: front
           port: 80
+---
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: kitchenowl
+  namespace: argocd
+spec:
+  applicationRefs:
+    - namePattern: "kitchenowl"
+      images:
+        - alias: front
+          imageName: tombursch/kitchenowl-web:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"
+        - alias: back
+          imageName: tombursch/kitchenowl-web:latest
+          commonUpdateSettings:
+            updateStrategy: "digest"

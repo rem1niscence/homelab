@@ -102,3 +102,21 @@ configMap:
             - profile
           token_endpoint_auth_method: client_secret_post
           userinfo_signed_response_alg: none
+        - client_id: mitra
+          client_name: mitra
+          # pbkdf2 digest of the secret, the plaintext lives in the mitra sealed secret
+          client_secret:
+            value: '$pbkdf2-sha512$310000$pPneiNpgAWgoxMlNc10Ekg$m7PjKhHxQ5mooTSE8oPfrD8h..qkzwn3AlwsleAft2yamrDzTLL8x2sqiVD9aHYTCHZujb.NYKYlmR8wdBG6/g'
+          public: false
+          authorization_policy: two_factor
+          consent_mode: implicit
+          require_pkce: true
+          pkce_challenge_method: S256
+          redirect_uris:
+            - https://mitra.remini.site/auth/callback
+          scopes:
+            - openid
+            - email
+            - profile
+          token_endpoint_auth_method: client_secret_post
+          userinfo_signed_response_alg: none

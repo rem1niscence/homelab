@@ -317,7 +317,13 @@ data:
         alerts:
           - type: discord
       - name: Mitra
-        url: "http://Mitra.Mitra"
+        url: "http://mitra.mitra"
+        conditions:
+          - "[STATUS] == 200"
+        alerts:
+          - type: discord
+      - name: Authelia
+        url: "http://authelia.authelia"
         conditions:
           - "[STATUS] == 200"
         alerts:

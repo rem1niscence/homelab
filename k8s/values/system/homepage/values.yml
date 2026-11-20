@@ -258,6 +258,11 @@ config:
             href: https://rancher.{{HOMEPAGE_VAR_DOMAIN}}
             siteMonitor: http://rancher.cattle-system:443
             description: Kubernetes management platform
+        - Authelia:
+            icon: sh-authelia
+            href: https://auth.{{HOMEPAGE_VAR_DOMAIN}}
+            siteMonitor: http://authelia.authelia
+            description: Open-source Auth server
         - Hubble:
             icon: sh-cilium-hubble
             href: https://hubble.remini.site
